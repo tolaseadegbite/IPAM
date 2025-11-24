@@ -1,0 +1,27 @@
+<%# This component receives `trigger`, `title`, `label`, `size`, and `content` %>
+<div contents data-controller="dialog">
+  <%# Render the trigger button/link that was passed in from the helper %>
+  <%= raw(trigger) %>
+
+  <dialog class="dialog"
+          style="--dialog-size: <%= size %>;"
+          data-dialog-target="content"
+          data-action="click->dialog#closeOnClickOutside"
+          aria-label="<%= label %>">
+
+    <button type="button" class="btn btn--plain dialog__close" data-action="click->dialog#close">
+      <span class="icon icon--x" aria-hidden="true"></span>
+      <span class="sr-only">Close</span>
+    </button>
+
+    <div class="dialog__content">
+      <%# Only render the title if one was provided %>
+      <% if title.present? %>
+        <h2 class="font-semibold text-lg mbe-4"><%= title %></h2>
+      <% end %>
+
+      <%# Render the main content block that was passed in %>
+      <%= raw(content) %>
+    </div>
+  </dialog>
+</div>

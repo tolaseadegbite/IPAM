@@ -18,7 +18,7 @@ gem "stimulus-rails"
 gem "jbuilder"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -57,6 +57,7 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  gem "letter_opener_web", "~> 3.0"
 end
 
 group :test do
@@ -64,3 +65,14 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "mission_control-jobs"
+gem "ransack", "~> 4.4"
+gem "pagy", "~> 43.1"
+gem "pg", "~> 1.6"
+
+gem "css-zero", "~> 3.2", github: "lazaronixon/css-zero"
+
+gem "authentication-zero", "~> 4.0"
+# Use Pwned to check if a password has been found in any of the huge data breaches [https://github.com/philnash/pwned]
+gem "pwned"

@@ -1,0 +1,69 @@
+<div class="sidebar-menu">
+  <%= link_to root_path, class: "flex items-center gap mbs-4 mis-1" do %>
+    <%= image_tag("logo/logo.png", size: 30) %>
+  <% end %>
+
+  <div class="sidebar-menu__content">
+    <div class="sidebar-menu__group">
+      <%# <div class="sidebar-menu__group-label">MAIN</div> %>
+      <div class="sidebar-menu__items">  
+        <nav class="">
+          <%= link_to dashboard_path, class: "btn sidebar-menu__button mbe-1" do %>
+            <span class="icon icon--chart-pie" aria-hidden="true"></span>
+            Dashboard
+          <% end %>
+          <%= link_to contacts_path, 
+                      class: "btn sidebar-menu__button mbe-1", 
+                      aria: (current_page?(contacts_path) ? { current: "page" } : {}) do %>
+            <span class="icon icon--card-sim" aria-hidden="true"></span>
+            Contacts
+          <% end %>
+        </nav>
+      </div>
+    </div>
+    <div class="sidebar-menu__group">
+      <%# <div class="sidebar-menu__group-label">PLAYGROUND</div> %>
+      <div class="sidebar-menu__items">  
+        <nav>
+
+          <%# Adds `aria-current="page"` if the current page matches the link's path. %>
+          <%= link_to events_path, 
+                      class: "btn sidebar-menu__button mbe-1", 
+                      aria: (current_page?(events_path) ? { current: "page" } : {}) do %>
+            <span class="icon icon--calendar-range" aria-hidden="true"></span>
+            Events
+          <% end %>
+
+          <%# Adds `aria-current="page"` if the current page matches the link's path. %>
+          <%= link_to follow_up_tasks_path, 
+                      class: "btn sidebar-menu__button mbe-1", 
+                      aria: (current_page?(follow_up_tasks_path) ? { current: "page" } : {}) do %>
+            <span class="icon icon--list-checks" aria-hidden="true"></span>
+            Follow up Tasks
+            <div class="badge badge--number badge--negative"><%= current_user.follow_up_tasks
+                                    .where(completed_at: nil)
+                                    .order(due_at: :asc)
+                                    .includes(invitation: [ :event, :contact ]).count %> </div>
+          <% end %>
+          
+          <%#= link_to voice_changer_path, 
+                      class: "btn sidebar-menu__button mbe-1", 
+                      aria: (current_page?(voice_changer_path) ? { current: "page" } : {}) do %>
+            <!--<span class="icon icon--vc" aria-hidden="true"></span>
+            Voice Changer-->
+          <%# end %>
+          
+          <%#= link_to sound_effects_path, 
+                      class: "btn sidebar-menu__button mbe-1", 
+                      aria: (current_page?(sound_effects_path) ? { current: "page" } : {}) do %>
+            <!--<span class="icon icon--rotate-3d" aria-hidden="true"></span>
+            Sound Effects-->
+          <%# end %>
+
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <%= render "layouts/navigation/dashboard/sidebar_bottom_menu" %>
+</div>

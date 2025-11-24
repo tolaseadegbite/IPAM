@@ -1,0 +1,15 @@
+<% if notice.present? %>
+  <div popover="manual" class="flash rounded-md"
+       data-controller="flash"
+       data-action="animationend->flash#remove"
+       role="status">
+    <div class="flash__content"><%= notice %></div>
+  </div>
+<% elsif alert.present? %>
+  <div popover="manual" class="flash flash--negative rounded-md"
+       data-controller="flash"
+       data-action="animationend->flash#remove"
+       role="alert">
+    <div class="flash__content"><%= alert %></div>
+  </div>
+<% end %>
