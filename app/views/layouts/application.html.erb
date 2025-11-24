@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Ipam" %></title>
+    <title><%= full_title(yield(:title)) %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -14,7 +14,7 @@
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <%# <link rel="icon" href="/icon.svg" type="image/svg+xml"> %>
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%= stylesheet_link_tag "css-zero/reset", "data-turbo-track": "reload" %>
@@ -33,7 +33,7 @@
   <body class="<%= 'min-b-screen flex flex-col justify-center items-center p-4' if is_auth_page %> bg-main" data-controller="color-scheme <%= 'player' if is_dashboard_view %>" <% if is_dashboard_view %>data-action="show@window->player#show"<% end %>>
 
     <div id="flash_messages">
-      <%= render "layouts/shared/flash" %>
+      <%= render "shared/flash" %>
     </div>
 
     <% if is_dashboard_view %>

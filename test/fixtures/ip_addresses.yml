@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  subnet: one
+  device: one
+  address: 
+  status: 1
+
+two:
+  subnet: two
+  device: two
+  address: 
+  status: 1

@@ -1,6 +1,6 @@
 .dialog {
   background-color: var(--color-bg);
-  border-radius: var(--rounded-lg);
+  border-radius: var(--rounded-xl);
   border-width: var(--border);
   box-shadow: var(--shadow-lg);
   color: var(--color-text);
@@ -37,8 +37,29 @@
     &[open]::backdrop { opacity: 0; }
   }
 
-  @media (width < 40rem) {
-    border-radius: 0;
+  /* --- THE FIX for mobile layout --- */
+  @media (width < 64rem) {
+    /* Position it at the bottom of the screen */
+    margin: 0;
+    margin-block-start: auto;
+    max-inline-size: 100%;
+
+    /* Style it like a bottom sheet */
+    border-start-start-radius: var(--rounded-xl);
+    border-start-end-radius: var(--rounded-xl);
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+    
+    /* Change animation from scaling to sliding up */
+    transform: translateY(100%);
+    &[open] {
+      transform: translateY(0);
+    }
+    @starting-style {
+      &[open] {
+        transform: translateY(100%);
+      }
+    }
   }
 }
 

@@ -2,20 +2,23 @@
   align-items: center;
   background-color: var(--btn-background, var(--color-surface));
   block-size: var(--btn-block-size, auto);
+  border-radius: var(--btn-radius, var(--rounded-sm));
   border: 1px solid var(--btn-border-color, var(--color-border));
-  border-radius: var(--btn-radius, var(--rounded-md));
   box-shadow: var(--btn-box-shadow, var(--shadow-xs));
   color: var(--btn-color, var(--color-text));
   column-gap: var(--size-2);
   cursor: default;
   display: inline-flex;
   font-size: var(--btn-font-size, var(--text-sm));
+  /* font-size: var(--btn-font-size, var(--text-lg)); */
   font-weight: var(--btn-font-weight, var(--font-medium));
   inline-size: var(--btn-inline-size, auto);
   justify-content: var(--btn-justify-content, center);
   padding: var(--btn-padding, .375rem 1rem);
+  /* padding: 0.75rem 1.5rem; */
   position: relative;
   white-space: nowrap;
+  cursor: pointer;
 
   &:hover {
     background-color: var(--btn-hover-color, var(--color-border-light));
@@ -76,7 +79,7 @@
   --btn-padding: var(--size-2);
 }
 
-[aria-busy="true"] .btn--busy:disabled {
+[aria-busy="true"] .btn--loading:disabled {
   > * {
     visibility: hidden;
   }

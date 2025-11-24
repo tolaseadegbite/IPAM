@@ -1,0 +1,45 @@
+.section-padding {
+    padding-top: 6rem;
+}
+
+@media (width <= 64rem) {
+    .app-header {
+        margin-top: 0 !important;
+        padding: .5rem !important;
+    }
+
+#main {
+    gap: var(--size-1 )!important;
+}
+
+    section {
+        margin: .3rem !important;
+        border-radius: .5rem !important;
+        padding: 2rem 1rem !important;
+        align-items: center !important;
+    }
+
+    .container.grid > div {
+        align-items: center !important;
+    }
+
+    .home-image {
+        border-radius: .2rem !important;
+    }
+
+    h1 {
+        font-size: 2rem !important;
+    }
+
+    h2 {
+        font-size: 1.5rem !important;
+    }
+
+    h3 {
+        font-size: 1.2rem !important;
+    }
+
+    .section-padding {
+        padding-top: 2rem !important;
+    }
+}

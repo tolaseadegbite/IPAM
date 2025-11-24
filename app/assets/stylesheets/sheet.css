@@ -1,0 +1,133 @@
+.sheet {
+  background-color: var(--color-bg);
+  border-inline-width: var(--sheet-border);
+  box-shadow: var(--shadow-lg);
+  block-size: var(--size-full);
+  color: var(--color-text);
+  inline-size: var(--sheet-size, var(--size-3-4));
+  margin-inline: var(--sheet-margin);
+  max-block-size: unset;
+
+  &::backdrop {
+    background-color: rgba(0, 0, 0, .5);
+  }
+
+  /* Setup transition */
+  transition-behavior: allow-discrete;
+  transition-duration: var(--time-300);
+  transition-property: display, overlay, transform;
+
+  &::backdrop {
+    transition-behavior: allow-discrete;
+    transition-duration: var(--time-150);
+    transition-property: display, overlay, opacity;
+  }
+
+  /* Exit stage to */
+  & { transform: var(--sheet-transform); }
+  &::backdrop { opacity: 0; }
+
+  /* On stage */
+  &[open] { transform: translateX(0); }
+  &[open]::backdrop { opacity: 1; }
+
+  /* Enter stage from */
+  @starting-style {
+    &[open] { transform: var(--sheet-transform); }
+    &[open]::backdrop { opacity: 0;}
+  }
+
+  @media (width >= 40rem) {
+    max-inline-size: var(--sheet-size, var(--max-i-sm));
+  }
+}
+
+.sheet--left {
+  --sheet-border: 0 1px;
+  --sheet-margin: 0 auto;
+  --sheet-transform: translateX(-100%);
+}
+
+.sheet--right {
+  --sheet-border: 1px 0;
+  --sheet-margin: auto 0;
+  --sheet-transform: translateX(100%);
+}
+
+.sheet__content {
+  block-size: var(--size-full);
+  padding: var(--size-6);
+  width: 100%;
+}
+
+.sheet__close {
+  inset-block-start: var(--size-3);
+  inset-inline-end:  var(--size-3);
+  position: absolute;
+}
+
+
+
+
+
+/* New Bottom Sheet Variant */
+.sheet--bottom {
+  /* 1. Anchor to the bottom, edge-to-edge. */
+  inset: auto 0 0;
+  inline-size: 100%;
+  max-inline-size: none; 
+  --sheet-size: 100%;
+  block-size: 73dvh;
+  --sheet-transform: translateY(100%);
+  border: none;
+  border-block-start: 1px solid var(--color-border);
+  border-radius: var(--rounded-2xl) var(--rounded-2xl) 0 0;
+
+  transition-duration: 500ms;
+
+&::backdrop {
+    transition-duration: 400ms;
+  }
+}
+
+/* On stage: Ensure the transform uses translateY for vertical animation */
+.sheet--bottom[open] { 
+  transform: translateY(0); 
+}
+
+/* The "handle" at the top of the sheet */
+.sheet--bottom::before {
+  content: "";
+  position: absolute;
+  top: var(--size-2);
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--size-10);
+  height: var(--size-1);  
+  background-color: var(--color-border);
+  border-radius: var(--rounded-full);
+  z-index: 9999;
+}
+
+.voice-list-item {
+  /* Add a transparent border to prevent layout shift on hover */
+  border: 1px solid transparent;
+  border-radius: var(--rounded-md);
+  transition: background-color var(--time-150), border-color var(--time-150);
+}
+
+.voice-list-item:hover {
+  /* On hover, change the border color and background */
+  /* border-color: var(--color-border-dark); */
+  background-color: var(--color-border-light);
+  cursor: pointer;
+}
+
+/* ADD THIS BLOCK AT THE TOP */
+dialog.sheet:not([open]) {
+  display: none;
+}
+
+dialog.sheet[open] {
+  display: flex;
+}

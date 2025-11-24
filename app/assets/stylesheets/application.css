@@ -1,10 +1,88 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
+@font-face {
+  font-family: 'Roboto Condensed';
+  src: font-url('roboto/Roboto_Condensed-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Condensed';
+  src: font-url('roboto/Roboto_Condensed-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Condensed';
+  src: font-url('roboto/Roboto_Condensed-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Condensed';
+  src: font-url('roboto/Roboto_Condensed-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+h1 {
+  font-weight: 700; /* Maps to Roboto_Condensed-Bold */
+}
+
+h2 {
+  font-weight: 600; /* Maps to Roboto_Condensed-SemiBold */
+}
+
+h3 {
+  font-weight: 500; /* Maps to Roboto_Condensed-Medium */
+}
+
+h4, h5, h6 {
+  font-weight: 400; /* Maps to Roboto_Condensed-Regular */
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.min-b-screen {
+  min-block-size: 100dvh; /* 100vh = 100% of the viewport height */
+}
+ 
+.min-b-screen-80 {
+  min-block-size: 80dvh; /* 100vh = 80% of the viewport height */
+}
+ 
+.min-b-screen-60 {
+  min-block-size: 60dvh; /* 100vh = 80% of the viewport height */
+}
+ 
+.min-b-screen-90, .fixed-right-col {
+  min-block-size: 90dvh; /* 90vh = 90% of the viewport height */
+}
+
+/* Style for the popover that holds the notifications */
+.popover--notifications {
+  /* Remove default popover padding to allow content to go edge-to-edge */
+  --popover-padding: 0; 
+}
+
+/* The scrollable list inside the popover */
+.popover__scrollable-list {
+  /* Set a max-height. When content exceeds this, a scrollbar will appear. */
+  max-block-size: 78dvh; /* 78% of the viewport height is a good starting point */
+  overflow-y: auto;
+}
+
+.popover__item {
+  transition: background-color var(--time-150);
+}
+
+.popover__item:hover {
+  background-color: var(--color-border-light);
+}

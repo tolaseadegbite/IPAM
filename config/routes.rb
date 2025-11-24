@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
-  get "pages/home"
-  get "pages/about"
+  mount MissionControl::Jobs::Engine, at: "/jobs"
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
+  
+  root "pages#home"
   get  "sign_in", to: "sessions#new"
   post "sign_in", to: "sessions#create"
   get  "sign_up", to: "registrations#new"
@@ -19,7 +21,9 @@ Rails.application.routes.draw do
   namespace :sessions do
     resource :sudo, only: [:new, :create]
   end
-  root "home#index"
+
+  resource :dashboard, only: [ :show ]
+  
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

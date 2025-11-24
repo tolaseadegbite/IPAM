@@ -5,9 +5,8 @@
   flex-shrink: 0;
   inline-size: var(--icon-size, 1rem);
   mask-image: var(--svg);
-  mask-position: center;
   mask-repeat: no-repeat;
-  mask-size: var(--icon-size, 1rem);
+  mask-size: cover;
   pointer-events: none;
   user-select: none;
 }
@@ -26,20 +25,36 @@ img.icon {
 * Lucide (https://lucide.dev)
 * Open-source icon library with a consistent style
 *****************************************************************/
-.icon--camera { --svg: url("camera.svg"); }
+.icon--calendar-range { --svg: url("calendar-range.svg"); }
 .icon--chevron-left { --svg: url("chevron-left.svg"); }
+.icon--chevrons-left { --svg: url("chevrons-left.svg"); }
+.icon--chevrons-right { --svg: url("chevrons-right.svg"); }
 .icon--chevron-right { --svg: url("chevron-right.svg"); }
+.icon--ellipsis { --svg: url("ellipsis.svg"); }
+.icon--eye { --svg: url("eye.svg"); }
+.icon--pen { --svg: url("pen.svg"); }
+.icon--message-square-text { --svg: url("message-square-text.svg"); }
+.icon--mail { --svg: url("mail.svg"); }
+.icon--phone { --svg: url("phone.svg"); }
+.icon--list-checks { --svg: url("list-checks.svg"); }
 .icon--chevrons-up-down { --svg: url("chevrons-up-down.svg"); }
-.icon--circle-alert { --svg: url("circle-alert.svg"); }
-.icon--circle-check { --svg: url("circle-check.svg"); }
+.icon--menu { --svg: url("menu.svg"); }
+.icon--x { --svg: url("x.svg"); }
+.icon--search { --svg: url("search.svg"); }
+.icon--card-sim { --svg: url("card-sim.svg"); }
+.icon--chart-pie { --svg: url("chart-pie.svg"); }
 .icon--copy { --svg: url("copy.svg"); }
 .icon--download { --svg: url("download.svg"); }
-.icon--ellipsis { --svg: url("ellipsis.svg"); }
-.icon--minus { --svg: url("minus.svg"); }
-.icon--menu { --svg: url("menu.svg"); }
-.icon--moon { --svg: url("moon.svg"); }
-.icon--panel-left { --svg: url("panel-left.svg"); }
-.icon--search { --svg: url("search.svg"); }
 .icon--share { --svg: url("share.svg"); }
+.icon--bell { --svg: url("bell.svg"); }
+.icon--laptop { --svg: url("laptop.svg"); }
+.icon--camera { --svg: url("camera.svg"); }
+.icon--minus { --svg: url("minus.svg"); }
 .icon--sun { --svg: url("sun.svg"); }
-.icon--x { --svg: url("x.svg"); }
+.icon--moon { --svg: url("moon.svg"); }
+.icon--panel-left-open { --svg: url("panel-left-open.svg"); }
+.icon--circle-alert { --svg: url("circle-alert.svg"); }
+.icon--circle-check { --svg: url("circle-check.svg"); }
+.icon--user-check { --svg: url("user-check.svg"); }
+.icon--user-minus { --svg: url("user-minus.svg"); }
+.icon--user-x { --svg: url("user-x.svg"); }

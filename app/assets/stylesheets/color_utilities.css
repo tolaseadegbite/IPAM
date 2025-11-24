@@ -1,0 +1,38 @@
+/* Orange Text Colors */
+.text-orange-50 { color: var(--orange-50); }
+.text-orange-100 { color: var(--orange-100); }
+.text-orange-200 { color: var(--orange-200); }
+.text-orange-300 { color: var(--orange-300); }
+.text-orange-400 { color: var(--orange-400); }
+.text-orange-500 { color: var(--orange-500); }
+.text-orange-600 { color: var(--orange-600); }
+.text-orange-700 { color: var(--orange-700); }
+.text-orange-800 { color: var(--orange-800); }
+.text-orange-900 { color: var(--orange-900); }
+.text-orange-950 { color: var(--orange-950); }
+
+/* Orange Colors */
+.bg-orange-50 { background-color: var(--orange-50); }
+.bg-orange-100 { background-color: var(--orange-100); }
+.bg-orange-200 { background-color: var(--orange-200); }
+.bg-orange-300 { background-color: var(--orange-300); }
+.bg-orange-400 { background-color: var(--orange-400); }
+.bg-orange-500 { background-color: var(--orange-500); }
+.bg-orange-600 { background-color: var(--orange-600); }
+.bg-orange-700 { background-color: var(--orange-700); }
+.bg-orange-800 { background-color: var(--orange-800); }
+.bg-orange-900 { background-color: var(--orange-900); }
+.bg-orange-950 { background-color: var(--orange-950); }
+
+/* Orange Hover Background Colors */
+.hover\:bg-orange-50:hover { background-color: var(--orange-50); }
+.hover\:bg-orange-100:hover { background-color: var(--orange-100); }
+.hover\:bg-orange-200:hover { background-color: var(--orange-200); }
+.hover\:bg-orange-300:hover { background-color: var(--orange-300); }
+.hover\:bg-orange-400:hover { background-color: var(--orange-400); }
+.hover\:bg-orange-500:hover { background-color: var(--orange-500); }
+.hover\:bg-orange-600:hover { background-color: var(--orange-600); }
+.hover\:bg-orange-700:hover { background-color: var(--orange-700); }
+.hover\:bg-orange-800:hover { background-color: var(--orange-800); }
+.hover\:bg-orange-900:hover { background-color: var(--orange-900); }
+.hover\:bg-orange-950:hover { background-color: var(--orange-950); }

@@ -1,35 +1,61 @@
-<h1>Sign up</h1>
+<div class="p-4 i-full bg-main" style="max-inline-size: 25rem;">
+  <div class="text-center">
+    <div class="mbe-5">
+      <%= link_to root_path, class: "flex items-center gap-2 mi-auto rounded-lg border i-fit pie-2" do %>
+        <%= image_tag("logo.png", size: 80) %>
+        <span class="text-5xl font-semibold">AM</span>
+      <% end %>
+    </div>
+    <h1 class="font-semibold text-3xl mbe-5">Sign Up</h1>
+  </div>
 
-<%= form_with(url: sign_up_path) do |form| %>
-  <% if @user.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+  <%= form_with(url: sign_up_path) do |form| %>
+    <% if @user.errors.any? %>
+      <div class="alert alert--negative flex items-start mbe-5" role="alert">
+        <span class="icon icon--circle-alert" aria-hidden="true"></span>
+        <div class="flex flex-col mis-3">
+          <h5 class="font-medium leading-none mbe-1">Unable to create user.</h5>
+          <div class="flex flex-col text-sm">
+            <p class="mbe-2"><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</p>
+            <ul class="mis-3" style="list-style: disc">
+              <% @user.errors.each do |error| %>
+                <li><%= error.full_message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    <% end %>
 
-      <ul>
-        <% @user.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+    <div class="mbe-5">
+      <div class="mbe-5">
+        <%= form.label :username, style: "display: block", class: "font-semibold mbe-1" %>
+        <%= form.text_field :username, value: @user.username, placeholder: "lashe", required: true, autofocus: true, class: "input" %>
+      </div>
+      
+      <%= form.label :email, style: "display: block", class: "font-semibold mbe-1" %>
+      <%= form.email_field :email, value: @user.email, placeholder: "tolase@ipam.com", required: true, autocomplete: "email", class: "input" %>
+    </div>
+
+    <div class="mbe-5">
+      <%= form.label :password, style: "display: block", class: "font-semibold mbe-1" %>
+      <%= form.password_field :password, required: true, placeholder: "************", autocomplete: "new-password", class: "input" %>
+      <div class="text-sm text-end">12 characters minimum.</div>
+    </div>
+
+    <div class="mbe-5">
+      <%= form.label :password_confirmation, style: "display: block", class: "font-semibold mbe-1" %>
+      <%= form.password_field :password_confirmation, required: true, placeholder: "************", autocomplete: "new-password", class: "input" %>
+    </div>
+
+    <div>
+      <%= form.submit "Sign up", class: "btn bg-orange-400 hover:bg-orange-500 i-full" %>
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :email, style: "display: block" %>
-    <%= form.email_field :email, value: @user.email, required: true, autofocus: true, autocomplete: "email" %>
-  </div>
+  <br>
 
-  <div>
-    <%= form.label :password, style: "display: block" %>
-    <%= form.password_field :password, required: true, autocomplete: "new-password" %>
-    <div>12 characters minimum.</div>
+  <div class="text-sm text-center">
+    <%= link_to "Sign in", sign_in_path %> | <%= link_to "Forgot your password?", new_identity_password_reset_path %>
   </div>
-
-  <div>
-    <%= form.label :password_confirmation, style: "display: block" %>
-    <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password" %>
-  </div>
-
-  <div>
-    <%= form.submit "Sign up" %>
-  </div>
-<% end %>
+</div>

@@ -3,11 +3,23 @@
   background-color: var(--flash-background, var(--color-text));
   border-radius: var(--rounded-full);
   color: var(--flash-color, var(--color-text-reversed));
-  margin-block-start: var(--flash-position, var(--size-5));
-  margin-inline: auto;
+
+  /* --- ADD THESE LINES --- */
+  position: fixed; /* Position relative to the viewport */
+  z-index: 9999; /* Ensure it's on top of everything */
+
+  /* --- REPLACE MARGINS WITH THIS POSITIONING --- */
+  top: var(--flash-position, var(--size-5)); /* Position from the top */
+  left: 50%; /* Center it horizontally */
+  transform: translateX(-50%); /* Adjust for perfect centering */
+
 
   &:is(:hover, :focus-within) {
     animation-play-state: paused;
+  }
+
+  [data-turbo-preview] & {
+    display: none;
   }
 }
 
@@ -32,8 +44,8 @@
 }
 
 .flash--extended {
-  animation-duration: 12s;
   animation-name: appear-then-fade-extended;
+  animation-duration: 12s;
 }
 
 @keyframes appear-then-fade {

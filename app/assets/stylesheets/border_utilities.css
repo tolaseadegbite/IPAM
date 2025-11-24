@@ -1,0 +1,17 @@
+/* --- Border Width Utilities --- */
+
+.border-1 { border-width: var(--border); }
+.border-2 { border-width: var(--border-2); }
+.border-4 { border-width: var(--border-4); }
+.border-8 { border-width: var(--border-8); }
+
+/* --- Border Radius Utilities --- */
+
+.rounded-xs { border-radius: var(--rounded-xs); }
+.rounded-sm { border-radius: var(--rounded-sm); }
+.rounded-md { border-radius: var(--rounded-md); }
+.rounded-lg { border-radius: var(--rounded-lg); }
+.rounded-xl { border-radius: var(--rounded-xl); }
+.rounded-2xl { border-radius: var(--rounded-2xl); }
+.rounded-3xl { border-radius: var(--rounded-3xl); }
+.rounded-full { border-radius: var(--rounded-full); }
