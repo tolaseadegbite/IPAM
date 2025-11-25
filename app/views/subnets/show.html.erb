@@ -16,7 +16,7 @@
       <% end %>
       <div>
         <h1 class="text-3xl font-bold"><%= @subnet.name %></h1>
-        <div class="font-mono text-sky-500"><%= @subnet.network_address %></div>
+        <div class="font-mono text-link"><%= @subnet.network_address %></div>
       </div>
     </div>
   </div>
@@ -32,10 +32,12 @@
       <span class="font-bold text-sm uppercase text-subtle">Utilization</span>
       <span class="font-semibold text-lg"><%= used %> / <%= total %> IPs Used (<%= percent %>%)</span>
     </div>
-    <%# Round progressbar %>
-    <div class="i-full bg-gray-200 rounded-full h-4 overflow-hidden">
-      <div class="bg-blue-500 rounded-full transition-all duration-500" style="width: <%= percent %>%"></div>
-    </div>
+
+    <%# --- CORRECTED PROGRESS COMPONENT --- %>
+    <label class="block i-full">
+      <%= tag.progress value: used, max: total, class: "progress", role: "progressbar" %>
+      <span class="sr-only">Utilization <%= percent %>%</span>
+    </label>
   </div>
 
   <%# --- IP Grid --- %>
