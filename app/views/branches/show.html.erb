@@ -1,5 +1,14 @@
 <% content_for :title, @branch.name %>
 
+<% content_for :page_header do %>
+  <%= @branch.name %>
+<% end %>
+
+<% content_for :header_action_buttons do %>
+  <%= link_to "Edit", edit_branch_path(@branch), class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2", data: { turbo_frame: "modal" } %>
+
+<% end %>
+
 <div class="p-4 max-w-5xl mx-auto">
   <div class="flex items-center justify-between mbe-6">
     <div class="flex items-center gap-4">
@@ -7,9 +16,6 @@
         <span class="icon icon--chevron-left"></span>
       <% end %>
       <h1 class="text-3xl font-bold"><%= @branch.name %></h1>
-    </div>
-    <div class="flex gap-2">
-      <%= link_to "Edit", edit_branch_path(@branch), class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2", data: { turbo_frame: "modal" } %>
     </div>
   </div>
 
@@ -33,7 +39,7 @@
 
     <%# --- Associated Departments --- %>
     <div class="col-span-2">
-      <div class=" rounded bg-white shadow-sm">
+      <div class="">
         <div class="flex items-center justify-between mbe-4 border-be pbe-2">
           <h3 class="font-bold text-lg">Departments</h3>
           <%= link_to "Add Dept", new_department_path(branch_id: @branch.id), class: "text-sm text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>

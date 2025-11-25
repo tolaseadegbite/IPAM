@@ -1,4 +1,4 @@
-<tr id="<%= dom_id device %>" class="hover:bg-gray-50">
+<tr id="<%= dom_id device %>">
   <td class="p-4">
     <div class="font-bold"><%= device.name %></div>
     <div class="text-xs text-subtle"><%= device.device_type.humanize %></div>
@@ -7,7 +7,7 @@
     <div class="font-mono"><%= device.serial_number %></div>
     <div class="text-xs text-subtle">Tag: <%= device.asset_tag %></div>
   </td>
-  <td class="p-4 font-mono text-sm text-blue-600">
+  <td class="p-4 font-mono text-sm text-sky-500">
     <%= device.ip_address&.address || "Unassigned" %>
   </td>
   <td class="p-4 text-sm">

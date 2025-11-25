@@ -12,4 +12,8 @@ class Employee < ApplicationRecord
   # validates :email, uniqueness: true, allow_blank: true
   validates :phone_number, uniqueness: true, allow_blank: true
   validates :status, presence: true
+
+  def full_name
+    "#{first_name} #{last_name}"
+  end
 end

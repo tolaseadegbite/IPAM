@@ -1,12 +1,26 @@
+<% content_for :title, "Asset Inventory" %>
+
+<% content_for :page_header do %>
+  <h4 class="font-semibold">Asset Inventory</h4>
+<% end %>
+
+<% content_for :header_action_buttons do %>
+    <%= link_to "New Device", new_device_path,
+                  class: "btn bg-orange-400 text-white font-semibold rounded-md p-2 show@md",
+                  data: { turbo_frame: "modal" } %>
+<% end %>
+
+<div class="absolute hide@md" style="bottom: 10rem; right: 1rem; z-index: 9999">
+  <%= link_to new_device_path, class: "btn bg-orange-400 text-white font-semibold rounded-full p-5", data: { turbo_frame: "modal" } do %>
+    <span class="icon icon--pen"></span>
+  <% end %>
+</div>
+
 <div class="p-4 i-full">
-  <div class="flex items-center justify-between mbe-6">
-    <h1 class="text-3xl font-semibold">Asset Inventory</h1>
-    <%= link_to "New Device", new_device_path, class: "btn bg-orange-400 text-white font-semibold rounded-md p-2", data: { turbo_frame: "new_device" } %>
-  </div>
 
   <%= form_with url: devices_path, method: :get, class: "mbe-6 flex gap-2", data: { turbo_frame: "devices", turbo_action: "advance" } do |f| %>
     <%= f.text_field :query, placeholder: "Search Serial, Asset Tag, or Name...", class: "input border rounded p-2 flex-grow", value: params[:query] %>
-    <%= f.submit "Search", class: "btn bg-gray-800 text-white rounded px-4" %>
+    <%= f.submit "Search", class: "btn btn--primary" %>
   <% end %>
 
   <%= turbo_frame_tag "new_device" %>

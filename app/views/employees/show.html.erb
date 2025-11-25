@@ -1,0 +1,89 @@
+<% content_for :title, "#{@employee.first_name} #{@employee.last_name}" %>
+
+<% content_for :page_header do %>
+  <h4 class="font-semibold"><%= @employee.first_name %> <%= @employee.last_name %></h4>
+<% end %>
+
+<% content_for :header_action_buttons do %>
+    <%= link_to "Edit Profile", edit_employee_path(@employee),
+                  class: "btn bg-orange-400 text-white font-semibold rounded-md p-2 show@md",
+                  data: { turbo_frame: "modal" } %>
+<% end %>
+
+<div class="absolute hide@md" style="bottom: 10rem; right: 1rem; z-index: 9999">
+  <%= link_to edit_employee_path(@employee), class: "btn bg-orange-400 text-white font-semibold rounded-full p-5", data: { turbo_frame: "modal" } do %>
+    <span class="icon icon--pen"></span>
+  <% end %>
+</div>
+
+<div class="p-4 max-w-4xl mx-auto">
+  <div class="flex items-center justify-between mbe-6">
+    <div class="flex items-center gap-4">
+      <%= link_to employees_path, class: "btn btn--subtle btn--icon" do %>
+        <span class="icon icon--chevron-left"></span>
+      <% end %>
+      <h1 class="text-3xl font-bold"><%= @employee.first_name %> <%= @employee.last_name %></h1>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 grid-cols-3@md gap-4">
+    <%# --- Profile Card --- %>
+    <div class="col-span-1">
+      <div class="card p-4 border rounded shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-center mbe-2">
+          <div class="bg-shade rounded-full flex items-center justify-center text-3xl font-bold text-subtle border" style="block-size: 5rem; inline-size: 5rem;">
+            <%= @employee.first_name.first %><%= @employee.last_name.first %>
+          </div>
+        </div>
+        
+        <div class="text-center mbe-2">
+          <% status_color = @employee.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>
+          <span class="<%= status_color %> pi-3 pb-1 rounded-full text-sm font-bold uppercase"><%= @employee.status.humanize %></span>
+        </div>
+
+        <div class="border-t pt-4">
+          <div>
+            <label class="block text-xs text-subtle font-bold uppercase">Email</label>
+            <div class="break-all"><%= @employee.email %></div>
+          </div>
+          <div>
+            <label class="block text-xs text-subtle font-bold uppercase">Department</label>
+            <div><%= link_to @employee.department.name, @employee.department, class: "text-sky-600 hover:underline" %></div>
+            <div class="text-xs text-subtle"><%= @employee.department.branch.name %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# --- Assets Card --- %>
+    <div class="col-span-2">
+      <div class="card">
+        <h3 class="font-bold text-lg mbe-4 border-be pbe-2">Assigned Assets</h3>
+        <% if @employee.devices.any? %>
+          <div class="grid grid-cols-1 gap-4">
+            <% @employee.devices.each do |device| %>
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-lg"><%= link_to device.name, device, class: "hover:text-orange-600" %></div>
+                  <div class="text-sm text-subtle"><%= device.device_type.humanize %> &bull; <%= device.serial_number %></div>
+                </div>
+                <div class="text-right">
+                  <% if device.ip_address %>
+                    <div class="font-mono text-blue-600 font-bold"><%= device.ip_address.address %></div>
+                  <% else %>
+                    <div class="text-xs text-subtle italic">No IP</div>
+                  <% end %>
+                  <div class="text-xs uppercase font-bold mt-1 text-gray-500"><%= device.status %></div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="p-8 text-center text-subtle bg-gray-50 rounded border border-dashed">
+            <p>No devices currently assigned.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
