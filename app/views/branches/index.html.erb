@@ -1,0 +1,44 @@
+<% content_for :title, "Branches" %>
+
+<% content_for :page_header do %>
+  <h4 class="font-semibold">Branches</h4>
+<% end %>
+
+<% content_for :header_action_buttons do %>
+    <%= link_to "New Branch", new_branch_path,
+                  class: "btn bg-orange-400 text-white font-semibold rounded-md p-2 show@md",
+                  data: { turbo_frame: "modal" } %>
+<% end %>
+
+<div class="absolute hide@md" style="bottom: 10rem; right: 1rem; z-index: 9999">
+  <%= link_to new_branch_path, class: "btn bg-orange-400 text-white font-semibold rounded-full p-5", data: { turbo_frame: "modal" } do %>
+    <span class="icon icon--pen"></span>
+  <% end %>
+</div>
+
+<div class="p-4 i-full">
+
+  <%= turbo_frame_tag "branches" do %>
+    <%# --- Desktop Table --- %>
+    <div class="show@md relative i-full overflow-x-auto border rounded-md bg-surface mbe-4">
+      <table class="table i-full text-left">
+        <thead class="bg-shade text-subtle font-semibold border-b">
+          <tr>
+            <th class="p-4">Name</th>
+            <th class="p-4">Location</th>
+            <th class="p-4">Contact</th>
+            <th class="p-4 text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="branches_table_body" class="divide-y divide-gray-100">
+          <%= render @branches %>
+        </tbody>
+      </table>
+    </div>
+
+    <%# --- Mobile Cards --- %>
+    <div class="hide@md flex flex-col gap-4">
+      <%= render partial: "branches/branch_card", collection: @branches, as: :branch %>
+    </div>
+  <% end %>
+</div>

@@ -1,5 +1,5 @@
 <div class="sidebar-menu">
-  <%= link_to root_path, class: "flex items-center gap-2 rounded-lg border i-fit pie-2 mbs-4 mis-1" do %>
+  <%= link_to root_path, class: "flex items-center gap-2 rounded-lg border i-fit pie-2 mbs-2 mis-1" do %>
         <%= image_tag("logo.png", size: 30) %>
         <span class="text-2xl font-semibold">AM</span>
       <% end %>
@@ -13,7 +13,7 @@
             <span class="icon icon--chart-pie" aria-hidden="true"></span>
             Dashboard
           <% end %>
-          <%= link_to "", 
+          <%= link_to branches_path, 
                       class: "btn sidebar-menu__button mbe-1", 
                       aria: (current_page?("") ? { current: "page" } : {}) do %>
             <span class="icon icon--card-sim" aria-hidden="true"></span>
@@ -28,49 +28,49 @@
         <nav>
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
-          <%= link_to "", 
+          <%= link_to departments_path, 
                       class: "btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?("") ? { current: "page" } : {}) do %>
+                      aria: (current_page?(departments_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--calendar-range" aria-hidden="true"></span>
             Departments
           <% end %>
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
-          <%= link_to "", 
+          <%= link_to employees_path, 
                       class: "btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?("") ? { current: "page" } : {}) do %>
+                      aria: (current_page?(employees_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--list-checks" aria-hidden="true"></span>
             Employees
           <% end %>
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
-          <%= link_to "", 
+          <%= link_to subnets_path, 
                       class: "btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?("") ? { current: "page" } : {}) do %>
+                      aria: (current_page?(subnets_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--list-checks" aria-hidden="true"></span>
             Subnets
           <% end %>
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
-          <%= link_to "", 
+          <%= link_to ip_addresses_path, 
                       class: "btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?("") ? { current: "page" } : {}) do %>
+                      aria: (current_page?(ip_addresses_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--list-checks" aria-hidden="true"></span>
             IpAddresses
           <% end %>
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
-          <%= link_to "", 
+          <%= link_to devices_path, 
                       class: "btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?("") ? { current: "page" } : {}) do %>
+                      aria: (current_page?(devices_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--list-checks" aria-hidden="true"></span>
             Devices
           <% end %>
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
-          <%= link_to "", 
+          <%= link_to users_path, 
                       class: "btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?("") ? { current: "page" } : {}) do %>
+                      aria: (current_page?(users_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--list-checks" aria-hidden="true"></span>
             Users
           <% end %>

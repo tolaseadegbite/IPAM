@@ -1,0 +1,62 @@
+<% content_for :title, @branch.name %>
+
+<div class="p-4 max-w-5xl mx-auto">
+  <div class="flex items-center justify-between mbe-6">
+    <div class="flex items-center gap-4">
+      <%= link_to branches_path, class: "btn btn--subtle btn--icon" do %>
+        <span class="icon icon--chevron-left"></span>
+      <% end %>
+      <h1 class="text-3xl font-bold"><%= @branch.name %></h1>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to "Edit", edit_branch_path(@branch), class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2", data: { turbo_frame: "modal" } %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 grid-cols-3@md gap-6">
+    <%# --- Branch Info --- %>
+    <div class="col-span-1">
+      <div class="card p-4 border rounded bg-white shadow-sm">
+        <h3 class="font-bold text-lg mbe-4 border-be pbe-2">Details</h3>
+        
+        <div class="mbe-4">
+          <label class="text-xs text-subtle uppercase font-bold">Location</label>
+          <div class="text-lg"><%= @branch.location %></div>
+        </div>
+
+        <div class="mbe-4">
+          <label class="text-xs text-subtle uppercase font-bold">Contact</label>
+          <div class="text-lg"><%= @branch.contact_phone %></div>
+        </div>
+      </div>
+    </div>
+
+    <%# --- Associated Departments --- %>
+    <div class="col-span-2">
+      <div class=" rounded bg-white shadow-sm">
+        <div class="flex items-center justify-between mbe-4 border-be pbe-2">
+          <h3 class="font-bold text-lg">Departments</h3>
+          <%= link_to "Add Dept", new_department_path(branch_id: @branch.id), class: "text-sm text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
+        </div>
+
+        <% if @branch.departments.any? %>
+          <div class="flex flex-col gap-2">
+            <% @branch.departments.each do |dept| %>
+              <div class="card btn p-2 flex items-center justify-between transition">
+                <div>
+                  <div class="font-medium"><%= link_to dept.name, dept, class: "hover:text-orange-600" %></div>
+                  <div class="text-xs text-subtle"><%= dept.employees.count %> Employees</div>
+                </div>
+                <div class="text-sm font-mono text-subtle">
+                  <%= dept.devices.count %> Devices
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-subtle italic">No departments configured.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

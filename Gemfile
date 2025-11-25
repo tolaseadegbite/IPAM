@@ -78,3 +78,5 @@ gem "authentication-zero", "~> 4.0"
 gem "pwned"
 
 gem "paper_trail", "~> 17.0"
+
+gem "faker", "~> 3.5"

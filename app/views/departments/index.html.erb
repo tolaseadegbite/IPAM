@@ -1,0 +1,29 @@
+<div class="p-4 i-full">
+  <div class="flex items-center justify-between mbe-6">
+    <h1 class="text-3xl font-semibold">Departments</h1>
+    <%= link_to "New Department", new_department_path, class: "btn bg-orange-400 text-white font-semibold rounded-md p-2", data: { turbo_frame: "new_department" } %>
+  </div>
+
+  <%= turbo_frame_tag "new_department" %>
+
+  <%= turbo_frame_tag "departments" do %>
+    <div class="show@md relative i-full overflow-x-auto border rounded-md bg-surface">
+      <table class="table i-full text-left">
+        <thead class="bg-shade text-subtle font-semibold border-b">
+          <tr>
+            <th class="p-4">Name</th>
+            <th class="p-4">Branch</th>
+            <th class="p-4 text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <%= render @departments %>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="hide@md flex flex-col gap-4">
+      <%= render partial: "departments/department_card", collection: @departments, as: :department %>
+    </div>
+  <% end %>
+</div>

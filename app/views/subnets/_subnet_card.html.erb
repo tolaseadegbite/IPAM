@@ -1,0 +1,41 @@
+<%# app/views/subnets/_subnet_card.html.erb %>
+<div id="<%= dom_id subnet, :card %>" class="card p-4 border rounded-md bg-white shadow-sm flex flex-col gap-3 mbe-4">
+  
+  <%# --- Header: Name & VLAN --- %>
+  <div class="flex items-center justify-between border-b pbe-2">
+    <h3 class="font-bold text-lg text-primary"><%= subnet.name %></h3>
+    <% if subnet.vlan_id.present? %>
+      <span class="text-xs font-mono bg-gray-100 border border-gray-200 px-2 py-1 rounded">
+        VLAN <%= subnet.vlan_id %>
+      </span>
+    <% end %>
+  </div>
+
+  <%# --- Network Details --- %>
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <span class="block text-xs text-subtle uppercase font-bold mbe-1">Network / CIDR</span>
+      <span class="font-mono text-sm bg-blue-50 text-blue-700 px-2 py-1 rounded inline-block">
+        <%= subnet.network_address %>
+      </span>
+    </div>
+    <div>
+      <span class="block text-xs text-subtle uppercase font-bold mbe-1">Gateway</span>
+      <span class="font-mono text-sm">
+        <%= subnet.gateway %>
+      </span>
+    </div>
+  </div>
+
+  <%# --- Stats / Count --- %>
+  <div class="flex items-center gap-2 text-sm text-subtle">
+    <span class="icon icon--server"></span>
+    <span><%= subnet.ip_addresses.count %> Total IPs</span>
+  </div>
+
+  <%# --- Actions --- %>
+  <div class="flex justify-end gap-4 mbs-2">
+    <%= link_to "Details", subnet_path(subnet), class: "text-sm font-medium text-blue-600 hover:underline", data: { turbo_frame: "_top" } %>
+    <%= link_to "Edit", edit_subnet_path(subnet), class: "text-sm font-medium text-orange-600 hover:underline", data: { turbo_frame: dom_id(subnet) } %>
+  </div>
+</div>

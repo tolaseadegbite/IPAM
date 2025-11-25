@@ -86,3 +86,15 @@ h4, h5, h6 {
 .popover__item:hover {
   background-color: var(--color-border-light);
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}

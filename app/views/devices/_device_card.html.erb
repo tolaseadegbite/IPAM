@@ -1,0 +1,60 @@
+<%# app/views/devices/_device_card.html.erb %>
+<div id="<%= dom_id device, :card %>" class="card p-4 border rounded-md bg-white shadow-sm flex flex-col gap-3">
+  
+  <%# --- Header: Name, Type, Status --- %>
+  <div class="flex items-start justify-between">
+    <div>
+      <div class="font-bold text-lg leading-tight"><%= device.name %></div>
+      <span class="text-xs text-subtle uppercase font-semibold"><%= device.device_type.humanize %></span>
+    </div>
+    <span class="text-xs font-bold px-2 py-1 rounded bg-gray-100 uppercase">
+      <%= device.status %>
+    </span>
+  </div>
+
+  <%# --- Details: Serial & Tag --- %>
+  <div class="grid grid-cols-2 gap-2 text-sm">
+    <div>
+      <span class="text-xs text-subtle block">Serial</span>
+      <span class="font-mono"><%= device.serial_number %></span>
+    </div>
+    <div>
+      <span class="text-xs text-subtle block">Asset Tag</span>
+      <span class="font-mono"><%= device.asset_tag %></span>
+    </div>
+  </div>
+
+  <%# --- IP Address --- %>
+  <div class="p-2 bg-gray-50 rounded border border-gray-100 flex items-center gap-2">
+    <span class="icon icon--globe text-subtle"></span>
+    <% if device.ip_address %>
+      <span class="font-mono text-blue-600 font-semibold"><%= device.ip_address.address %></span>
+    <% else %>
+      <span class="text-subtle italic">No IP Assigned</span>
+    <% end %>
+  </div>
+
+  <%# --- Owner Info --- %>
+  <div class="flex items-center gap-3 border-t pt-3 mt-1">
+    <div class="flex items-center justify-center rounded-full bg-shade shrink-0 border" style="block-size: 2rem; inline-size: 2rem;">
+      <span class="font-semibold text-xs">
+        <%= device.employee&.first_name&.first || "?" %>
+      </span>
+    </div>
+    <div class="flex flex-col text-sm">
+      <% if device.employee %>
+        <span class="font-semibold"><%= device.employee.first_name %> <%= device.employee.last_name %></span>
+        <span class="text-xs text-subtle"><%= device.department.name %></span>
+      <% else %>
+        <span class="text-subtle italic">Unassigned (In Stock)</span>
+      <% end %>
+    </div>
+  </div>
+
+  <%# --- Actions --- %>
+  <div class="flex justify-end gap-3 mt-2">
+    <%= link_to "Edit", edit_device_path(device), class: "btn btn--subtle text-sm text-orange-600", data: { turbo_frame: dom_id(device) } %>
+    
+    <%= button_to "Delete", device, method: :delete, class: "btn btn--subtle text-sm text-red-600 bg-transparent border-0", form: { data: { turbo_confirm: "Retire this device?" } } %>
+  </div>
+</div>

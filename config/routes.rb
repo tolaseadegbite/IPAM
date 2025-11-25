@@ -2,11 +2,11 @@ Rails.application.routes.draw do
   mount MissionControl::Jobs::Engine, at: "/jobs"
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   
-  root "pages#home"
   get  "sign_in", to: "sessions#new"
   post "sign_in", to: "sessions#create"
   get  "sign_up", to: "registrations#new"
   post "sign_up", to: "registrations#create"
+  resources :users, only: [:index]
   resources :sessions, only: [:index, :show, :destroy]
   resource  :password, only: [:edit, :update]
   namespace :identity do
@@ -23,6 +23,22 @@ Rails.application.routes.draw do
   end
 
   resource :dashboard, only: [ :show ]
+
+  # --- Core Resources ---
+  resources :branches
+  resources :departments
+  resources :employees
+  
+  # --- Network Management ---
+  resources :subnets
+  resources :ip_addresses
+
+  # --- Asset Management ---
+  resources :devices
+
+  # --- Root Path ---
+  # The dashboard or main inventory list
+  root "devices#index"
   
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

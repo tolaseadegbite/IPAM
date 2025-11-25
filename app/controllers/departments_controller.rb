@@ -1,4 +1,4 @@
-class DepartmentsController < DashboardsController
+class DepartmentsController < ApplicationController
   before_action :set_department, only: %i[ show edit update destroy ]
 
   def index

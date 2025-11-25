@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_24_170738) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_25_164824) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -77,6 +77,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_24_170738) do
     t.inet "address", null: false
     t.datetime "created_at", null: false
     t.bigint "device_id"
+    t.text "notes"
     t.integer "status", default: 0, null: false
     t.bigint "subnet_id", null: false
     t.datetime "updated_at", null: false

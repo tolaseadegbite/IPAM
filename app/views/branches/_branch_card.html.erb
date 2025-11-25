@@ -1,0 +1,12 @@
+<div id="<%= dom_id branch, :card %>" class="card flex flex-col gap-2">
+  <div class="flex items-center justify-between">
+    <span class="font-bold text-lg"><%= branch.name %></span>
+    <div class="flex gap-2">
+      <%= link_to "Edit", edit_branch_path(branch), class: "text-sm text-orange-600 font-medium" %>
+    </div>
+  </div>
+  <div class="text-subtle text-sm">
+    <p>📍 <%= branch.location %></p>
+    <p>📞 <%= branch.contact_phone %></p>
+  </div>
+</div>

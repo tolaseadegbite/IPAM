@@ -6,16 +6,15 @@
   <div class="flex items-center gap">
     <div>
       <%= yield :header_action_buttons %>
-
     </div>
 
-    <% trigger = button_tag type: "button", class: "btn btn--icon hide@md", data: { action: "dialog#showModal" } do %>
+    <!--<%# trigger = button_tag type: "button", class: "btn btn--icon hide@md", data: { action: "dialog#showModal" } do %>
       <span class="icon icon--sun icon--color-scheme-light" aria-hidden="true"></span>
       <span class="icon icon--moon icon--color-scheme-dark" aria-hidden="true"></span>
       <span class="sr-only">Theme switcher</span>
-    <% end %>
+    <%# end %>
 
-    <%= modal_dialog trigger, title: "Select a theme" do %>
+    <%#= modal_dialog trigger, title: "Select a theme" do %>
       <div class="menu bg-main" data-controller="menu" data-action="keydown->menu#navigate" role="menu">
         
         <button type="button" class="btn menu__item bg-main" data-action="dialog#close color-scheme#setLight" data-menu-target="item" role="menuitem">
@@ -31,21 +30,21 @@
           System
         </button>
       </div>
-    <% end %>
+    <%# end %>
 
     <%# User profile dropdown %>
-    <% trigger = button_tag type: "button", class: "btn p-0 rounded-full border-2 border-green-500 hide@md", data: { action: "dialog#showModal" } do %>
-      <%= image_tag "avatar.jpg", size: 32, class: "rounded-full", alt: "User Avatar" %>
-    <% end %>
+    <%# trigger = button_tag type: "button", class: "btn p-0 rounded-full border-2 border-green-500 hide@md", data: { action: "dialog#showModal" } do %>
+      <%#= image_tag "avatar.jpg", size: 32, class: "rounded-full", alt: "User Avatar" %>
+    <%# end %>
 
     <%# 2. Call our generic modal_dialog helper with the trigger and a title. %>
-    <%= modal_dialog trigger, title: "Menu", size: '12rem' do %>
+    <%#= modal_dialog trigger, title: "Menu", size: '12rem' do %>
       <div class="menu bg-main gap-2" data-controller="menu" data-action="keydown->menu#navigate" role="menu">
         
         <span class="inline-flex items-center gap-2 overflow-ellipsis max-i-full font-semibold">
-          <span><%= current_user.username %></span>
+          <span><%#= current_user.username %></span>
           
-          <% if current_user.verified? %>
+          <%# if current_user.verified? %>
             <span class="text-positive" title="Verified Account">
               
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -54,16 +53,16 @@
               
               <span class="sr-only">(Verified)</span>
             </span>
-          <% end %>
+          <%# end %>
         </span>
 
         <%# <hr class="menu__separator b-2" role="separator"/> %>
-        <%= link_to "Settings", "", class: "btn menu__item bg-main", data: { menu_target: "item" }, role: "menuitem" %>
+        <%#= link_to "Settings", "", class: "btn menu__item bg-main", data: { menu_target: "item" }, role: "menuitem" %>
         <%#= link_to "API Keys", "", class: "btn menu__item", data: { menu_target: "item" }, role: "menuitem" %>
         <%#= link_to "Webhooks", "", class: "btn menu__item", data: { menu_target: "item" }, role: "menuitem" %>
         <%#= link_to "Subscription", "", class: "btn menu__item", data: { menu_target: "item" }, role: "menuitem" %>
-        <%= button_to "Sign out", Current.session, class: "btn menu__item i-full bg-main", method: :delete, role: "menuitem" %>
+        <%#= button_to "Sign out", Current.session, class: "btn menu__item i-full bg-main", method: :delete, role: "menuitem" %>
       </div>
-    <% end %>
+    <%# end %>-->
   </div>
 </div>

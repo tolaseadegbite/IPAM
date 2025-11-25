@@ -1,4 +1,4 @@
-class BranchesController < DashboardsController
+class BranchesController < ApplicationController
   before_action :set_branch, only: %i[ show edit update destroy ]
 
   def index

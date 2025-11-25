@@ -1,4 +1,4 @@
-class SubnetsController < DashboardsController
+class SubnetsController < ApplicationController
   before_action :set_subnet, only: %i[ show edit update destroy ]
 
   def index

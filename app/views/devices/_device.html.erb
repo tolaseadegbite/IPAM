@@ -1,0 +1,25 @@
+<tr id="<%= dom_id device %>" class="hover:bg-gray-50">
+  <td class="p-4">
+    <div class="font-bold"><%= device.name %></div>
+    <div class="text-xs text-subtle"><%= device.device_type.humanize %></div>
+  </td>
+  <td class="p-4 text-sm">
+    <div class="font-mono"><%= device.serial_number %></div>
+    <div class="text-xs text-subtle">Tag: <%= device.asset_tag %></div>
+  </td>
+  <td class="p-4 font-mono text-sm text-blue-600">
+    <%= device.ip_address&.address || "Unassigned" %>
+  </td>
+  <td class="p-4 text-sm">
+    <% if device.employee %>
+      <%= device.employee.first_name %> <%= device.employee.last_name %>
+      <div class="text-xs text-subtle"><%= device.department.name %></div>
+    <% else %>
+      <span class="text-subtle italic">In Stock</span>
+    <% end %>
+  </td>
+  <td class="p-4 text-xs font-semibold uppercase"><%= device.status %></td>
+  <td class="p-4 text-end">
+    <%= link_to "Edit", edit_device_path(device), class: "text-orange-600 hover:underline", data: { turbo_frame: dom_id(device) } %>
+  </td>
+</tr>

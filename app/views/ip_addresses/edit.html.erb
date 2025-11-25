@@ -1,0 +1,8 @@
+<% content_for :title, "New Ip Address" %>
+
+<%= render "shared/modal" do %>
+  <div data-action="turbo:submit-end->modal#submitEnd">
+    <h1 class="font-bold text-2xl mbe-4">Edit IP Address: <%= @ip_address.address %> </h1>
+    <%= render "form", ip_address: @ip_address %>
+  </div>
+<% end %>

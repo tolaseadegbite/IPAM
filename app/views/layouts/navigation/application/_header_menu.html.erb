@@ -1,12 +1,11 @@
 <div class="flex justify-between items-center gap i-full">
-  <div style="max-width: 40dvw;">
-    <span class="font-semibold"><%= yield(:page_header) || "Dashboard" %></span>
+  <div>
+    <span><%= yield(:page_header) || "Dashboard" %></span>
   </div>
 
   <div class="flex items-center gap">
     <div>
       <%= yield :header_action_buttons %>
-
     </div>
 
     <% trigger = button_tag type: "button", class: "btn btn--icon hide@md", data: { action: "dialog#showModal" } do %>
