@@ -21,7 +21,7 @@
     </div>
     <div class="col-span-1">
       <%= form.label :device_type, class: "block font-medium mbe-1" %>
-      <%= form.select :device_type, Device.device_types.keys.map { |k| [k.humanize, k] }, {}, { class: "input w-full p-2 border rounded" } %>
+      <%= form.select :device_type, Device.device_types.keys.map { |k| [k.humanize, k] }, {}, { class: "input w-full p-2 border rounded cursor-pointer" } %>
     </div>
   </div>
 
@@ -29,11 +29,11 @@
   <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-6">
     <div class="col-span-1">
       <%= form.label :department_id, class: "block font-medium mbe-1" %>
-      <%= form.collection_select :department_id, Department.all, :id, :name, { prompt: "Select Dept" }, { class: "input w-full p-2 border rounded" } %>
+      <%= form.collection_select :department_id, Department.all, :id, :name, { prompt: "Select Dept" }, { class: "input w-full p-2 border rounded cursor-pointer" } %>
     </div>
     <div class="col-span-1">
       <%= form.label :employee_id, "Assign Owner (Optional)", class: "block font-medium mbe-1" %>
-      <%= form.collection_select :employee_id, Employee.where(status: :active), :id, :full_name, { include_blank: "Unassigned" }, { class: "input w-full p-2 border rounded" } %>
+      <%= form.collection_select :employee_id, Employee.where(status: :active), :id, :full_name, { include_blank: "Unassigned" }, { class: "input w-full p-2 border rounded cursor-pointer" } %>
     </div>
   </div>
     
@@ -44,23 +44,23 @@
     <%# This would ideally be a Turbo Frame that updates when a Subnet is picked %>
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label class="text-xs text-subtle">Filter by Subnet</label>
+        <label class="text-sm text-subtle">Filter by Subnet</label>
         <%= select_tag "subnet_filter", options_from_collection_for_select(Subnet.all, :id, :name), 
-            prompt: "Select Network...", class: "input w-full p-2 border rounded",
+            prompt: "Select Network...", class: "input w-full p-2 border rounded cursor-pointer",
             data: { controller: "subnet-select" } %>
       </div>
       
       <div>
-        <label class="text-xs text-subtle">Available IP</label>
+        <label class="text-sm text-subtle">Available IP</label>
         <%# Note: The controller expects params[:device][:ip_address_id] %>
         <%# We preload ALL free IPs grouped by subnet or similar, but for simplicity here we show a flat list of all free IPs %>
-        <%= form.collection_select :ip_address_id, IpAddress.free.limit(100), :id, :address, { include_blank: "Do not assign IP" }, { class: "input w-full p-2 border rounded" } %>
+        <%= form.collection_select :ip_address_id, IpAddress.free.limit(100), :id, :address, { include_blank: "Do not assign IP" }, { class: "input w-full p-2 border rounded cursor-pointer" } %>
       </div>
     </div>
   </div>
 
   <div class="flex gap-3 mbs-4 items-center">
     <%= form.submit "Save Device", class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2" %>
-    <%= link_to "Cancel", devices_path, class: "text-subtle" %>
+    <%= link_to "Cancel", devices_path, class: "text-subtle", data: { turbo_frame: "_top" } %>
   </div>
 <% end %>

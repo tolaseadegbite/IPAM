@@ -4,7 +4,7 @@
   <div class="flex items-center justify-between border-be pbe-2">
     <h3 class="font-bold text-lg"><%= subnet.name %></h3>
     <% if subnet.vlan_id.present? %>
-      <span class="text-xs font-mono bg-shade border border-gray-200 pi-2 pb-1 rounded-md">
+      <span class="text-sm font-mono bg-shade border border-gray-200 pi-2 pb-1 rounded-md">
         VLAN <%= subnet.vlan_id %>
       </span>
     <% end %>
@@ -13,7 +13,7 @@
   <%# --- Network Details --- %>
   <div class="grid grid-cols-2 gap-4">
     <div>
-      <span class="block text-xs text-subtle uppercase font-bold mbe-1">Network / CIDR</span>
+      <span class="block text-sm text-subtle uppercase font-bold mbe-1">Network / CIDR</span>
       <span class="font-mono text-sm bg-blue-50 text-blue-700 pi-2 pb-1 rounded-md inline-block">
         <%= subnet.network_address %>
       </span>
@@ -21,7 +21,7 @@
 
     <div class="flex justify-end">
       <div>
-        <span class="block text-xs text-subtle uppercase font-bold mbe-1">Gateway</span>
+        <span class="block text-sm text-subtle uppercase font-bold mbe-1 text-end">Gateway</span>
         <span class="font-mono text-sm">
           <%= subnet.gateway %>
         </span>

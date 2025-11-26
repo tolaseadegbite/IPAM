@@ -1,5 +1,5 @@
 <tr id="<%= dom_id department %>" class="">
-  <td class="p-4 font-medium"><%= department.name %></td>
+  <td class="p-4 font-medium"><%= link_to department.name, department, class: "hover:text-orange-600", data: { turbo_frame: "_top" } %></td>
   <td class="p-4"><span class=""><%= department.branch.name %></span></td>
   <td class="p-4 text-end">
     <div class="flex justify-end gap-2">

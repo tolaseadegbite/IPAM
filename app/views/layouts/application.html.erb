@@ -37,13 +37,13 @@
     </div>
 
     <div class="sidebar-layout">
-      <aside id="sidebar">
-        <%= render "layouts/navigation/dashboard/sidebar_menu" %>
-      </aside>
 
       <% if is_auth_page %>
         <%= yield %>
       <% else %>
+      <aside id="sidebar">
+        <%= render "layouts/navigation/dashboard/sidebar_menu" %>
+      </aside>
         <main id="main" style="padding: 0 !important; gap: 0">
           <div class="header-layout">
             <header class="" id="header">
