@@ -19,7 +19,8 @@
     <% end %>
   </td>
   <td class="p-4 text-xs font-semibold uppercase"><%= device.status %></td>
-  <td class="p-4 text-end">
+  <td class="flex gap-4 items-center justify-end p-4 text-end">
+    <%= button_to "Delete", device, method: :delete, class: "btn bg-white border border-red-200 text-red-600 font-semibold rounded px-4 py-2 hover:bg-red-50", form: { data: { turbo_confirm: "Are you sure? This will release the IP." } } %>
     <%= link_to "Edit", edit_device_path(device), class: "text-orange-600 hover:underline", data: { turbo_frame: dom_id(device) } %>
   </td>
 </tr>

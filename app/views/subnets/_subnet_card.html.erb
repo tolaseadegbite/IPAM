@@ -1,4 +1,4 @@
-<div id="<%= dom_id subnet, :card %>" class="card p-4 border rounded-md bg-white shadow-sm flex flex-col gap-3">
+<div id="<%= dom_id subnet, :card %>" class="card p-4 flex flex-col gap-3">
   
   <%# --- Header: Name & VLAN --- %>
   <div class="flex items-center justify-between border-be pbe-2">
@@ -37,7 +37,7 @@
 
   <%# --- Actions --- %>
   <div class="flex justify-end gap-4 mbs-2">
-    <%= link_to "Details", subnet_path(subnet), class: "text-sm font-medium text-green-600 hover:underline", data: { turbo_frame: "_top" } %>
+    <%= link_to "Show", subnet_path(subnet), class: "text-sm font-medium text-green-600 hover:underline", data: { turbo_frame: "_top" } %>
     <%= link_to "Edit", edit_subnet_path(subnet), class: "text-sm font-medium text-orange-500 hover:underline", data: { turbo_frame: dom_id(subnet) } %>
   </div>
 </div>

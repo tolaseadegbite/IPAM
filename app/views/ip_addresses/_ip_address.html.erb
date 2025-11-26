@@ -14,13 +14,17 @@
     <% end %>
   </div>
 
-  <div class="mbs-2 pt-2 border-t flex justify-between items-center">
+  <div class="mbs-2 pbs-2 flex justify-between items-center">
     <% status_class = ip_address.available? ? "text-green-600" : (ip_address.active? ? "text-red-600" : "text-yellow-600") %>
     <span class="text-xs font-bold uppercase <%= status_class %>"><%= ip_address.status %></span>
     
-    <%# Edit Status (Reserved/Blacklisted) %>
-    <%= link_to edit_ip_address_path(ip_address), class: "text-subtle hover:text-orange-500", data: { turbo_frame: "modal" } do %>
-      <span class="text-xs">Edit</span>
-    <% end %>
+    <div class="flex gap-4 items-center text-xs font-semibold">
+      <%= link_to "View IP", ip_address, class: "hover:text-orange-600 text-subtle", data: { turbo_frame: "_top" } %>
+
+      <%# Edit Status (Reserved/Blacklisted) %>
+      <%= link_to edit_ip_address_path(ip_address), class: "text-subtle hover:text-orange-500", data: { turbo_frame: "modal" } do %>
+        <span class="">Edit</span>
+      <% end %>
+    </div>
   </div>
 </div>

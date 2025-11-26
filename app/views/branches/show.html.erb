@@ -26,12 +26,12 @@
         <h3 class="font-bold text-lg mbe-4 border-be pbe-2">Details</h3>
         
         <div class="mbe-4">
-          <label class="text-xs text-subtle uppercase font-bold">Location</label>
+          <label class="text-sm text-subtle uppercase font-bold">Location</label>
           <div class="text-lg"><%= @branch.location %></div>
         </div>
 
         <div class="mbe-4">
-          <label class="text-xs text-subtle uppercase font-bold">Contact</label>
+          <label class="text-sm text-subtle uppercase font-bold">Contact</label>
           <div class="text-lg"><%= @branch.contact_phone %></div>
         </div>
       </div>
@@ -51,7 +51,7 @@
               <div class="card btn p-2 flex items-center justify-between transition">
                 <div>
                   <div class="font-medium"><%= link_to dept.name, dept, class: "hover:text-orange-600" %></div>
-                  <div class="text-xs text-subtle"><%= dept.employees.count %> Employees</div>
+                  <div class="text-sm text-subtle"><%= dept.employees.count %> Employees</div>
                 </div>
                 <div class="text-sm font-mono text-subtle">
                   <%= dept.devices.count %> Devices

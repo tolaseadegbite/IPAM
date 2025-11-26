@@ -1,4 +1,4 @@
-<%= form_with(model: subnet, id: dom_id(subnet, :form), class: "p-4 border rounded-md bg-gray-50 mbe-4") do |form| %>
+<%= form_with(model: subnet, html: { contents: true }) do |form| %>
   <%= render "shared/error_messages", object: subnet %>
 
   <div class="grid grid-cols-1 grid-cols-2@md gap-4">
@@ -20,8 +20,8 @@
     </div>
   </div>
 
-  <div class="mbs-4 flex gap-3">
+  <div class="mbs-4 flex items-center gap-3">
     <%= form.submit "Save Subnet", class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2" %>
-    <%= link_to "Cancel", subnets_path, class: "text-subtle" %>
+    <%= link_to "Cancel", subnets_path, class: "text-subtle", data: { turbo_frame: "_top" } %>
   </div>
 <% end %>

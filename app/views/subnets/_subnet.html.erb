@@ -1,12 +1,12 @@
 <tr id="<%= dom_id subnet %>">
-  <td class="p-4 font-medium"><%= subnet.name %></td>
+  <td class="p-4 font-medium"><%= link_to subnet.name, subnet, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></td>
   <td class="p-4 font-mono text-sm"><%= subnet.network_address %></td>
   <td class="p-4 font-mono text-sm"><%= subnet.gateway %></td>
   <td class="p-4"><%= subnet.vlan_id %></td>
   <td class="p-4">
-    <div class="flex gap-2">
-      <%= link_to "Show Details", subnet_path(subnet), class: "text-green-500 hover:underline", data: { turbo_frame: "_top" } %>
-      <%= link_to "Edit", edit_subnet_path(subnet), class: "text-orange-500 hover:underline", data: { turbo_frame: dom_id(subnet) } %>
+    <div class="flex gap-2 items-center">
+      <%#= link_to "Show", subnet_path(subnet), class: "text-green-500 hover:underline", data: { turbo_frame: "_top" } %>
+      <%= link_to "Edit", edit_subnet_path(subnet), class: "text-orange-500 hover:underline", data: { turbo_frame: "modal" } %>
     </div>
   </td>
 </tr>

@@ -32,9 +32,12 @@ img.icon {
 .icon--chevron-right { --svg: url("chevron-right.svg"); }
 .icon--ellipsis { --svg: url("ellipsis.svg"); }
 .icon--eye { --svg: url("eye.svg"); }
+.icon--building { --svg: url("building.svg"); }
 .icon--pen { --svg: url("pen.svg"); }
 .icon--message-square-text { --svg: url("message-square-text.svg"); }
 .icon--mail { --svg: url("mail.svg"); }
+.icon--globe { --svg: url("globe.svg"); }
+.icon--server { --svg: url("server.svg"); }
 .icon--phone { --svg: url("phone.svg"); }
 .icon--list-checks { --svg: url("list-checks.svg"); }
 .icon--chevrons-up-down { --svg: url("chevrons-up-down.svg"); }

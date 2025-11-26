@@ -1,8 +1,9 @@
 <div id="<%= dom_id branch, :card %>" class="card flex flex-col gap-2">
   <div class="flex items-center justify-between">
     <span class="font-bold text-lg"><%= branch.name %></span>
-    <div class="flex gap-2">
-      <%= link_to "Edit", edit_branch_path(branch), class: "text-sm text-orange-600 font-medium" %>
+    <div class="flex flex-col gap-2 items-end">
+      <%= link_to "Edit", edit_branch_path(branch), class: "text-sm text-orange-600 font-medium text-end", data: { turbo_frame: "modal" } %>
+      <%= button_to "Delete", branch, method: :delete, class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", form: { data: { turbo_confirm: "Are you sure?" } } %>
     </div>
   </div>
   <div class="text-subtle text-sm">

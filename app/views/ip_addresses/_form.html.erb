@@ -1,4 +1,6 @@
 <%= form_with(model: ip_address, html: { contents: true }) do |form| %>
+  <%= render "shared/error_messages", object: ip_address %>
+
   <div class="mbe-4">
     <%= form.label :status, class: "block font-medium mbe-1" %>
     <%= form.select :status, IpAddress.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "input w-full p-2 border rounded cursor-pointer" } %>
