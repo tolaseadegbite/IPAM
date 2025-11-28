@@ -2,7 +2,7 @@
   
   <%# --- Header: Name & VLAN --- %>
   <div class="flex items-center justify-between border-be pbe-2">
-    <h3 class="font-bold text-lg"><%= subnet.name %></h3>
+    <span class="text-lg font-semibold"><%= link_to subnet.name, subnet, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span>
     <% if subnet.vlan_id.present? %>
       <span class="text-sm font-mono bg-shade border border-gray-200 pi-2 pb-1 rounded-md">
         VLAN <%= subnet.vlan_id %>

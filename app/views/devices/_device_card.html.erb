@@ -3,7 +3,7 @@
   <%# --- Header: Name, Type, Status --- %>
   <div class="flex items-start justify-between">
     <div>
-      <div class="font-bold text-lg leading-tight"><%= link_to device.name, device, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
+      <div class="font-semibold text-lg leading-tight"><%= link_to device.name, device, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
       <span class="text-sm text-subtle uppercase font-semibold"><%= device.device_type.humanize %></span>
     </div>
     <span class="text-sm font-bold pi-2 pb-1 rounded-md bg-shade uppercase">
