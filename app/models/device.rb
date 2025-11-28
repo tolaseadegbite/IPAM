@@ -3,10 +3,10 @@ class Device < ApplicationRecord
 
   belongs_to :department
   belongs_to :employee, optional: true # Optional: New laptops might be in storage (no owner)
-  
+
   # When a device is deleted/retired, the IP is automatically freed (set to null)
-  has_one :ip_address, dependent: :nullify 
-  
+  has_one :ip_address, dependent: :nullify
+
   # Delegations for convenience (e.g., calling @device.branch_name)
   delegate :branch, to: :department
   delegate :name, to: :department, prefix: true
@@ -18,7 +18,7 @@ class Device < ApplicationRecord
   validates :name, presence: true # Hostname
   validates :device_type, presence: true
   validates :status, presence: true
-  
+
   # Validation to ensure a device doesn't have an IP assigned if it's "Retired"
   validate :ip_released_if_retired
 
