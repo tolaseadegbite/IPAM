@@ -8,4 +8,12 @@ class Department < ApplicationRecord
   validates :name, presence: true
   # Scoped Uniqueness: "Safety Office" can exist in "Yale 1" AND "Yale 5", but not twice in "Yale 1"
   validates :name, uniqueness: { scope: :branch_id, case_sensitive: false, message: "already exists in this branch" }
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[ id name branch created_at updated_at ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    [ "branch", "devices", "employees" ]
+  end
 end

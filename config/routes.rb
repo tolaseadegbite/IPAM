@@ -1,25 +1,25 @@
 Rails.application.routes.draw do
   mount MissionControl::Jobs::Engine, at: "/jobs"
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
-  
+
   get  "sign_in", to: "sessions#new"
   post "sign_in", to: "sessions#create"
   get  "sign_up", to: "registrations#new"
   post "sign_up", to: "registrations#create"
-  resources :users, only: [:index]
-  resources :sessions, only: [:index, :show, :destroy]
-  resource  :password, only: [:edit, :update]
+  resources :users, only: [ :index ]
+  resources :sessions, only: [ :index, :show, :destroy ]
+  resource  :password, only: [ :edit, :update ]
   namespace :identity do
-    resource :email,              only: [:edit, :update]
-    resource :email_verification, only: [:show, :create]
-    resource :password_reset,     only: [:new, :edit, :create, :update]
+    resource :email,              only: [ :edit, :update ]
+    resource :email_verification, only: [ :show, :create ]
+    resource :password_reset,     only: [ :new, :edit, :create, :update ]
   end
   namespace :authentications do
     resources :events, only: :index
   end
   post "users/:user_id/masquerade", to: "masquerades#create", as: :user_masquerade
   namespace :sessions do
-    resource :sudo, only: [:new, :create]
+    resource :sudo, only: [ :new, :create ]
   end
 
   resource :dashboard, only: [ :show ]
@@ -28,7 +28,7 @@ Rails.application.routes.draw do
   resources :branches
   resources :departments
   resources :employees
-  
+
   # --- Network Management ---
   resources :subnets
   resources :ip_addresses
@@ -39,7 +39,7 @@ Rails.application.routes.draw do
   # --- Root Path ---
   # The dashboard or main inventory list
   root "devices#index"
-  
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

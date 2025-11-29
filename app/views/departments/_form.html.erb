@@ -8,7 +8,7 @@
     </div>
     <div class="col-span-1">
       <%= form.label :branch_id, class: "block font-medium mbe-1" %>
-      <%= form.collection_select :branch_id, Branch.order(:name), :id, :name, { prompt: "Select Branch" }, { class: "input w-full p-2 border rounded" } %>
+      <%= form.collection_select :branch_id, Branch.order(:name), :id, :name, { prompt: "Select Branch" }, { class: "input w-full p-2 border rounded cursor-pointer" } %>
     </div>
   </div>
 

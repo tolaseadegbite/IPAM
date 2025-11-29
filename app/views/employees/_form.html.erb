@@ -11,10 +11,6 @@
       <%= form.text_field :last_name, class: "input w-full p-2 border rounded" %>
     </div>
     <div class="col-span-1">
-      <%= form.label :email, class: "block font-medium mbe-1" %>
-      <%= form.email_field :email, class: "input w-full p-2 border rounded" %>
-    </div>
-    <div class="col-span-1">
       <%= form.label :department_id, class: "block font-medium mbe-1" %>
       <%= form.collection_select :department_id, Department.includes(:branch).order("branches.name", :name), :id, ->(d){ "#{d.name} (#{d.branch.name})" }, { prompt: "Select Department" }, { class: "input w-full p-2 border cursor-pointer" } %>
     </div>

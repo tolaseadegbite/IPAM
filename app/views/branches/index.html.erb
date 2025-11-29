@@ -18,27 +18,39 @@
 
 <div class="p-4 i-full">
 
-  <%= turbo_frame_tag "branches" do %>
-    <%# --- Desktop Table --- %>
-    <div class="show@md relative i-full overflow-x-auto border rounded-md bg-surface mbe-4">
+  <%= turbo_frame_tag :branches_table do %>
+    
+    <%# --- DESKTOP VIEW: Table (Visible on medium screens and up) --- %>
+    <div class="show@md relative i-full overflow-x-auto border rounded-md bg-surface">
       <table class="table i-full text-left">
-        <thead class="bg-shade text-subtle font-semibold border-b">
+        <thead class="bg-shade font-semibold">
           <tr>
-            <th class="p-4">Name</th>
-            <th class="p-4">Location</th>
-            <th class="p-4">Contact</th>
+            <th class="p-4"><%= sort_link(@search, :name, class: "font-semibold") %></th>
+            <th class="p-4"><%= sort_link(@search, :location, class: "font-semibold") %></th>
+            <th class="p-4"><%= sort_link(@search, :contact_phone, class: "font-semibold") %></th>
             <th class="p-4 text-end">Actions</th>
+            <th></th>
           </tr>
         </thead>
-        <tbody id="branches_table_body" class="divide-y divide-gray-100">
-          <%= render @branches %>
+        <tbody id="branches-table">
+          <% if @branches.empty? %>
+            <tr><td colspan="7" class="text-center p-8">No Results.</td></tr>
+          <% else %>
+            <%= render @branches %>
+          <% end %>
         </tbody>
       </table>
     </div>
 
-    <%# --- Mobile Cards --- %>
-    <div class="hide@md flex flex-col gap-4">
-      <%= render partial: "branches/branch_card", collection: @branches, as: :branch %>
+    <%# --- MOBILE VIEW: Cards (Hidden on medium screens and up) --- %>
+    <div id="branches-cards" class="hide@md flex flex-col gap-4">
+      <% if @branches.empty? %>
+        <p class="text-subtle text-center p-8">No branches found.</p>
+      <% else %>
+        <%= render partial: "branches/branch_card", collection: @branches, as: :branch %>
+      <% end %>
     </div>
+
+    <%= render "shared/pagination", pagy: @pagy %>
   <% end %>
 </div>

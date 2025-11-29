@@ -17,32 +17,40 @@
 </div>
 
 <div class="p-4 i-full">
-  <%= form_with url: employees_path, method: :get, class: "mbe-6 flex gap-2", data: { turbo_frame: "employees", turbo_action: "advance" } do |f| %>
-    <%= f.text_field :query, placeholder: "Search name or email...", class: "input border rounded p-2 flex-grow", value: params[:query] %>
-    <%= f.submit "Search", class: "btn btn--primary" %>
-  <% end %>
 
-  <%= turbo_frame_tag "new_employee" %>
-
-  <%= turbo_frame_tag "employees" do %>
+  <%= turbo_frame_tag :employees_table do %>
+    
+    <%# --- DESKTOP VIEW: Table (Visible on medium screens and up) --- %>
     <div class="show@md relative i-full overflow-x-auto border rounded-md bg-surface">
       <table class="table i-full text-left">
-        <thead class="bg-shade text-subtle font-semibold border-b">
+        <thead class="bg-shade font-semibold">
           <tr>
-            <th class="p-4">Name</th>
-            <th class="p-4">Department</th>
-            <th class="p-4">Status</th>
-            <th class="p-4 text-end">Actions</th>
+            <th class="p-4"><%= sort_link(@search, :full_name, class: "font-semibold") %></th>
+            <th class="p-4"><%= sort_link(@search, :department_name, "Department name", class: "font-semibold") %></th>
+            <th class="p-4"><%= sort_link(@search, :status, class: "font-semibold") %></th>
+            <th class="p-4 text-end font-semibold">Actions</th>
+            <th></th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100">
-          <%= render @employees %>
+        <tbody id="employees-table">
+          <% if @employees.empty? %>
+            <tr><td colspan="7" class="text-center p-8">No Results.</td></tr>
+          <% else %>
+            <%= render @employees %>
+          <% end %>
         </tbody>
       </table>
     </div>
 
-    <div class="hide@md flex flex-col gap-4">
-      <%= render partial: "employees/employee_card", collection: @employees, as: :employee %>
+    <%# --- MOBILE VIEW: Cards (Hidden on medium screens and up) --- %>
+    <div id="employees-cards" class="hide@md flex flex-col gap-4">
+      <% if @employees.empty? %>
+        <p class="text-subtle text-center p-8">No employees found.</p>
+      <% else %>
+        <%= render partial: "employees/employee_card", collection: @employees, as: :employee %>
+      <% end %>
     </div>
+
+    <%= render "shared/pagination", pagy: @pagy %>
   <% end %>
 </div>

@@ -8,6 +8,8 @@ class ApplicationController < ActionController::Base
   before_action :set_current_user_from_session
   before_action :authenticate
 
+  include Pagy::Backend
+
   def pending_follow_ups
     @pending_follow_ups = current_user.follow_up_tasks
                                     .where(completed_at: nil)

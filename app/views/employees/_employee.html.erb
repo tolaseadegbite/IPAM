@@ -1,21 +1,29 @@
-<tr id="<%= dom_id employee %>">
-  <td class="p-4">
-    <div class="font-semibold"><%= link_to employee.full_name, employee, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
-    <div class="text-sm text-subtle">Dummy email</div>
-  </td>
-  <td class="p-4"><%= employee.department.name %> <span class="text-sm text-subtle block"><%= employee.department.branch.name %></span></td>
+<tr id="<%= dom_id(employee, :table_row) %>">
+  <td class="p-4 font-semibold"><span><%= link_to employee.full_name.titleize, employee, class: "text-lg text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
+
+  <td class="p-4"><%= employee.department.name %> <span class="text-sm text-subtle block"><%= link_to employee.department.branch.name, branch_path(employee.department.branch), class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
+
   <td class="p-4">
     <% status_color = case employee.status 
        when 'active' then 'bg-green-100 text-green-800'
        when 'on_leave' then 'bg-yellow-100 text-yellow-800'
        when 'terminated' then 'bg-red-100 text-red-800'
        end %>
-    <span class="<%= status_color %> font-medium pi-2 pb-1 rounded-md"><%= employee.status.humanize %></span>
+    <span class="<%= status_color %> font-medium pi-2 pb-1 rounded-md text-sm"><%= employee.status.humanize %></span>
   </td>
-  <td class="p-4 text-end">
-    <div class="flex items-center justify-end gap-4">
-      <%= link_to "Edit", edit_employee_path(employee), class: "text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
-      <%= button_to "Delete", employee, method: :delete, class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", form: { data: { turbo_confirm: "Are you sure?" } } %>
-    </div>
+
+  <td class="flex items-center justify-end gap-4">
+    <%= link_to "Edit", edit_employee_path(employee),
+                class: "text-orange-500 hover:text-orange-600",
+                data: { turbo_frame: "modal" } %>
+
+    <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+    <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{employee.full_name}'?" do %>
+      <p class="text-sm text-subtle mbe-4">This will permanently delete this employee. This action cannot be undone.</p>
+      <div class="flex items-center justify-end gap">
+        <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
+        <%= button_to "Continue", employee, method: :delete, class: "btn btn--negative" %>
+      </div>
+    <% end %>
   </td>
 </tr>

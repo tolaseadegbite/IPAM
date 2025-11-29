@@ -1,4 +1,5 @@
 module ApplicationHelper
+  include Pagy::Frontend
 
   # returns full title if present, else returns base title
   def full_title(page_title = "")

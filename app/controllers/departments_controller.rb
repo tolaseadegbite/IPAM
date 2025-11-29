@@ -2,7 +2,9 @@ class DepartmentsController < ApplicationController
   before_action :set_department, only: %i[ show edit update destroy ]
 
   def index
-    @departments = Department.includes(:branch).order("branches.name", :name)
+    records = Department.includes(:branch).order("branches.name", :name)
+    @search = records.ransack(params[:q])
+    @pagy, @departments = pagy(@search.result)
   end
 
   def show
@@ -20,12 +22,13 @@ class DepartmentsController < ApplicationController
 
     if @department.save
       respond_to do |format|
-        format.html { redirect_to departments_path, notice: "Department created." }
+        format.html { redirect_to departments_path, notice: "Department created successfully." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.prepend("departments", partial: "departments/department", locals: { department: @department }),
-            turbo_stream.update("new_department", ""),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Department created." })
+             turbo_stream.prepend("departments-table", partial: "departments/department", locals: { department: @department }),
+            turbo_stream.prepend("departments-cards", partial: "departments/department_card", locals: { department: @department }),
+            turbo_stream.update("new_department", ""), # Clear the form/modal
+            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Department created successfully." })
           ]
         end
       end
@@ -37,11 +40,12 @@ class DepartmentsController < ApplicationController
   def update
     if @department.update(department_params)
       respond_to do |format|
-        format.html { redirect_to departments_path, notice: "Department updated." }
+        format.html { redirect_to departments_path, notice: "Department updated successfully." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.replace(@department, partial: "departments/department", locals: { department: @department }),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Department updated." })
+            turbo_stream.replace(helpers.dom_id(@department, :table_row), partial: "departments/department", locals: { department: @department }),
+            turbo_stream.replace(helpers.dom_id(@department, :card), partial: "departments/department_card", locals: { department: @department }),
+            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Department updated successfully." })
           ]
         end
       end
@@ -51,21 +55,24 @@ class DepartmentsController < ApplicationController
   end
 
   def destroy
+    # Constraint check handled by model (restrict_with_error)
     if @department.destroy
       respond_to do |format|
         format.html { redirect_to departments_path, notice: "Department deleted." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.remove(@department),
+            turbo_stream.remove(helpers.dom_id(@department, :table_row)),
+            turbo_stream.remove(helpers.dom_id(@department, :card)),
             turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Department deleted." })
           ]
         end
       end
     else
+      # If deletion fails (e.g., has departments), show error
       respond_to do |format|
-        format.html { redirect_to departments_path, alert: "Cannot delete department with active employees/devices." }
+        format.html { redirect_to departments_path, alert: @department.errors.full_messages.to_sentence }
         format.turbo_stream do
-          render turbo_stream: turbo_stream.update("flash", partial: "shared/flash", locals: { alert: "Cannot delete department with active employees/devices." })
+          render turbo_stream: turbo_stream.update("flash", partial: "shared/flash", locals: { alert: @department.errors.full_messages.to_sentence })
         end
       end
     end

@@ -68,7 +68,7 @@ end
 
 gem "mission_control-jobs"
 gem "ransack", "~> 4.4"
-gem "pagy", "~> 43.1"
+gem "pagy", "~> 9.4"
 gem "pg", "~> 1.6"
 
 gem "css-zero", "~> 3.2", github: "lazaronixon/css-zero"
