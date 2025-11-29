@@ -50,10 +50,15 @@
     </div>
   </div>
 
-  <%# --- Actions --- %>
-  <div class="flex justify-end gap-3 mt-2">
-    <%= link_to "Edit", edit_device_path(device), class: "btn btn--subtle text-sm text-orange-500", data: { turbo_frame: "modal" } %>
-    
-    <%= button_to "Delete", device, method: :delete, class: "btn btn--subtle text-sm text-red-500 bg-transparent border-0", form: { data: { turbo_confirm: "Retire this device?" } } %>
+  <div class="flex items-center justify-end text-xs gap-4">
+    <%= link_to "Edit", edit_device_path(device), class: "text-subtle hover:text-orange-500", data: { turbo_frame: "modal" } %>
+    <% delete_trigger = button_tag "Delete", type: "button", class: "text-subtle hover:text-orange-500", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+    <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{device.name}'?" do %>
+      <p class="text-sm text-subtle mbe-4">This will permanently delete this device. This action cannot be undone.</p>
+      <div class="flex items-center justify-end gap">
+        <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
+        <%= button_to "Continue", device, method: :delete, class: "btn btn--negative" %>
+      </div>
+    <% end %>
   </div>
 </div>

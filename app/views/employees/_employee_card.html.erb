@@ -29,11 +29,9 @@
   </div>
 
   <%# --- Actions --- %>
-  <div class="flex items-center justify-between">
-    <%#= link_to "View Employee", employee, class: "btn btn--primary" %>
-    <%= link_to "Edit", edit_employee_path(employee), class: "text-sm font-medium text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
-
-    <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+  <div class="flex items-center justify-end text-xs gap-4">
+    <%= link_to "Edit", edit_employee_path(employee), class: "text-subtle hover:text-orange-500", data: { turbo_frame: "modal" } %>
+    <% delete_trigger = button_tag "Delete", type: "button", class: "text-subtle hover:text-orange-500", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{employee.full_name}'?" do %>
       <p class="text-sm text-subtle mbe-4">This will permanently delete this employee. This action cannot be undone.</p>
       <div class="flex items-center justify-end gap">

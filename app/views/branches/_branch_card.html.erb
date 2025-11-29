@@ -7,9 +7,10 @@
         <p class="mbs-2">📞 <%= branch.contact_phone.present? ? branch.contact_phone : "Nil" %></p>
       </div>
     </div>
-    <div class="flex flex-col justify-end">
-      <%= link_to "Edit", edit_branch_path(branch), class: "text-sm text-orange-600 font-medium text-end mie-2", data: { turbo_frame: "modal" } %>
-      <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50 mbs-3", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+
+    <div class="flex flex-col items-start justify-center text-xs gap-4">
+      <%= link_to "Edit", edit_branch_path(branch), class: "text-subtle hover:text-orange-500", data: { turbo_frame: "modal" } %>
+      <% delete_trigger = button_tag "Delete", type: "button", class: "text-subtle hover:text-orange-500", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
       <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{branch.name}'?" do %>
         <p class="text-sm text-subtle mbe-4">This will permanently delete this branch. This action cannot be undone.</p>
         <div class="flex items-center justify-end gap">

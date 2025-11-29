@@ -1,12 +1,21 @@
-<tr id="<%= dom_id subnet %>">
-  <td class="p-4 font-semibold"><%= link_to subnet.name, subnet, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></td>
-  <td class="p-4 font-mono text-sm"><%= subnet.network_address %></td>
-  <td class="p-4 font-mono text-sm"><%= subnet.gateway %></td>
+<tr id="<%= dom_id(subnet, :table_row) %>">
+  <td class="p-4 font-semibold"><span><%= link_to subnet.name.titleize, subnet, class: "text-lg text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
+  <td class="p-4 font-mono text-sky-500"><%= subnet.network_address %></td>
+  <td class="p-4 font-mono"><%= subnet.gateway %></td>
   <td class="p-4"><%= subnet.vlan_id %></td>
-  <td class="text-end">
-    <div class="flex items-center justify-end gap-4">
-      <%= link_to "Edit", edit_subnet_path(subnet), class: "text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
-      <%= button_to "Delete", subnet, method: :delete, class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", form: { data: { turbo_confirm: "Are you sure?" } } %>
-    </div>
+
+  <td class="flex items-center justify-end gap-4">
+    <%= link_to "Edit", edit_subnet_path(subnet),
+                class: "text-orange-500 hover:text-orange-600",
+                data: { turbo_frame: "modal" } %>
+
+    <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+    <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{subnet.name}'?" do %>
+      <p class="text-sm text-subtle mbe-4">This will permanently delete this subnet. This action cannot be undone.</p>
+      <div class="flex items-center justify-end gap">
+        <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
+        <%= button_to "Continue", subnet, method: :delete, class: "btn btn--negative" %>
+      </div>
+    <% end %>
   </td>
 </tr>
