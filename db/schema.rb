@@ -55,11 +55,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_164824) do
     t.bigint "department_id", null: false
     t.string "first_name", null: false
     t.string "last_name", null: false
-    t.string "phone_number"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["department_id"], name: "index_employees_on_department_id"
-    t.index ["phone_number"], name: "index_employees_on_phone_number", unique: true
     t.index ["status"], name: "index_employees_on_status"
   end
 

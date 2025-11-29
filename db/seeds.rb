@@ -19,7 +19,7 @@ User.create!(
   email: "tolase@ipam.com",
   username: "tolase",
   # Must be >12 chars per your User model validation
-  password: "Correct-Horse-Battery-Staple-123!", 
+  password: "Correct-Horse-Battery-Staple-123!",
   verified: true
 )
 
@@ -59,7 +59,7 @@ puts "   Populating IP Addresses..."
 def populate_subnet(subnet, range)
   # Logic: Take "192.168.13.0" -> "192.168.13"
   base_ip_string = subnet.network_address.to_s.split('.')[0...3].join('.')
-  
+
   range.each do |i|
     # Create the IP. The model validation we just fixed will run here.
     subnet.ip_addresses.create!(
@@ -77,16 +77,16 @@ puts "   Onboarding Employees..."
 employees = []
 
 # Specific employees
-employees << Employee.create!(first_name: "Sarah", last_name: "Connor", email: "sarah.connor@ipam.com", department: depts[0], status: :active)
-employees << Employee.create!(first_name: "John", last_name: "Doe", email: "john.doe@ipam.com", department: depts[2], status: :active)
-employees << Employee.create!(first_name: "Alex", last_name: "Admin", email: "alex.admin@ipam.com", department: depts[1], status: :active)
+employees << Employee.create!(first_name: "Sarah", last_name: "Connor", department: depts[0], status: :active)
+employees << Employee.create!(first_name: "John", last_name: "Doe", department: depts[2], status: :active)
+employees << Employee.create!(first_name: "Alex", last_name: "Admin", department: depts[1], status: :active)
 
 # Random employees via Faker
 10.times do
   employees << Employee.create!(
     first_name: Faker::Name.first_name,
     last_name: Faker::Name.last_name,
-    email: Faker::Internet.email,
+    # email: Faker::Internet.email,
     department: depts.sample,
     status: :active
   )
@@ -140,7 +140,7 @@ assign_ip(subnet_mgmt, desktop)
     department: depts.sample,
     employee: employees.sample
   )
-  target_subnet = [subnet_data, subnet_mgmt].sample
+  target_subnet = [ subnet_data, subnet_mgmt ].sample
   assign_ip(target_subnet, d)
 end
 

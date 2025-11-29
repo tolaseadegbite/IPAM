@@ -9,8 +9,6 @@ class Employee < ApplicationRecord
   normalizes :email, with: ->(e) { e.strip.downcase }
 
   validates :first_name, :last_name, presence: true
-  # validates :email, uniqueness: true, allow_blank: true
-  validates :phone_number, uniqueness: true, allow_blank: true
   validates :status, presence: true
 
   def full_name
