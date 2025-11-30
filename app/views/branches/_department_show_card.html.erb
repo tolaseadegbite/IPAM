@@ -1,0 +1,9 @@
+<div class="card btn p-2 flex items-center justify-between transition">
+  <div>
+    <div class="font-medium"><%= link_to department.name, department, class: "hover:text-orange-600" %></div>
+    <div class="text-sm text-subtle"><%= department.employees.count %> Employees</div>
+  </div>
+  <div class="text-sm font-mono text-subtle">
+    <%= department.devices.count %> Devices
+  </div>
+</div>

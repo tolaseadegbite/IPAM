@@ -49,6 +49,7 @@ class IpAddressesController < ApplicationController
         format.turbo_stream do
           render turbo_stream: [
             turbo_stream.replace(@ip_address, partial: "ip_addresses/ip_address", locals: { ip_address: @ip_address }),
+            turbo_stream.update(("details"), partial: "ip_addresses/hardware_details"),
             turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "IP Address updated." })
           ]
         end

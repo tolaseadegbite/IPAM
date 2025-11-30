@@ -1,7 +1,7 @@
 <tr id="<%= dom_id(branch, :table_row) %>">
   <td class="p-4 font-semibold"><span><%= link_to branch.name.titleize, branch, class: "text-lg text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
 
-  <td class="p-4"><span><%= branch.location %></span></td>
+  <td class="p-4"><span><%= branch.location.present? ? branch.location : "Nil" %></span></td>
 
   <td class="p-4"><span><%= branch.contact_phone.present? ? branch.contact_phone : "Nil" %></span></td>
 

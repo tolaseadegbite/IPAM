@@ -45,6 +45,8 @@ class BranchesController < ApplicationController
           render turbo_stream: [
             turbo_stream.replace(helpers.dom_id(@branch, :table_row), partial: "branches/branch", locals: { branch: @branch }),
             turbo_stream.replace(helpers.dom_id(@branch, :card), partial: "branches/branch_card", locals: { branch: @branch }),
+            turbo_stream.update(("branch_name"), partial: "branches/branch_name", locals: { branch: @branch }),
+            turbo_stream.update(("branch_details"), partial: "branches/details", locals: { branch: @branch }),
             turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Branch updated successfully." })
           ]
         end

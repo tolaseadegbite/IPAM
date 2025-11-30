@@ -5,8 +5,19 @@
 <% end %>
 
 <% content_for :header_action_buttons do %>
+  <div class="flex items-center gap-2">
   <%= link_to "Edit", edit_branch_path(@branch), class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2", data: { turbo_frame: "modal" } %>
 
+  <%#= button_to "Delete", @branch, class: "btn bg-white border border-red-200 text-red-600 font-semibold rounded px-4 py-2 hover:bg-red-50", method: :delete, form: { data: { turbo_confirm: "Are you sure?", turbo: false } } %>
+
+  <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+  <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{@branch.name}'?" do %>
+    <p class="text-sm text-subtle mbe-4">This will permanently delete this branch. This action cannot be undone.</p>
+    <div class="flex items-center justify-end gap">
+      <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
+      <%= button_to "Continue", @branch, method: :delete, data: { turbo: false }, class: "btn btn--negative" %>
+    </div>
+  <% end %>
 <% end %>
 
 <div class="p-4 max-w-5xl mx-auto">
@@ -15,26 +26,16 @@
       <%= link_to branches_path, class: "btn btn--subtle btn--icon" do %>
         <span class="icon icon--chevron-left"></span>
       <% end %>
-      <h1 class="text-3xl font-bold"><%= @branch.name %></h1>
+      <div id="branch_name">
+        <%= render 'branches/branch_name' %>
+      </div>
     </div>
   </div>
 
   <div class="grid grid-cols-1 grid-cols-3@md gap-6">
     <%# --- Branch Info --- %>
-    <div class="col-span-1">
-      <div class="card p-4 border rounded bg-white shadow-sm">
-        <h3 class="font-bold text-lg mbe-4 border-be pbe-2">Details</h3>
-        
-        <div class="mbe-4">
-          <label class="text-sm text-subtle uppercase font-bold">Location</label>
-          <div class="text-lg"><%= @branch.location %></div>
-        </div>
-
-        <div class="mbe-4">
-          <label class="text-sm text-subtle uppercase font-bold">Contact</label>
-          <div class="text-lg"><%= @branch.contact_phone %></div>
-        </div>
-      </div>
+    <div id="branch_details" class="col-span-1">
+      <%= render "branches/details" %>
     </div>
 
     <%# --- Associated Departments --- %>
@@ -44,24 +45,28 @@
           <h3 class="font-bold text-lg">Departments</h3>
           <%= link_to "Add Dept", new_department_path(branch_id: @branch.id), class: "text-sm text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
         </div>
-
-        <% if @branch.departments.any? %>
-          <div class="flex flex-col gap-2">
-            <% @branch.departments.each do |dept| %>
-              <div class="card btn p-2 flex items-center justify-between transition">
-                <div>
-                  <div class="font-medium"><%= link_to dept.name, dept, class: "hover:text-orange-600" %></div>
-                  <div class="text-sm text-subtle"><%= dept.employees.count %> Employees</div>
+        
+        <div id="<%= dom_id(@branch, :departments) %>" class="mbs-4">
+          <% if @branch.departments.any? %>
+            <div class="flex flex-col gap-2">
+              <% @branch.departments.each do |dept| %>
+                <div class="card btn p-2 flex items-center justify-between transition">
+                  <div>
+                    <div class="font-medium"><%= link_to dept.name, dept, class: "hover:text-orange-600" %></div>
+                    <div class="text-sm text-subtle"><%= dept.employees.count %> Employees</div>
+                  </div>
+                  <div class="text-sm font-mono text-subtle">
+                    <%= dept.devices.count %> Devices
+                  </div>
                 </div>
-                <div class="text-sm font-mono text-subtle">
-                  <%= dept.devices.count %> Devices
-                </div>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <p class="text-subtle italic">No departments configured.</p>
-        <% end %>
+              <% end %>
+            </div>
+          <% else %>
+            <div id="empty_state">
+              <%= render "shared/empty_state", object: "department" %>
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>

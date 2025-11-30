@@ -45,6 +45,8 @@ class EmployeesController < ApplicationController
           render turbo_stream: [
             turbo_stream.replace(helpers.dom_id(@employee, :table_row), partial: "employees/employee", locals: { employee: @employee }),
             turbo_stream.replace(helpers.dom_id(@employee, :card), partial: "employees/employee_card", locals: { employee: @employee }),
+            turbo_stream.update(("name"), partial: "employees/name"),
+            turbo_stream.update(("profile"), partial: "employees/profile"),
             turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Employee updated successfully." })
           ]
         end

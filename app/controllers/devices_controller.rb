@@ -70,6 +70,9 @@ class DevicesController < ApplicationController
             render turbo_stream: [
               turbo_stream.replace(helpers.dom_id(@device, :table_row), partial: "devices/device", locals: { device: @device }),
               turbo_stream.replace(helpers.dom_id(@device, :card), partial: "devices/device_card", locals: { device: @device }),
+              turbo_stream.update(("name_and_serial"), partial: "devices/name_and_serial"),
+              turbo_stream.update(("hardware_details"), partial: "devices/hardware_details"),
+              turbo_stream.update(("network_and_owner_cards"), partial: "devices/network_and_owner_cards"),
               turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device updated." })
             ]
           end

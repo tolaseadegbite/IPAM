@@ -1,0 +1,13 @@
+<div class="card p-4 border rounded bg-white shadow-sm">
+    <h3 class="font-bold text-lg mbe-4 border-be pbe-2">Details</h3>
+    
+    <div class="mbe-4">
+        <label class="text-sm text-subtle uppercase font-bold">Location</label>
+        <div class="text-lg"><%= @branch.location.present? ? @branch.location : "Nil" %></div>
+    </div>
+
+    <div class="mbe-4">
+        <label class="text-sm text-subtle uppercase font-bold">Contact</label>
+        <div class="text-lg"><%= @branch.contact_phone.present? ? @branch.contact_phone : "Nil" %></div>
+    </div>
+</div>

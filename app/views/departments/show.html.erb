@@ -14,11 +14,8 @@
       <%= link_to departments_path, class: "btn btn--subtle btn--icon" do %>
         <span class="icon icon--chevron-left"></span>
       <% end %>
-      <div>
-        <h1 class="text-3xl font-bold"><%= @department.name %></h1>
-        <div class="text-subtle text-sm">
-          Branch: <%= link_to @department.branch.name, @department.branch, class: "hover:underline text-orange-500" %>
-        </div>
+      <div id="department_details">
+        <%= render "departments/department_details" %>
       </div>
     </div>
     <%#= link_to "Edit", edit_department_path(@department), class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2", data: { turbo_frame: "modal" } %>
