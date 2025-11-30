@@ -2,12 +2,9 @@ class DevicesController < ApplicationController
   before_action :set_device, only: %i[ show edit update destroy ]
 
   def index
-    @devices = Device.includes(:department, :employee, :ip_address).order(:serial_number)
-
-    if params[:query].present?
-      term = "%#{params[:query]}%"
-      @devices = @devices.where("name ILIKE ? OR serial_number ILIKE ? OR asset_tag ILIKE ?", term, term, term)
-    end
+    records = Device.includes(:department, :employee, :ip_address).order(:serial_number)
+    @search = records.ransack(params[:q])
+    @pagy, @devices = pagy(@search.result)
   end
 
   def show
@@ -22,7 +19,7 @@ class DevicesController < ApplicationController
 
   def create
     @device = Device.new(device_params)
-    
+
     # We capture the selected IP ID from the form (not a standard column on Device)
     selected_ip_id = params[:device][:ip_address_id]
 
@@ -35,15 +32,16 @@ class DevicesController < ApplicationController
         end
 
         respond_to do |format|
-          format.html { redirect_to devices_path, notice: "Device registered." }
-          format.turbo_stream do
-            render turbo_stream: [
-              turbo_stream.prepend("devices", partial: "devices/device", locals: { device: @device }),
-              turbo_stream.update("new_device", ""),
-              turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device registered." })
-            ]
-          end
+        format.html { redirect_to devices_path, notice: "Device registered." }
+        format.turbo_stream do
+          render turbo_stream: [
+             turbo_stream.prepend("devices-table", partial: "devices/device", locals: { device: @device }),
+            turbo_stream.prepend("devices-cards", partial: "devices/device_card", locals: { device: @device }),
+            turbo_stream.update("new_device", ""), # Clear the form/modal
+            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device registered." })
+          ]
         end
+      end
       else
         render :new, status: :unprocessable_entity
         raise ActiveRecord::Rollback # Cancel transaction if device save fails
@@ -56,7 +54,7 @@ class DevicesController < ApplicationController
 
     Device.transaction do
       if @device.update(device_params)
-        
+
         # IP Re-assignment Logic
         if selected_ip_id.present? && @device.ip_address&.id != selected_ip_id.to_i
           # Release old IP
@@ -67,10 +65,11 @@ class DevicesController < ApplicationController
         end
 
         respond_to do |format|
-          format.html { redirect_to devices_path, notice: "Device updated." }
+          format.html { redirect_to devices_path, notice: "device updated successfully." }
           format.turbo_stream do
             render turbo_stream: [
-              turbo_stream.replace(@device, partial: "devices/device", locals: { device: @device }),
+              turbo_stream.replace(helpers.dom_id(@device, :table_row), partial: "devices/device", locals: { device: @device }),
+              turbo_stream.replace(helpers.dom_id(@device, :card), partial: "devices/device_card", locals: { device: @device }),
               turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device updated." })
             ]
           end
@@ -85,13 +84,23 @@ class DevicesController < ApplicationController
   def destroy
     # Dependent :nullify in model handles IP release
     @device.destroy
-    respond_to do |format|
-      format.html { redirect_to devices_path, notice: "Device retired." }
-      format.turbo_stream do
-        render turbo_stream: [
-          turbo_stream.remove(@device),
-          turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device retired." })
-        ]
+    if @device.destroy
+      respond_to do |format|
+        format.html { redirect_to devices_path, notice: "Device deleted." }
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.remove(helpers.dom_id(@device, :table_row)),
+            turbo_stream.remove(helpers.dom_id(@device, :card)),
+            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device deleted." })
+          ]
+        end
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to devices_path, alert: @device.errors.full_messages.to_sentence }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.update("flash", partial: "shared/flash", locals: { alert: @device.errors.full_messages.to_sentence })
+        end
       end
     end
   end
@@ -103,7 +112,7 @@ class DevicesController < ApplicationController
 
     def device_params
       params.require(:device).permit(
-        :name, :serial_number, :asset_tag, :device_type, 
+        :name, :serial_number, :asset_tag, :device_type,
         :status, :notes, :department_id, :employee_id
         # Note: ip_address_id is NOT permitted here, handled manually
       )

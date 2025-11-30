@@ -22,8 +22,6 @@ class SubnetsController < ApplicationController
     @subnet = Subnet.new(subnet_params)
 
     if @subnet.save
-      # Auto-populate logic (inline for now, ideally background job)
-      populate_ips_for(@subnet)
 
       respond_to do |format|
         format.html { redirect_to subnets_path, notice: "Subnet created successfully." }
@@ -79,16 +77,5 @@ class SubnetsController < ApplicationController
 
     def subnet_params
       params.require(:subnet).permit(:name, :network_address, :gateway, :vlan_id)
-    end
-
-    # Simplified Population Logic
-    def populate_ips_for(subnet)
-      range = IPAddr.new(subnet.network_address.to_s).to_range.to_a
-      # Exclude Network (first) and Broadcast (last)
-      range[1...-1].each do |ip|
-        subnet.ip_addresses.create(address: ip.to_s, status: :available)
-      end
-    rescue IPAddr::InvalidAddressError
-      # handled by model validation usually
     end
 end

@@ -22,7 +22,16 @@ class Device < ApplicationRecord
   # Validation to ensure a device doesn't have an IP assigned if it's "Retired"
   validate :ip_released_if_retired
 
+  def self.ransackable_attributes(auth_object = nil)
+    %w[ name asset_tag serial_number status created_at updated_at ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    [ "department", "employee", "ip_address" ]
+  end
+
   private
+
   def ip_released_if_retired
     if retired? && ip_address.present?
       errors.add(:status, "cannot be Retired while holding an IP Address. Release the IP first.")

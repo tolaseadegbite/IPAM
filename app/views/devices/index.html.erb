@@ -18,34 +18,40 @@
 
 <div class="p-4 i-full">
 
-  <%= form_with url: devices_path, method: :get, class: "mbe-6 flex gap-2", data: { turbo_frame: "devices", turbo_action: "advance" } do |f| %>
-    <%= f.text_field :query, placeholder: "Search Serial, Asset Tag, or Name...", class: "input border rounded p-2 flex-grow", value: params[:query] %>
-    <%= f.submit "Search", class: "btn btn--primary" %>
-  <% end %>
-
-  <%= turbo_frame_tag "new_device" %>
-
-  <%= turbo_frame_tag "devices" do %>
+  <%= turbo_frame_tag :devices_table do %>
+    
+    <%# --- DESKTOP VIEW: Table (Visible on medium screens and up) --- %>
     <div class="show@md relative i-full overflow-x-auto border rounded-md bg-surface">
       <table class="table i-full text-left">
-        <thead class="bg-shade text-subtle font-semibold border-b">
+        <thead class="bg-shade font-semibold">
           <tr>
-            <th class="p-4">Device</th>
-            <th class="p-4">Details (Serial/Tag)</th>
-            <th class="p-4">IP Address</th>
-            <th class="p-4">Assigned To</th>
-            <th class="p-4">Status</th>
+            <th class="p-4"><%= sort_link(@search, :name, "Device", class: "font-semibold") %></th>
+            <th class="p-4"><%= sort_link(@search, :serial_number, "Details (Serial/Tag)", class: "font-semibold") %></th>
+            <th class="p-4"><%= sort_link(@search, :ip_address_address, "Ip Address", class: "font-semibold") %></th>
+            <th class="p-4"><%= sort_link(@search, :employee_full_name, "Assigned To", class: "font-semibold") %></th>
+            <th class="p-4"><%= sort_link(@search, :status, class: "font-semibold") %></th>
             <th class="p-4 text-end">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100">
-          <%= render @devices %>
+        <tbody id="devices-table">
+          <% if @devices.empty? %>
+            <tr><td colspan="7" class="text-center p-8">No Results.</td></tr>
+          <% else %>
+            <%= render @devices %>
+          <% end %>
         </tbody>
       </table>
     </div>
 
-    <div class="hide@md flex flex-col gap-4">
-      <%= render partial: "devices/device_card", collection: @devices, as: :device %>
+    <%# --- MOBILE VIEW: Cards (Hidden on medium screens and up) --- %>
+    <div id="devices-cards" class="hide@md flex flex-col gap-4">
+      <% if @devices.empty? %>
+        <p class="text-subtle text-center p-8">No devices found.</p>
+      <% else %>
+        <%= render partial: "devices/device_card", collection: @devices, as: :device %>
+      <% end %>
     </div>
+
+    <%= render "shared/pagination", pagy: @pagy %>
   <% end %>
 </div>
