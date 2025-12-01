@@ -1,8 +1,7 @@
 class IpAddress < ApplicationRecord
   # has_paper_trail
 
-  # Callbacks
-  before_save :enforce_status_consistency
+  before_validation :enforce_status_consistency
 
   # Associations
   belongs_to :subnet
@@ -14,6 +13,7 @@ class IpAddress < ApplicationRecord
   # Validations
   validates :address, presence: true, uniqueness: true
   validate :address_within_subnet_range
+  validate :cannot_assign_device_if_blacklisted
 
   # Scopes
   scope :free, -> { where(device_id: nil, status: :available) }
@@ -29,6 +29,12 @@ class IpAddress < ApplicationRecord
 
   private
 
+  def cannot_assign_device_if_blacklisted
+    if blacklisted? && device_id.present?
+      errors.add(:status, "is Blacklisted. You must change the status to 'Active' or 'Reserved' before assigning a device.")
+    end
+  end
+
   def address_within_subnet_range
     return if address.blank? || subnet.blank?
     unless subnet.network_address.include?(address)
@@ -36,33 +42,26 @@ class IpAddress < ApplicationRecord
     end
   end
 
-  # Smart logic to handle dual-intent
   def enforce_status_consistency
-    # 1. USER INTENT: RELEASE IP
-    # If the user explicitly changed status to 'available' or 'blacklisted',
-    # we assume they want to disconnect the device, even if the device_id is still present in the form data.
+    # 1. RELEASE IP (Intentional Status Change)
+    # If you explicitly change status to 'available' or 'blacklisted',
+    # we assume you want to kick the device off immediately.
+    # Since this runs before_validation, the device becomes nil, and the validation passes.
     if (available? || blacklisted?) && status_changed?
       self.device = nil
     end
 
-    # 2. USER INTENT: ASSIGN DEVICE
-    # If the user explicitly changed/added a device,
-    # we assume they want the IP to be 'active', even if they forgot to change the status from 'available'.
+    # 2. ASSIGN IP (Intentional Device Change)
+    # If you select a device, we assume you want the IP to be 'active'.
+    # We check device_id_changed? so we don't accidentally flip existing 'reserved' IPs.
     if device_id.present? && device_id_changed? && available?
       self.status = :active
     end
 
-    # 3. CLEANUP: ORPHAN CHECK
-    # If for any reason there is no device (and it's not reserved/blacklisted),
-    # it shouldn't be marked as 'active'.
+    # 3. ORPHAN CHECK (Cleanup)
+    # If for any reason there is no device (and it's active), make it available.
     if device_id.nil? && active?
       self.status = :available
-    end
-
-    # 4. SAFETY: HARD RULE
-    # Blacklisted IPs can never have a device, no matter what.
-    if blacklisted?
-      self.device = nil
     end
   end
 end
