@@ -14,7 +14,7 @@ class Device < ApplicationRecord
   enum :device_type, { laptop: 0, desktop: 1, all_in_one: 2, printer: 3, server: 4, tablet: 5 }
   enum :status, { active: 0, in_storage: 1, in_repair: 2, retired: 3, lost: 4 }
 
-  validates :serial_number, presence: true, uniqueness: { case_sensitive: false }
+  validates :serial_number, uniqueness: { case_sensitive: false }
   validates :name, presence: true # Hostname
   validates :device_type, presence: true
   validates :status, presence: true

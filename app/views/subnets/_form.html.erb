@@ -4,19 +4,36 @@
   <div class="grid grid-cols-1 grid-cols-2@md gap-4">
     <div class="col-span-1">
       <%= form.label :name, "Subnet Name", class: "block font-medium mbe-1" %>
-      <%= form.text_field :name, class: "input w-full p-2 border rounded", placeholder: "e.g., Corporate Data" %>
+      <%= form.text_field :name, class: "input", placeholder: "e.g., Corporate Data" %>
     </div>
+    
     <div class="col-span-1">
       <%= form.label :network_address, "CIDR Range", class: "block font-medium mbe-1" %>
-      <%= form.text_field :network_address, class: "input w-full p-2 border rounded", placeholder: "e.g., 192.168.13.0/24" %>
+      
+      <% if subnet.persisted? %>
+        <%# READ-ONLY MODE %>
+        <%= form.text_field :network_address, 
+              value: subnet.network_address_before_type_cast, 
+              class: "input bg-gray-100 text-subtle cursor-not-allowed", 
+              readonly: true,
+              title: "Delete and recreate this subnet to change the range." %>
+        <p class="text-xs text-subtle mt-1">Cannot be changed after creation.</p>
+      <% else %>
+        <%# EDIT MODE %>
+        <%= form.text_field :network_address, 
+              value: subnet.network_address_before_type_cast, 
+              class: "input", 
+              placeholder: "e.g., 192.168.13.0/24" %>
+      <% end %>
     </div>
+
     <div class="col-span-1">
       <%= form.label :gateway, class: "block font-medium mbe-1" %>
-      <%= form.text_field :gateway, class: "input w-full p-2 border rounded", placeholder: "e.g., 192.168.13.1" %>
+      <%= form.text_field :gateway, class: "input", placeholder: "e.g., 192.168.13.1" %>
     </div>
     <div class="col-span-1">
       <%= form.label :vlan_id, "VLAN ID", class: "block font-medium mbe-1" %>
-      <%= form.number_field :vlan_id, class: "input w-full p-2 border rounded" %>
+      <%= form.number_field :vlan_id, class: "input" %>
     </div>
   </div>
 

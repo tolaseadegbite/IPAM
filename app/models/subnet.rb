@@ -11,6 +11,8 @@ class Subnet < ApplicationRecord
   validate :network_ranges_must_not_overlap
 
   after_create :populate_ip_addresses
+  after_save :reserve_gateway_ip
+
 
   def self.ransackable_attributes(auth_object = nil)
     %w[ id name gateway network_address vlan_id created_at updated_at ]
@@ -68,20 +70,45 @@ class Subnet < ApplicationRecord
     end
   end
 
+  # 1. Update this method to handle Gateway changes
+  def reserve_gateway_ip
+    return unless gateway.present?
+
+    # Find the specific IP record that matches the Gateway string
+    # We use 'find_by' because it might not exist yet during creation (handled by populate below)
+    gateway_ip = ip_addresses.find_by(address: gateway.to_s)
+
+    if gateway_ip
+      # Force status to reserved so Laptops can't grab it
+      # We skip callbacks/validation to ensure it saves even if logic is complex
+      gateway_ip.update_columns(status: IpAddress.statuses[:reserved], notes: "Subnet Gateway")
+    end
+  end
+
+  # 2. Update the population logic to mark the gateway reserved immediately
   def populate_ip_addresses
-    # Use the IPAddr object directly to get the range
     cidr = network_address
     all_ips = cidr.to_range.to_a
     return if all_ips.size < 3
 
     host_ips = all_ips[1...-1]
 
+    # Pre-calculate the gateway string for comparison
+    gw_string = gateway.to_s
+
     now = Time.current
     ip_data = host_ips.map do |ip|
+      ip_str = ip.to_s
+
+      # Determine status: If this IP matches the Gateway, Reserve it. Else Available.
+      initial_status = (ip_str == gw_string) ? 2 : 0 # 2=Reserved, 0=Available
+      initial_note   = (ip_str == gw_string) ? "Subnet Gateway" : nil
+
       {
-        address: ip.to_s,
+        address: ip_str,
         subnet_id: id,
-        status: 0,
+        status: initial_status,
+        notes: initial_note,
         created_at: now,
         updated_at: now
       }
