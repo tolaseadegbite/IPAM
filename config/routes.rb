@@ -31,7 +31,7 @@ Rails.application.routes.draw do
 
   # --- Network Management ---
   resources :subnets
-  resources :ip_addresses
+  resources :ip_addresses, only: %i[index show edit update]
 
   # --- Asset Management ---
   resources :devices

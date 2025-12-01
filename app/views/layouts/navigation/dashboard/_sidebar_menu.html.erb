@@ -15,8 +15,8 @@
           <% end %>
           <%= link_to branches_path, 
                       class: "btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?("") ? { current: "page" } : {}) do %>
-            <span class="icon icon--card-sim" aria-hidden="true"></span>
+                      aria: (current_page?(branches_path) ? { current: "page" } : {}) do %>
+            <span class="icon icon--building" aria-hidden="true"></span>
             Branches
           <% end %>
         </nav>
@@ -31,7 +31,7 @@
           <%= link_to departments_path, 
                       class: "btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(departments_path) ? { current: "page" } : {}) do %>
-            <span class="icon icon--calendar-range" aria-hidden="true"></span>
+            <span class="icon icon--warehouse" aria-hidden="true"></span>
             Departments
           <% end %>
 
@@ -39,7 +39,7 @@
           <%= link_to employees_path, 
                       class: "btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(employees_path) ? { current: "page" } : {}) do %>
-            <span class="icon icon--list-checks" aria-hidden="true"></span>
+            <span class="icon icon--users-round" aria-hidden="true"></span>
             Employees
           <% end %>
 
@@ -55,7 +55,7 @@
           <%= link_to ip_addresses_path, 
                       class: "btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(ip_addresses_path) ? { current: "page" } : {}) do %>
-            <span class="icon icon--list-checks" aria-hidden="true"></span>
+            <span class="icon icon--map-pinned" aria-hidden="true"></span>
             Ip Addresses
           <% end %>
 
@@ -63,7 +63,7 @@
           <%= link_to devices_path, 
                       class: "btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(devices_path) ? { current: "page" } : {}) do %>
-            <span class="icon icon--list-checks" aria-hidden="true"></span>
+            <span class="icon icon--monitor" aria-hidden="true"></span>
             Devices
           <% end %>
 
@@ -71,24 +71,9 @@
           <%= link_to users_path, 
                       class: "btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(users_path) ? { current: "page" } : {}) do %>
-            <span class="icon icon--list-checks" aria-hidden="true"></span>
+            <span class="icon icon--users" aria-hidden="true"></span>
             Users
           <% end %>
-          
-          <%#= link_to voice_changer_path, 
-                      class: "btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(voice_changer_path) ? { current: "page" } : {}) do %>
-            <!--<span class="icon icon--vc" aria-hidden="true"></span>
-            Voice Changer-->
-          <%# end %>
-          
-          <%#= link_to sound_effects_path, 
-                      class: "btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(sound_effects_path) ? { current: "page" } : {}) do %>
-            <!--<span class="icon icon--rotate-3d" aria-hidden="true"></span>
-            Sound Effects-->
-          <%# end %>
-
         </nav>
       </div>
     </div>

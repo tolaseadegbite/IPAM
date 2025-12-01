@@ -3,16 +3,23 @@
 
   <div class="mbe-4">
     <%= form.label :status, class: "block font-medium mbe-1" %>
-    <%= form.select :status, IpAddress.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "input w-full p-2 border rounded cursor-pointer" } %>
+    <%= form.select :status, IpAddress.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "input cursor-pointer" } %>
+  </div>
+
+  <div class="mbe-4">
+    <%= form.label :device_id, "Connected Device", class: "block font-medium mbe-1" %>
+    <%= form.collection_select :device_id, Device.all, :id, :name, 
+        { include_blank: "No Device (Unassigned)" }, 
+        { class: "input cursor-pointer" } %>
   </div>
 
   <div class="mbe-4">
     <%= form.label :notes, class: "block font-medium mbe-1" %>
-    <%= form.text_area :notes, class: "input w-full p-2 border rounded h-20" %>
+    <%= form.text_area :notes, class: "input" %>
   </div>
 
   <div class="flex items-center gap-3">
-    <%= form.submit "Update IP", class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2" %>
+    <%= form.submit "Update IP", class: "btn bg-orange-400 text-white font-semibold pi-4 pb-2" %>
     <%= link_to "Cancel", ip_addresses_path, class: "text-subtle", data: { turbo_frame: "modal" } %>
   </div>
 <% end %>

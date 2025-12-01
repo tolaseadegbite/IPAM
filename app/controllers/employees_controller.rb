@@ -2,7 +2,7 @@ class EmployeesController < ApplicationController
   before_action :set_employee, only: %i[ show edit update destroy ]
 
   def index
-    records = Employee.includes(department: :branch).order(:last_name, :first_name)
+    records = Employee.includes(department: :branch).order(:first_name, :last_name)
     @search = records.ransack(params[:q])
     @pagy, @employees = pagy(@search.result)
   end

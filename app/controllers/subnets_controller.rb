@@ -42,7 +42,7 @@ class SubnetsController < ApplicationController
   def update
     if @subnet.update(subnet_params)
       respond_to do |format|
-        format.html { redirect_to subnets_path, notice: "subnet updated successfully." }
+        format.html { redirect_to subnets_path, notice: "Subnet updated successfully." }
         format.turbo_stream do
           render turbo_stream: [
             turbo_stream.replace(helpers.dom_id(@subnet, :table_row), partial: "subnets/subnet", locals: { subnet: @subnet }),
@@ -64,7 +64,7 @@ class SubnetsController < ApplicationController
         render turbo_stream: [
           turbo_stream.remove(helpers.dom_id(@subnet, :table_row)),
           turbo_stream.remove(helpers.dom_id(@subnet, :card)),
-          turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "subnet deleted." })
+          turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Subnet deleted." })
         ]
       end
     end

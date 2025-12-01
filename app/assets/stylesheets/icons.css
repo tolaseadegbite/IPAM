@@ -35,7 +35,12 @@ img.icon {
 .icon--square-pen { --svg: url("square-pen.svg"); }
 .icon--building { --svg: url("building.svg"); }
 .icon--pen { --svg: url("pen.svg"); }
+.icon--users { --svg: url("users.svg"); }
+.icon--users-round { --svg: url("users-round.svg"); }
+.icon--map-pinned { --svg: url("map-pinned.svg"); }
+.icon--warehouse { --svg: url("warehouse.svg"); }
 .icon--user { --svg: url("user.svg"); }
+.icon--monitor { --svg: url("monitor.svg"); }
 .icon--message-square-text { --svg: url("message-square-text.svg"); }
 .icon--mail { --svg: url("mail.svg"); }
 .icon--globe { --svg: url("globe.svg"); }

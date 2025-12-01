@@ -1,7 +1,7 @@
 class Branch < ApplicationRecord
   #   has_paper_trail
 
-  has_many :departments, dependent: :destroy
+  has_many :departments, dependent: :restrict_with_error # Don't delete dept if people are in it
   has_many :devices, through: :departments # Optimization for reporting
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }

@@ -5,8 +5,25 @@
 <% end %>
 
 <% content_for :header_action_buttons do %>
-  <%= link_to "Edit", edit_department_path(@department), class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2", data: { turbo_frame: "modal" } %>
+  <div class="flex items-center gap-2">
+    <%= link_to "Edit", edit_department_path(@department), class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2 show@md", data: { turbo_frame: "modal" } %>
+
+    <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+    <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{@department.name}'?" do %>
+      <p class="text-sm text-subtle mbe-4">This will permanently delete this department. This action cannot be undone.</p>
+      <div class="flex items-center justify-end gap">
+        <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
+        <%= button_to "Continue", @department, method: :delete, data: { turbo: false }, class: "btn btn--negative" %>
+      </div>
+    <% end %>
+  </div>
 <% end %>
+
+<div class="absolute hide@md" style="bottom: 10rem; right: 1rem; z-index: 9999">
+  <%= link_to edit_department_path(@department), class: "btn bg-orange-400 text-white font-semibold rounded-full p-5", data: { turbo_frame: "modal" } do %>
+    <span class="icon icon--square-pen"></span>
+  <% end %>
+</div>
 
 <div class="p-4 max-w-5xl mx-auto">
   <div class="flex items-center justify-between mbe-6">
