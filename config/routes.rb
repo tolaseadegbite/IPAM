@@ -26,7 +26,13 @@ Rails.application.routes.draw do
 
   # --- Core Resources ---
   resources :branches
-  resources :departments
+
+  resources :departments do
+    collection do
+      get :select_options
+    end
+  end
+
   resources :employees
 
   # --- Network Management ---

@@ -1,5 +1,5 @@
 <tr id="<%= dom_id(employee, :table_row) %>">
-  <td class="p-4 font-semibold"><span><%= link_to employee.full_name.titleize, employee, class: "text-lg text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
+  <td class="p-4 font-semibold"><span><%= link_to employee.full_name, employee, class: "text-lg text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
 
   <td class="p-4"><%= employee.department.name %> <span class="text-sm text-subtle block"><%= link_to employee.department.branch.name, branch_path(employee.department.branch), class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
 

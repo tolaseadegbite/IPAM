@@ -81,6 +81,14 @@ class DepartmentsController < ApplicationController
     end
   end
 
+  def select_options
+    # Filter departments by the branch_id passed in params
+    @departments = Department.where(branch_id: params[:branch_id]).order(:name)
+
+    # We render a specific partial designed just for the select box
+    render partial: "departments/select_options", locals: { departments: @departments }
+  end
+
   private
     def set_department
       @department = Department.find(params[:id])
