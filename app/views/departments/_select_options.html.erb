@@ -1,16 +1,25 @@
-<%# The ID must match the frame in the parent form %>
 <%= turbo_frame_tag "department_options_frame" do %>
-  
-  <%# We use select_tag here because we don't have the 'form' builder object 
-      from the parent EmployeesController. 
-      
-      CRITICAL: We must manually set the 'name' to "employee[department_id]" 
-      so that when the main form submits, it looks just like a native Rails form field. 
-  %>
-  <%= select_tag "employee[department_id]", 
-        options_from_collection_for_select(departments, :id, :name),
-        prompt: "Select Department",
-        class: "input w-full p-2 border rounded cursor-pointer",
-        id: "employee_department_id" %>
+  <% 
+     target_model = params[:target_model] || "employee" 
+     input_name = "#{target_model}[department_id]"
+     
+     # FIX: Only add Stimulus attributes if this is for a Device (to trigger Employee load).
+     # For Employees, this is the end of the chain, so we don't want to trigger anything.
+     html_options = {
+       prompt: "Select Department",
+       class: "input w-full p-2 border rounded cursor-pointer",
+       id: "#{target_model}_department_id"
+     }
 
+     if target_model == "device"
+       html_options[:data] = { 
+         action: "change->dependent-select#load", 
+         dependent_select_target: "select" 
+       }
+     end
+  %>
+  
+  <%= select_tag input_name, 
+        options_from_collection_for_select(departments, :id, :name),
+        html_options %>
 <% end %>

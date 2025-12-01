@@ -1,0 +1,6 @@
+<%= turbo_frame_tag "ip_address_options_frame" do %>
+  <%= select_tag "device[ip_address_id]", 
+        options_from_collection_for_select(ip_addresses, :id, :address),
+        prompt: "Select Available IP",
+        class: "input" %>
+<% end %>

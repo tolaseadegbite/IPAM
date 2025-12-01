@@ -2,8 +2,9 @@
   <%= render "shared/error_messages", object: employee %>
 
   <div class="grid grid-cols-1 grid-cols-2@md gap-4" 
-       data-controller="dependent-select" 
-       data-dependent-select-url-value="<%= select_options_departments_path %>">
+     data-controller="dependent-select" 
+     data-dependent-select-url-value="<%= select_options_departments_path %>"
+     data-dependent-select-param-value="branch_id">
 
     <div class="col-span-1">
       <%= form.label :first_name, class: "block font-medium mbe-1" %>

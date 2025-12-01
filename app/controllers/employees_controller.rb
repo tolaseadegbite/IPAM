@@ -80,6 +80,11 @@ class EmployeesController < ApplicationController
     end
   end
 
+  def select_options
+    @employees = Employee.where(department_id: params[:department_id], status: :active).order(:first_name)
+    render partial: "employees/select_options", locals: { employees: @employees }
+  end
+
   private
     def set_employee
       @employee = Employee.find(params[:id])

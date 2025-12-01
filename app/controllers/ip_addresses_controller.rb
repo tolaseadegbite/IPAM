@@ -40,6 +40,13 @@ class IpAddressesController < ApplicationController
     end
   end
 
+  def select_options
+    # Fetch ONLY free IPs for the selected subnet
+    @ip_addresses = IpAddress.where(subnet_id: params[:subnet_id]).free.order(:address)
+
+    render partial: "ip_addresses/select_options", locals: { ip_addresses: @ip_addresses }
+  end
+
   private
     def set_ip_address
       @ip_address = IpAddress.find(params[:id])

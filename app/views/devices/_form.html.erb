@@ -1,66 +1,153 @@
-<!-- NOTE: This form requires logic to fetch free IPs. 
-    Ideally, a Stimulus controller would listen to 'subnet_id' change and fetch IPs.
-    For this output, I will render the subnets and allow selecting an IP. -->
-
 <%= form_with(model: device, html: { contents: true }) do |form| %>
   <%= render "shared/error_messages", object: device %>
 
+  <!-- SECTION: Hardware -->
   <h4 class="font-bold border p-4 rounded-lg mbe-4">Hardware Details</h4>
   <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-6">
     <div class="col-span-1">
       <%= form.label :name, "Hostname", class: "block font-medium mbe-1" %>
-      <%= form.text_field :name, class: "input w-full p-2 border rounded" %>
+      <%= form.text_field :name, class: "input" %>
     </div>
     <div class="col-span-1">
       <%= form.label :serial_number, class: "block font-medium mbe-1" %>
-      <%= form.text_field :serial_number, class: "input w-full p-2 border rounded" %>
+      <%= form.text_field :serial_number, class: "input" %>
     </div>
     <div class="col-span-1">
       <%= form.label :asset_tag, class: "block font-medium mbe-1" %>
-      <%= form.text_field :asset_tag, class: "input w-full p-2 border rounded" %>
+      <%= form.text_field :asset_tag, class: "input" %>
     </div>
     <div class="col-span-1">
       <%= form.label :device_type, class: "block font-medium mbe-1" %>
-      <%= form.select :device_type, Device.device_types.keys.map { |k| [k.humanize, k] }, {}, { class: "input w-full p-2 border rounded cursor-pointer" } %>
+      <%= form.select :device_type, Device.device_types.keys.map { |k| [k.humanize, k] }, {}, { class: "input cursor-pointer" } %>
     </div>
   </div>
 
+  <!-- SECTION: Assignment & Network -->
   <h4 class="font-bold border rounded-lg p-4 pb-3 mbe-4">Assignment & Network</h4>
-  <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-6">
+  
+  <!-- CONTROLLER 1: Branch -> Department -->
+  <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-6"
+       data-controller="dependent-select" 
+       data-dependent-select-url-value="<%= select_options_departments_path %>"
+       data-dependent-select-param-value="branch_id"
+       data-dependent-select-extra-param-value="target_model=device"
+       data-dependent-select-frame-id-value="department_options_frame">
+
+    <!-- 1. Branch Select (Triggers Department reload) -->
     <div class="col-span-1">
-      <%= form.label :department_id, class: "block font-medium mbe-1" %>
-      <%= form.collection_select :department_id, Department.all, :id, :name, { prompt: "Select Dept" }, { class: "input w-full p-2 border rounded cursor-pointer" } %>
+      <label class="block font-medium mbe-1">Branch</label>
+      <% selected_branch_id = device.department&.branch_id %>
+      <%= select_tag "branch_id", 
+            options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
+            prompt: "Select Branch First",
+            class: "input cursor-pointer",
+            data: { 
+              dependent_select_target: "select", 
+              action: "change->dependent-select#load" 
+            } %>
     </div>
+
+    <!-- CONTROLLER 2: Department -> Employee -->
+    <!-- 2. Department Select (Target for Controller 1, Trigger for Controller 2) -->
+    <div class="col-span-1"
+         data-controller="dependent-select"
+         data-dependent-select-url-value="<%= select_options_employees_path %>"
+         data-dependent-select-param-value="department_id"
+         data-dependent-select-frame-id-value="employee_options_frame">
+
+      <%= form.label :department_id, class: "block font-medium mbe-1" %>
+      <%= turbo_frame_tag "department_options_frame" do %>
+        <% 
+            departments = if selected_branch_id
+                            Department.where(branch_id: selected_branch_id).order(:name)
+                          else
+                            []
+                          end
+        %>
+        <%= form.select :department_id, 
+              options_from_collection_for_select(departments, :id, :name, device.department_id),
+              { prompt: "Select Branch to see Departments" },
+              { class: "input cursor-pointer", 
+                data: { 
+                  dependent_select_target: "select", 
+                  action: "change->dependent-select#load" 
+                } 
+              } %>
+      <% end %>
+    </div>
+
+    <!-- 3. Employee Select (Target for Controller 2) -->
     <div class="col-span-1">
-      <%= form.label :employee_id, "Assign Owner (Optional)", class: "block font-medium mbe-1" %>
-      <%= form.collection_select :employee_id, Employee.where(status: :active), :id, :full_name, { include_blank: "Unassigned" }, { class: "input w-full p-2 border rounded cursor-pointer" } %>
+      <%= form.label :employee_id, "Assign Owner", class: "block font-medium mbe-1" %>
+      <%= turbo_frame_tag "employee_options_frame" do %>
+          <% 
+            employees = if device.department_id
+                          Employee.where(department_id: device.department_id, status: :active)
+                        else
+                          []
+                        end
+          %>
+          <%= form.collection_select :employee_id, employees, :id, :full_name, 
+                { include_blank: "Unassigned" }, 
+                { class: "input cursor-pointer" } %>
+      <% end %>
+    </div>
+
+    <!-- 4. Status Select -->
+    <div class="col-span-1">
+      <%= form.label :status, "Device status", class: "block font-medium mbe-1" %>
+      <%= form.select :status, Device.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "input cursor-pointer" } %>
     </div>
   </div>
     
-  <%# --- IP Assignment Block --- %>
-  <div class="col-span-full card">
+  <!-- SECTION: IP Assignment (Dependent Select) -->
+  <div class="col-span-full card" 
+     data-controller="dependent-select" 
+     data-dependent-select-url-value="<%= select_options_ip_addresses_path %>"
+     data-dependent-select-param-value="subnet_id">
+       
     <label class="block font-bold mbe-2">IP Address Assignment</label>
     
-    <%# This would ideally be a Turbo Frame that updates when a Subnet is picked %>
     <div class="grid grid-cols-2 gap-4">
+      <!-- 5. Subnet Filter -->
       <div>
         <label class="text-sm text-subtle">Filter by Subnet</label>
-        <%= select_tag "subnet_filter", options_from_collection_for_select(Subnet.all, :id, :name), 
-            prompt: "Select Network...", class: "input w-full p-2 border rounded cursor-pointer",
-            data: { controller: "subnet-select" } %>
+        <% current_subnet_id = device.ip_address&.subnet_id %>
+        <%= select_tag "subnet_filter", 
+              options_from_collection_for_select(Subnet.all, :id, :name, current_subnet_id), 
+              prompt: "Select Network...", 
+              class: "input cursor-pointer",
+              data: { 
+                dependent_select_target: "select", 
+                action: "change->dependent-select#load" 
+              } %>
       </div>
       
+      <!-- 6. IP Select -->
       <div>
         <label class="text-sm text-subtle">Available IP</label>
-        <%# Note: The controller expects params[:device][:ip_address_id] %>
-        <%# We preload ALL free IPs grouped by subnet or similar, but for simplicity here we show a flat list of all free IPs %>
-        <%= form.collection_select :ip_address_id, IpAddress.free.limit(100), :id, :address, { include_blank: "Do not assign IP" }, { class: "input w-full p-2 border rounded cursor-pointer" } %>
+        <%= turbo_frame_tag "ip_address_options_frame", data: { dependent_select_target: "frame" } do %>
+          <% 
+             current_subnet_id = device.ip_address&.subnet_id || params[:subnet_id]
+             
+             ips = if current_subnet_id
+                     base_query = IpAddress.where(subnet_id: current_subnet_id)
+                     base_query.free.or(base_query.where(id: device.ip_address&.id)).order(:address)
+                   else
+                     []
+                   end
+          %>
+          <%= form.collection_select :ip_address_id, ips, :id, :address, 
+            { include_blank: "Do not assign IP", selected: device.ip_address&.id }, 
+            { class: "input cursor-pointer" } %>
+        <% end %>
       </div>
     </div>
   </div>
 
+  <!-- Actions -->
   <div class="flex gap-3 mbs-4 items-center">
-    <%= form.submit "Save Device", class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2" %>
+    <%= form.submit "Save Device", class: "btn bg-orange-400 text-white font-semibold pi-4 pb-2" %>
     <%= link_to "Cancel", devices_path, class: "text-subtle", data: { turbo_frame: "_top" } %>
   </div>
 <% end %>

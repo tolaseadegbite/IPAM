@@ -33,11 +33,20 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :employees
+  resources :employees do
+    collection do
+      get :select_options # New endpoint
+    end
+  end
 
   # --- Network Management ---
   resources :subnets
-  resources :ip_addresses, only: %i[index show edit update]
+
+  resources :ip_addresses, only: %i[index show edit update] do
+    collection do
+      get :select_options # New endpoint
+    end
+  end
 
   # --- Asset Management ---
   resources :devices

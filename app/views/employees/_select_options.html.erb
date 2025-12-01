@@ -1,0 +1,6 @@
+<%= turbo_frame_tag "employee_options_frame" do %>
+  <%= select_tag "device[employee_id]", 
+        options_from_collection_for_select(employees, :id, :full_name),
+        prompt: "Select Owner",
+        class: "input w-full p-2 border rounded cursor-pointer" %>
+<% end %>
