@@ -17,6 +17,11 @@ class DevicesController < ApplicationController
   def edit
   end
 
+  def edit_status
+    @device = Device.find(params[:id])
+    # Renders app/views/devices/edit_status.html.erb automatically
+  end
+
   def create
     @device = Device.new(device_params)
 

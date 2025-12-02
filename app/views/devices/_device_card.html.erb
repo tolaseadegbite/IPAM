@@ -3,11 +3,11 @@
   <%# --- Header: Name, Type, Status --- %>
   <div class="flex items-start justify-between">
     <div>
-      <div class="font-semibold text-lg leading-tight"><%= link_to device.name, device, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
-      <span class="text-sm text-subtle uppercase font-semibold"><%= device.device_type.humanize %></span>
+      <div class="font-semibold text-lg leading-tight"><%= link_to (device.name.presence || "Nil"), device, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
+      <span class="text-sm text-subtle uppercase font-semibold"><%= device.device_type&.humanize.presence || "Nil" %></span>
     </div>
     <span class="text-sm font-bold pi-2 pb-1 rounded-md bg-shade uppercase">
-      <%= device.status %>
+      <%= device.status.presence || "Nil" %>
     </span>
   </div>
 
@@ -15,11 +15,11 @@
   <div class="grid grid-cols-2 gap-2 text-sm">
     <div>
       <span class="text-sm text-subtle block">Serial</span>
-      <span class="font-mono"><%= device.serial_number %></span>
+      <span class="font-mono"><%= device.serial_number.presence || "Nil" %></span>
     </div>
     <div class="text-end">
       <span class="text-sm text-subtle block">Asset Tag</span>
-      <span class="font-mono"><%= device.asset_tag %></span>
+      <span class="font-mono"><%= device.asset_tag.presence || "Nil" %></span>
     </div>
   </div>
 
@@ -29,11 +29,11 @@
     <% if device.ip_address %>
       <span class="font-mono text-sky-500 font-semibold"><%= device.ip_address.address %></span>
     <% else %>
-      <span class="text-subtle italic">No IP Assigned</span>
+      <span class="text-subtle italic">Nil</span>
     <% end %>
   </div>
 
-  <%# --- Owner Info --- %>
+  <%# --- Owner & Dept Info --- %>
   <div class="flex items-center gap-3 border-t pt-3 mt-1">
     <div class="flex items-center justify-center rounded-full bg-shade shrink-0 border" style="block-size: 2rem; inline-size: 2rem;">
       <span class="font-semibold text-sm">
@@ -41,12 +41,14 @@
       </span>
     </div>
     <div class="flex flex-col text-sm">
-      <% if device.employee %>
-        <span class="font-semibold"><%= device.employee.first_name %> <%= device.employee.last_name %></span>
-        <span class="text-sm text-subtle"><%= device.department.name %></span>
-      <% else %>
-        <span class="text-subtle italic">Unassigned (In Stock)</span>
-      <% end %>
+      <span class="font-semibold"><%= device.employee&.full_name.presence || "Owner: Nil" %></span>
+      <span class="text-sm text-subtle">
+        <% if device.department %>
+          <%= device.department.branch.name %> (<%= device.department.name %>)
+        <% else %>
+          Nil
+        <% end %>
+      </span>
     </div>
   </div>
 

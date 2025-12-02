@@ -1,0 +1,18 @@
+<%= turbo_frame_tag dom_id(device, :status) do %>
+  <div class="flex items-center gap-4">
+    <div>
+        <label class="text-xs text-subtle uppercase font-bold">Status</label>
+        <div class="mt-1">
+            <% color = device.active? ? "bg-green-100 text-green-800" : "bg-shade" %>
+            <span class="<%= color %> pi-3 pb-1 rounded-md text-sm font-bold uppercase"><%= device.status.humanize %></span>
+        </div>
+    </div>
+    
+    <%# Edit Link (Pencil Icon) %>
+    <div class="mt-4">
+      <%= link_to edit_status_device_path(device), class: "text-subtle hover:text-orange-500", title: "Change Status" do %>
+        <span class="icon icon--pen text-sm"></span>
+      <% end %>
+    </div>
+  </div>
+<% end %>

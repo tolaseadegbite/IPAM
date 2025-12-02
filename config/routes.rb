@@ -49,7 +49,11 @@ Rails.application.routes.draw do
   end
 
   # --- Asset Management ---
-  resources :devices
+  resources :devices do
+    member do
+      get :edit_status
+    end
+  end
 
   # --- Root Path ---
   # The dashboard or main inventory list

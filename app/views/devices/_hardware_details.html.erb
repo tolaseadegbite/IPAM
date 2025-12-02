@@ -10,9 +10,8 @@
         <div class="font-mono text-lg"><%= @device.asset_tag.presence || "N/A" %></div>
     </div>
     <div>
-        <label class="text-xs text-subtle uppercase font-bold">Status</label>
         <div class="mt-1">
-            <span class="bg-shade pi-3 pb-1 rounded-md text-sm font-bold uppercase"><%= @device.status %></span>
+            <%= render "devices/status", device: @device %>
         </div>
     </div>
     <div>

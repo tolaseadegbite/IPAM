@@ -1,0 +1,11 @@
+<%= turbo_frame_tag dom_id(@device, :status) do %>
+  <div class="flex flex-col gap-1">
+    <label class="text-xs text-subtle uppercase font-bold">Change Status</label>
+    <%= form_with(model: @device, url: device_path(@device), method: :patch, class: "flex items-center gap-2") do |f| %>
+      
+      <%= f.select :status, Device.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "input", onchange: "this.form.requestSubmit()" } %>
+      
+      <%= link_to "Cancel", device_path(@device), class: "text-xs text-red-500 hover:underline" %>
+    <% end %>
+  </div>
+<% end %>
