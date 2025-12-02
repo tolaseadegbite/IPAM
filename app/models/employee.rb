@@ -1,6 +1,11 @@
 class Employee < ApplicationRecord
   # has_paper_trail
 
+  include PgSearch::Model
+  
+  # Search by Name or Email
+  multisearchable against: [:first_name, :last_name]
+
   belongs_to :department
   has_many :devices # History: "What devices does Sarah have?"
 

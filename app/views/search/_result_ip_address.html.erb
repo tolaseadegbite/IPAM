@@ -1,0 +1,29 @@
+<div class="card transition">
+  <div class="flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1 p-2 bg-green-50 rounded-lg text-green-600">
+        <span class="icon icon--globe"></span>
+        <span class="text-xs font-bold uppercase">IP Addr</span>
+      </div>
+      <div class="flex gap-4 items-center">
+        <div>
+            <h3 class="font-mono font-bold text-lg text-blue-600">
+            <%= link_to item.address, item, data: { turbo_frame: "_top" } %>
+            </h3>
+            <p class="text-sm text-subtle"><%= item.subnet.name %></p>
+        </div>
+        <%= link_to edit_ip_address_path(item), data: { turbo_frame: "modal" } do %>
+            <span class="icon icon--square-pen"></span>
+        <% end %>
+      </div>
+    </div>
+    <div class="text-right text-sm">
+      <% if item.device %>
+        <div class="text-subtle">Assigned to:</div>
+        <div class="font-semibold"><%= link_to item.device.name, item, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
+      <% else %>
+        <span class="text-gray-400 italic">Unassigned</span>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,11 @@
 class IpAddress < ApplicationRecord
   # has_paper_trail
 
+  include PgSearch::Model
+  
+  # Search by the IP string itself
+  multisearchable against: [:address]
+
   before_validation :enforce_status_consistency
 
   # Associations

@@ -246,6 +246,9 @@ GEM
     pg (1.6.2-aarch64-linux-musl)
     pg (1.6.2-x86_64-linux)
     pg (1.6.2-x86_64-linux-musl)
+    pg_search (2.3.7)
+      activerecord (>= 6.1)
+      activesupport (>= 6.1)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -448,6 +451,7 @@ DEPENDENCIES
   pagy (~> 9.4)
   paper_trail (~> 17.0)
   pg (~> 1.6)
+  pg_search (~> 2.3)
   propshaft
   puma (>= 5.0)
   pwned

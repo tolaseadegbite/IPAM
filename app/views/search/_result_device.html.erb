@@ -1,0 +1,18 @@
+<div class="card transition">
+  <div class="flex justify-between items-start">
+    <div class="flex items-center gap-3">
+      <div class="flex gap-1 p-2 bg-blue-50 rounded-lg text-blue-600">
+        <span class="icon icon--laptop"></span> <%# Replace with your icon %>
+        <span class="text-xs font-bold uppercase">Device</span>
+      </div>
+      <div>
+        <h3 class="font-bold text-lg"><%= link_to item.name, item, data: { turbo_frame: "_top" }, class: "text-orange-500 hover:text-orange-600" %></h3>
+        <!--<p class="text-sm text-subtle"><%#= item.serial_number %> &bull; <%#= item.asset_tag %></p>-->
+      </div>
+    </div>
+    <div class="text-end text-sm">
+      <div class="font-semibold"><%= link_to item.department&.name, department_path(item.department), class: "hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
+      <div class="text-subtle"><%= link_to item.department&.branch&.name, branch_path(item.branch), class: "hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
+    </div>
+  </div>
+</div>

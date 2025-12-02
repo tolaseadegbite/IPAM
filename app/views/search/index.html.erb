@@ -1,0 +1,29 @@
+<% content_for :title, "Search Results" %>
+
+<% content_for :page_header do %>
+  <h4 class="font-semibold">Search results</h4>
+<% end %>
+
+<div class="p-4 i-full mi-auto" style="max-inline-size: 70rem">
+  <h1 class="text-2xl font-bold mbe-6">
+    Search Results for "<span class="text-orange-600"><%= params[:query] %></span>"
+  </h1>
+
+  <% if @results.any? %>
+    <div class="grid grid-cols-1 gap-4">
+      <% @results.each do |result| %>
+        <%# 'result.searchable' is the actual Device, Employee, or IpAddress object %>
+        <% item = result.searchable %>
+        
+        <% if item.present? %>
+          <%# Render specific partial based on type %>
+          <%= render "search/result_#{item.class.name.underscore}", item: item %>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="p-8 text-center bg-gray-50 rounded-lg border">
+      <p class="text-subtle">No matches found.</p>
+    </div>
+  <% end %>
+</div>

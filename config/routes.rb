@@ -55,9 +55,11 @@ Rails.application.routes.draw do
     end
   end
 
+  get "search", to: "search#index"
+
   # --- Root Path ---
   # The dashboard or main inventory list
-  root "devices#index"
+  root "ip_addresses#index"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

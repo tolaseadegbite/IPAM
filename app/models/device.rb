@@ -1,6 +1,11 @@
 class Device < ApplicationRecord
   # has_paper_trail
 
+  include PgSearch::Model
+
+  # Search by Name, Serial, or Tag.
+  multisearchable against: [:name, :serial_number, :asset_tag]
+
   belongs_to :department
   belongs_to :employee, optional: true # Optional: New laptops might be in storage (no owner)
 

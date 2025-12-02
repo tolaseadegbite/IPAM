@@ -1,0 +1,21 @@
+<div class="card transition">
+  <div class="flex justify-between items-start">
+    <div class="flex items-center gap-3">
+      <div class="flex gap-1 p-2 bg-purple-50 rounded-lg text-purple-600">
+        <span class="icon icon--user"></span>
+        <span class="text-xs font-bold uppercase">Staff</span>
+      </div>
+      <div>
+        <h3 class="font-semibold text-lg"><%= link_to "#{item.first_name} #{item.last_name}", item, data: { turbo_frame: "_top" }, class: "text-orange-500 hover:text-orange-600" %></h3>
+      </div>
+    </div>
+    <div class="text-right text-sm">
+        <% status_color = case item.status 
+            when 'active' then 'bg-green-100 text-green-800'
+            when 'on_leave' then 'bg-yellow-100 text-yellow-800'
+            when 'terminated' then 'bg-red-100 text-red-800'
+            end %>
+      <span class="pi-2 pb-1 border <%= status_color %> rounded-lg text-xs uppercase font-semibold"><%= item.status %></span>
+    </div>
+  </div>
+</div>

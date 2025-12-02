@@ -80,3 +80,5 @@ gem "pwned"
 gem "paper_trail", "~> 17.0"
 
 gem "faker", "~> 3.5"
+
+gem "pg_search", "~> 2.3"
