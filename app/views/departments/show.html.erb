@@ -71,7 +71,7 @@
       <% if @department.devices.any? %>
         <ul class="flex flex-col gap-2 max-h-96 overflow-y-auto">
           <% @department.devices.each do |device| %>
-            <li class="p-2 border rounded-md">
+            <li class="card p-4 transition">
               <%= link_to device, class: "block hover:text-orange-600" do %>
                 <div class="flex justify-between">
                   <span class="font-medium text-sm"><%= device.name %></span>

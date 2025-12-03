@@ -4,7 +4,6 @@ puts "🌱 Starting Database Seeding..."
 
 # 1. CLEANUP
 puts "   Cleaning old records..."
-# Order matches Foreign Key constraints (Child -> Parent)
 IpAddress.destroy_all
 Device.destroy_all
 Employee.destroy_all
@@ -23,25 +22,56 @@ User.create!(
   verified: true
 )
 
-# 3. CREATE BRANCHES
-puts "   Creating Branches..."
-branches = []
-branches << Branch.create!(name: "Yale 1", location: "123 Yale Ave, Building A", contact_phone: "555-0101")
-branches << Branch.create!(name: "Yale 5", location: "456 Yale Blvd, Building E", contact_phone: "555-0105")
+# 3. DEFINE STRUCTURES
+# Branches
+branch_names = [
+  "Yale 1", "Yale 2", "Yale 3", "Yale 4", "Yale 5",
+  "Yale 8", "Yale 9", "Yale 12", "Yale 14",
+  "Vital", "Havard", "Sumal", "Trailer park"
+]
 
-# 4. CREATE DEPARTMENTS
-puts "   Creating Departments..."
-depts = []
-depts << Department.create!(name: "Safety Engineer Office", branch: branches[0])
-depts << Department.create!(name: "IT Operations", branch: branches[0])
-depts << Department.create!(name: "PM Office", branch: branches[1])
-depts << Department.create!(name: "Human Resources", branch: branches[1])
+# Department Definitions
+standard_depts = [
+  "Pallet Generation (Generating)", "Pallet Generation (Receiving)", "Store",
+  "Safety Engineer Office", "Personnel Office", "Personnel Manager Office",
+  "Waybill Office", "Weight Bridge", "Factory Manager"
+]
 
-# 5. CREATE SUBNETS
-# NOTE: The 'after_create' callback in Subnet model automatically generates IPs
-# AND marks the Gateway (.1) as Reserved.
-puts "   Creating Subnets (and auto-generating IPs)..."
+sumal_depts = [ "Marketing", "Account", "DHRM", "Secretary", "Personnel Office" ]
+trailer_depts = [ "Engineer Office", "Personnel Office" ]
+yale_1_extras = [ "IT Office", "HRM", "Quality Lab" ]
 
+# 4. CREATE BRANCHES & DEPARTMENTS
+puts "   Creating Branches and Departments..."
+
+branch_names.each do |b_name|
+  branch = Branch.create!(
+    name: b_name,
+    location: "Ibadan, Oyo State",
+    contact_phone: Faker::PhoneNumber.cell_phone
+  )
+
+  # Determine Department List
+  depts_to_create = if b_name == "Sumal"
+                      sumal_depts
+  elsif b_name == "Trailer park"
+                      trailer_depts
+  else
+                      # Standard list + Extras if Yale 1
+                      list = standard_depts.dup
+                      list += yale_1_extras if b_name == "Yale 1"
+                      list
+  end
+
+  # Create Departments
+  depts_to_create.each do |d_name|
+    Department.create!(name: d_name, branch: branch)
+  end
+end
+
+# 5. CREATE SUBNETS (Auto-IP Generation)
+puts "   Creating Subnets..."
+# Note: With ~13 branches and ~200+ devices, 2 subnets might fill up.
 subnet_data = Subnet.create!(
   name: "Corporate Data (.13)",
   network_address: "192.168.13.0/24",
@@ -56,82 +86,124 @@ subnet_mgmt = Subnet.create!(
   vlan_id: 20
 )
 
-# 6. CREATE EMPLOYEES
-puts "   Onboarding Employees..."
-employees = []
+# 6. HELPERS FOR DEVICES
 
-# Specific employees (Removed Email)
-employees << Employee.create!(first_name: "Sarah", last_name: "Connor", department: depts[0], status: :active)
-employees << Employee.create!(first_name: "John", last_name: "Doe", department: depts[2], status: :active)
-employees << Employee.create!(first_name: "Alex", last_name: "Admin", department: depts[1], status: :active)
-
-# Random employees via Faker (Removed Email)
-10.times do
-  employees << Employee.create!(
-    first_name: Faker::Name.first_name,
-    last_name: Faker::Name.last_name,
-    department: depts.sample,
-    status: :active
-  )
+# Helper to assign IP
+def assign_next_free_ip(device, subnets)
+  # Try subnets in order until one has space
+  subnets.each do |subnet|
+    ip = subnet.ip_addresses.find_by(status: :available, device: nil)
+    if ip
+      ip.update!(device: device, status: :active)
+      return
+    end
+  end
+  puts "   ⚠️  Warning: No IPs left for #{device.name}"
 end
 
-# 7. DEPLOY DEVICES & ASSIGN IPs
-puts "   Deploying Devices..."
+# Helper to generate Name: "Y2-PM-Office-1" or "IT-Office-1"
+def generate_device_name(branch_name, dept_name, index)
+  # Special exception for unique Yale 1 offices
+  if branch_name == "Yale 1" && [ "IT Office", "HRM", "Quality Lab" ].include?(dept_name)
+    prefix = dept_name.gsub(" ", "-") # "IT Office" -> "IT-Office"
+    return "#{prefix}-#{index}"
+  end
 
-def assign_ip(subnet, device)
-  # Find first available IP
-  # Note: This will correctly skip the .1 Gateway because the model marked it 'Reserved'
-  ip = subnet.ip_addresses.find_by(status: :available, device: nil)
+  # Branch Abbreviation
+  b_abbr = case branch_name
+  when /Yale (\d+)/ then "Y#{$1}"
+  when "Sumal" then "SUM"
+  when "Trailer park" then "TRP"
+  when "Vital" then "VIT"
+  when "Havard" then "HAV"
+  else branch_name[0..2].upcase
+  end
 
-  if ip
-    # The IpAddress model 'before_validation' callback will automatically
-    # switch status to 'active' when a device is attached.
-    ip.update!(device: device, status: :active)
-  else
-    puts "   ⚠️  Warning: No IPs left in #{subnet.name} for #{device.name}"
+  # Department Abbreviation (Sluggify)
+  d_abbr = case dept_name
+  when "Pallet Generation (Generating)" then "Pallet-Gen"
+  when "Pallet Generation (Receiving)" then "Pallet-Rec"
+  when "Safety Engineer Office" then "Safety"
+  when "Personnel Manager Office" then "PM-Mgr"
+  when "Factory Manager" then "Fact-Mgr"
+  when "Weight Bridge" then "Weight-B"
+  else dept_name.gsub(" ", "-")
+  end
+
+  "#{b_abbr}-#{d_abbr}-#{index}"
+end
+
+# Helper to batch create devices AND employees
+def create_devices_for_dept(dept, type, count, subnets)
+  count.times do |i|
+    # 1-based index for naming
+    index = i + 1
+
+    name = generate_device_name(dept.branch.name, dept.name, index)
+
+    # LOGIC: Check if this department should have assigned users
+    is_pallet_dept = [
+      "Pallet Generation (Generating)",
+      "Pallet Generation (Receiving)"
+    ].include?(dept.name)
+
+    owner = nil
+
+    # Create an employee UNLESS it is a Pallet Generation department
+    unless is_pallet_dept
+      owner = Employee.create!(
+        first_name: Faker::Name.first_name,
+        last_name: Faker::Name.last_name,
+        department: dept,
+        status: :active
+      )
+    end
+
+    device = Device.create!(
+      name: "#{name}-#{type.to_s[0].upcase}", # Append -D, -L, -A
+      serial_number: Faker::Device.serial + "-#{dept.id}-#{i}-#{type}",
+      asset_tag: "TAG-#{dept.id}-#{i}-#{type.to_s[0]}",
+      device_type: type,
+      status: :active,
+      department: dept,
+      employee: owner
+    )
+
+    assign_next_free_ip(device, subnets)
   end
 end
 
-# Device A: Sarah's Laptop
-laptop = Device.create!(
-  name: "LPT-SAFETY-01",
-  serial_number: "SN-LPT-1001",
-  asset_tag: "TAG-001",
-  device_type: :laptop,
-  status: :active,
-  department: depts[0],
-  employee: employees[0],
-  notes: "Standard Safety Engineer issue"
-)
-assign_ip(subnet_data, laptop)
+# 7. GENERATE DEVICES
+puts "   Deploying Devices to Offices..."
 
-# Device B: John's Desktop
-desktop = Device.create!(
-  name: "DSK-PM-05",
-  serial_number: "SN-DSK-2020",
-  asset_tag: "TAG-002",
-  device_type: :desktop,
-  status: :active,
-  department: depts[2],
-  employee: employees[1],
-  notes: "High performance workstation"
-)
-assign_ip(subnet_mgmt, desktop)
+Department.all.includes(:branch).each do |dept|
+  # Determine Device Count based on Dept Name
+  case dept.name
+  when "IT Office"
+    create_devices_for_dept(dept, :desktop, 4, [ subnet_data, subnet_mgmt ])
+    create_devices_for_dept(dept, :all_in_one, 2, [ subnet_data, subnet_mgmt ])
+    create_devices_for_dept(dept, :laptop, 3, [ subnet_data, subnet_mgmt ])
 
-# Random Devices
-5.times do |i|
-  d = Device.create!(
-    name: "LPT-POOL-#{100+i}",
-    # FIX: Append "-#{i}" to ensure uniqueness if Faker repeats itself
-    serial_number: "#{Faker::Device.serial}-#{i}",
-    asset_tag: "TAG-#{500+i}",
-    device_type: :laptop,
-    status: :active,
-    department: depts.sample,
-    employee: employees.sample
-  )
-  target_subnet = [ subnet_data, subnet_mgmt ].sample
-  assign_ip(target_subnet, d)
+  when "Personnel Office"
+    create_devices_for_dept(dept, :desktop, 4, [ subnet_data, subnet_mgmt ])
+    create_devices_for_dept(dept, :all_in_one, 2, [ subnet_data, subnet_mgmt ])
+
+  when "Account"
+    create_devices_for_dept(dept, :desktop, 8, [ subnet_data, subnet_mgmt ])
+    create_devices_for_dept(dept, :all_in_one, 2, [ subnet_data, subnet_mgmt ])
+
+  when "Marketing"
+    create_devices_for_dept(dept, :desktop, 5, [ subnet_data, subnet_mgmt ])
+    create_devices_for_dept(dept, :laptop, 2, [ subnet_data, subnet_mgmt ])
+
+  when "Pallet Generation (Generating)", "Pallet Generation (Receiving)"
+    # These will be created WITHOUT employees based on helper logic
+    create_devices_for_dept(dept, :desktop, 1, [ subnet_data, subnet_mgmt ])
+
+  else
+    # "Every other office should have at least 2 desktop computers"
+    create_devices_for_dept(dept, :desktop, 2, [ subnet_data, subnet_mgmt ])
+  end
 end
 
 puts "✅ Seeding Complete!"
@@ -141,10 +213,7 @@ puts "Password:       Correct-Horse-Battery-Staple-123!"
 puts "------------------------------------------------"
 puts "Branches:       #{Branch.count}"
 puts "Departments:    #{Department.count}"
-puts "Subnets:        #{Subnet.count}"
-puts "Total IPs:      #{IpAddress.count}"
-puts "Reserved IPs:   #{IpAddress.reserved.count} (Gateways)"
-puts "Active IPs:     #{IpAddress.active.count} (Devices)"
 puts "Devices:        #{Device.count}"
 puts "Employees:      #{Employee.count}"
+puts "Allocated IPs:  #{IpAddress.active.count}"
 puts "------------------------------------------------"

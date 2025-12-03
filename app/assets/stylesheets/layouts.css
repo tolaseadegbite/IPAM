@@ -16,7 +16,7 @@
   display: grid;
   grid-template-areas: "header" "main";
   grid-template-rows: auto 1fr;
-  block-size: 100dvh;
+  /* block-size: 100dvh; */
 }
 
 .centered-layout {

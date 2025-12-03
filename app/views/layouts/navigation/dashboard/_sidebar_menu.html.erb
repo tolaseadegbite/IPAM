@@ -1,35 +1,28 @@
 <div class="sidebar-menu">
   <%= link_to root_path, class: "flex items-center gap-2 rounded-lg border i-fit pi-2 mbs-2 mis-1" do %>
     <%= image_tag("logo.png", size: 30) %>
-    <span class="text-2xl font-semibold">AM</span>
+    <span class="text-2xl font-semibold">& AM</span>
   <% end %>
 
   <div class="sidebar-menu__content">
     <div class="sidebar-menu__group">
       <%# <div class="sidebar-menu__group-label">MAIN</div> %>
-      <div class="sidebar-menu__items">  
+      <div class="sidebar-menu__items">
         <nav class="">
-          <%= link_to dashboard_path, class: "btn sidebar-menu__button mbe-1" do %>
+          <%= link_to dashboard_path, class: "flex gap-4 btn sidebar-menu__button mbe-1" do %>
             <span class="icon icon--chart-pie" aria-hidden="true"></span>
             Dashboard
           <% end %>
           <%= link_to branches_path, 
-                      class: "btn sidebar-menu__button mbe-1", 
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(branches_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--building" aria-hidden="true"></span>
             Branches
           <% end %>
-        </nav>
-      </div>
-    </div>
-    <div class="sidebar-menu__group">
-      <%# <div class="sidebar-menu__group-label">PLAYGROUND</div> %>
-      <div class="sidebar-menu__items">  
-        <nav>
-
+          
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
           <%= link_to departments_path, 
-                      class: "btn sidebar-menu__button mbe-1", 
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(departments_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--warehouse" aria-hidden="true"></span>
             Departments
@@ -37,7 +30,7 @@
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
           <%= link_to employees_path, 
-                      class: "btn sidebar-menu__button mbe-1", 
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(employees_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--users-round" aria-hidden="true"></span>
             Employees
@@ -45,15 +38,15 @@
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
           <%= link_to subnets_path, 
-                      class: "btn sidebar-menu__button mbe-1", 
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(subnets_path) ? { current: "page" } : {}) do %>
-            <span class="icon icon--list-checks" aria-hidden="true"></span>
+            <span class="icon icon--network" aria-hidden="true"></span>
             Subnets
           <% end %>
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
           <%= link_to ip_addresses_path, 
-                      class: "btn sidebar-menu__button mbe-1", 
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(ip_addresses_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--map-pinned" aria-hidden="true"></span>
             Ip Addresses
@@ -61,7 +54,7 @@
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
           <%= link_to devices_path, 
-                      class: "btn sidebar-menu__button mbe-1", 
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(devices_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--monitor" aria-hidden="true"></span>
             Devices
@@ -69,7 +62,7 @@
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
           <%= link_to users_path, 
-                      class: "btn sidebar-menu__button mbe-1", 
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(users_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--users" aria-hidden="true"></span>
             Users

@@ -2,9 +2,9 @@ class IpAddress < ApplicationRecord
   # has_paper_trail
 
   include PgSearch::Model
-  
+
   # Search by the IP string itself
-  multisearchable against: [:address]
+  multisearchable against: [ :address ]
 
   before_validation :enforce_status_consistency
 
@@ -23,9 +23,14 @@ class IpAddress < ApplicationRecord
   # Scopes
   scope :free, -> { where(device_id: nil, status: :available) }
 
+  # Custom Ransacker to convert INET to TEXT for searching
+  ransacker :address_string do
+    Arel.sql("host(address)")
+  end
+
   # Ransack
   def self.ransackable_attributes(auth_object = nil)
-    %w[address created_at updated_at]
+    %w[address_string status subnet_id created_at updated_at]
   end
 
   def self.ransackable_associations(auth_object = nil)

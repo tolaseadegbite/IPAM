@@ -48,7 +48,7 @@
 
     <%# --- Assets Card --- %>
     <div class="col-span-2">
-      <div class="card text-center">
+      <div class="card">
         <h3 class="font-bold text-lg mbe-4 border-be pbe-2">Assigned Assets</h3>
         <% if @employee.devices.any? %>
           <div class="grid grid-cols-1 gap-4">
@@ -60,7 +60,7 @@
                 </div>
                 <div class="text-right">
                   <% if device.ip_address %>
-                    <div class="font-mono text-blue-600 font-bold"><%= device.ip_address.address %></div>
+                    <div class="font-mono text-sky-500 font-bold"><%= device.ip_address.address %></div>
                   <% else %>
                     <div class="text-xs text-subtle italic">No IP</div>
                   <% end %>

@@ -2,16 +2,6 @@ class IpAddressesController < ApplicationController
   before_action :set_ip_address, only: %i[ show edit update ]
 
   def index
-    # @ip_addresses = IpAddress.includes(:subnet, :device).order(:address)
-
-    # if params[:subnet_id].present?
-    #   @ip_addresses = @ip_addresses.where(subnet_id: params[:subnet_id])
-    # end
-
-    # if params[:status].present?
-    #   @ip_addresses = @ip_addresses.where(status: params[:status])
-    # end
-
     records = IpAddress.includes(:subnet, :device).order(:address)
     @search = records.ransack(params[:q])
     @pagy, @ip_addresses = pagy(@search.result)

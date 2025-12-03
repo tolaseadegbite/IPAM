@@ -1,0 +1,45 @@
+<div class=""
+  data-controller="search-filter"
+  data-action="click@window->search-filter#closeOnClickOutside">
+
+  <%# Button to toggle the visibility of the filters %>
+  <button type="button" class="btn btn--subtle mbe-4" data-action="search-filter#toggle">
+    <span class="icon icon--search"></span>
+    <span>Search & Filter</span>
+  </button>
+
+  <div class="card mbe-4 hide" data-search-filter-target="filters">
+    <%= search_form_for @search, data: { turbo_frame: "ip_addresses", turbo_action: "advance" } do |f| %>
+      <div class="grid grid-cols-1 grid-cols-2@md grid-cols-4@lg gap-4 items-end">
+        
+        <%# 1. IP Search %>
+        <div class="col-span-1">
+          <%= f.label :address_string_cont, "IP Address", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+          <%= f.search_field :address_string_cont, placeholder: "192.168...", class: "input cursor-pointer w-full p-2 border rounded" %>
+        </div>
+
+        <%# 2. Subnet Filter %>
+        <div class="col-span-1">
+          <%= f.label :subnet_id_eq, "Subnet", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+          <%= f.collection_select :subnet_id_eq, Subnet.order(:name), :id, :name, 
+                { include_blank: "All Subnets" }, 
+                { class: "input cursor-pointer" } %>
+        </div>
+
+        <%# 3. Status Filter %>
+        <div class="col-span-1">
+          <%= f.label :status_eq, "Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+          <%= f.select :status_eq, IpAddress.statuses.map { |k, v| [k.humanize, v] }, 
+                { include_blank: "All Statuses" }, 
+                { class: "input cursor-pointer" } %>
+        </div>
+
+        <%# 4. Actions %>
+        <div class="col-span-1 flex gap-2">
+          <%= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
+          <%= link_to "Clear", ip_addresses_path, class: "btn btn--primary", data: { turbo_frame: "ip_addresses", action: "click->search-filter#clear" } %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,26 +1,25 @@
-
-    <div class="card p-4 border shadow-sm flex flex-col gap-4">
-        <div class="flex items-center justify-center mbe-2">
-            <div class="bg-shade rounded-full flex items-center justify-center text-3xl font-bold text-subtle border" style="block-size: 5rem; inline-size: 5rem;">
-            <%= @employee.first_name.first %><%= @employee.last_name.first %>
-            </div>
-        </div>
-        
-        <div class="text-center mbe-2">
-            <% status_color = @employee.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>
-            <span class="<%= status_color %> pi-3 pb-1 rounded-full text-sm font-bold uppercase"><%= @employee.status.humanize %></span>
-        </div>
-
-        <div class="flex flex-col gap-2 pbs-4 text-center">
-
-            <div class="flex gap-2 items-center">
-            <label class="block text-subtle font-bold uppercase">Department:</label>
-            <div><%= link_to @employee.department.name, @employee.department, class: "text-sky-600 hover:underline" %></div>
-            </div>
-
-            <div class="flex gap-2 items-center">
-            <label class="block text-subtle font-bold uppercase">Branch:</label>
-            <div><%= link_to @employee.department.branch.name, branch_path(@employee.department.branch), class: "text-orange-500 hover:text-orange-600" %></div>
-            </div>
+<div class="card p-4 border shadow-sm flex flex-col gap-4">
+    <div class="flex items-center justify-center mbe-2">
+        <div class="bg-shade rounded-full flex items-center justify-center text-3xl font-bold text-subtle border" style="block-size: 5rem; inline-size: 5rem;">
+        <%= @employee.first_name.first %><%= @employee.last_name.first %>
         </div>
     </div>
+    
+    <div class="text-center mbe-2">
+        <% status_color = @employee.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>
+        <span class="<%= status_color %> pi-3 pb-1 rounded-full text-sm font-bold uppercase"><%= @employee.status.humanize %></span>
+    </div>
+
+    <div class="flex flex-col gap-2 pbs-4">
+
+        <div class="flex gap-2 items-center justify-center">
+            <label class="block text-subtle font-bold uppercase">Department:</label>
+            <div><%= link_to @employee.department.name, @employee.department, class: "text-sky-600 hover:underline" %></div>
+        </div>
+
+        <div class="flex gap-2 items-center justify-center">
+            <label class="block text-subtle font-bold uppercase">Branch:</label>
+            <div><%= link_to @employee.department.branch.name, branch_path(@employee.department.branch), class: "text-orange-500 hover:text-orange-600" %></div>
+        </div>
+    </div>
+</div>

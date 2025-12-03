@@ -1,0 +1,37 @@
+<div class=""
+  data-controller="search-filter"
+  data-action="click@window->search-filter#closeOnClickOutside">
+
+  <%# Button to toggle the visibility of the filters %>
+  <button type="button" class="btn btn--subtle mbe-4" data-action="search-filter#toggle">
+    <span class="icon icon--search"></span>
+    <span>Search & Filter</span>
+  </button>
+
+  <div class="card mbe-4 hide" data-search-filter-target="filters">
+    <%= search_form_for @search, data: { turbo_frame: "departments_table", turbo_action: "advance" } do |f| %>
+      <div class="grid grid-cols-1 grid-cols-3@md gap-4 items-end">
+        
+        <%# 1. Name Search %>
+        <div class="col-span-1">
+          <%= f.label :name_cont, "Department Name", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+          <%= f.search_field :name_cont, placeholder: "Search...", class: "input w-full p-2 border rounded" %>
+        </div>
+
+        <%# 2. Branch Filter %>
+        <div class="col-span-1">
+          <%= f.label :branch_id_eq, "Branch", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+          <%= f.collection_select :branch_id_eq, Branch.order(:name), :id, :name, 
+                { include_blank: "All Branches" }, 
+                { class: "input w-full p-2 border rounded cursor-pointer" } %>
+        </div>
+
+        <%# 3. Actions %>
+        <div class="col-span-1 flex gap-2">
+          <%= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
+          <%= link_to "Clear", departments_path, class: "btn btn--primary", data: { turbo_frame: "departments_table", action: "click->search-filter#clear" } %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

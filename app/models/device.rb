@@ -4,7 +4,7 @@ class Device < ApplicationRecord
   include PgSearch::Model
 
   # Search by Name, Serial, or Tag.
-  multisearchable against: [:name, :serial_number, :asset_tag]
+  multisearchable against: [ :name, :serial_number, :asset_tag ]
 
   belongs_to :department
   belongs_to :employee, optional: true # Optional: New laptops might be in storage (no owner)
@@ -28,7 +28,7 @@ class Device < ApplicationRecord
   validate :ip_released_if_retired
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[ name asset_tag serial_number status created_at updated_at ]
+    %w[ name asset_tag serial_number device_type status created_at updated_at ]
   end
 
   def self.ransackable_associations(auth_object = nil)

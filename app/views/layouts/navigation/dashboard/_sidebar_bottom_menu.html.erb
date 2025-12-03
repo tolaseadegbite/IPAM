@@ -27,15 +27,15 @@
           data-popover-placement-value="right-start" 
           data-action="click@window->popover#clickOutside">
         <%= button_tag type: "button", class: "btn sidebar-menu__button", data: { action: "click->popover#toggle", popover_target: "trigger" }, aria: { haspopup: "true" } do %>
-          <div class="flex shrink-0 overflow-hidden rounded-full border-2 border-green-500">
-            <%= image_tag "avatar.jpg", size: 32, alt: "User Avatar" %>
+          <div class="bg-black rounded-full flex items-center justify-center text-3xl font-bold text-reversed" style="block-size: 2.5rem; inline-size: 2.5rem;">
+            <%= current_user.username.first %>
           </div>
           <div class="flex flex-col text-start leading-tight overflow-hidden">
             
             <span class="inline-flex items-center gap-2 overflow-ellipsis max-i-full font-semibold">
               <span><%= current_user.username %></span>
               
-              <% if current_user.verified? %>
+              <!--<%# if current_user.verified? %>
                 <span class="text-positive" title="Verified Account">
                   
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="green" aria-hidden="true">
@@ -44,7 +44,7 @@
                   
                   <span class="sr-only">(Verified)</span>
                 </span>
-              <% end %>
+              <%# end %>-->
             </span>
 
             <span class="overflow-ellipsis max-i-full text-xs"><%= current_user.email %></span>
@@ -83,8 +83,8 @@
 
     <details>
       <summary class="btn sidebar-menu__button">
-        <div class="flex shrink-0 overflow-hidden rounded-full border-2 border-green-500">
-          <%= image_tag "avatar.jpg", size: 32, alt: "User Avatar" %>
+        <div class="bg-black rounded-full flex items-center justify-center text-3xl font-bold text-reversed" style="block-size: 2.5rem; inline-size: 2.5rem;">
+          <%= current_user.username.first %>
         </div>
         <div class="flex flex-col text-start leading-tight overflow-hidden">
           

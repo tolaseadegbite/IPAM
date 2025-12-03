@@ -35,6 +35,7 @@ img.icon {
 .icon--square-pen { --svg: url("square-pen.svg"); }
 .icon--building { --svg: url("building.svg"); }
 .icon--pen { --svg: url("pen.svg"); }
+.icon--network { --svg: url("network.svg"); }
 .icon--users { --svg: url("users.svg"); }
 .icon--users-round { --svg: url("users-round.svg"); }
 .icon--map-pinned { --svg: url("map-pinned.svg"); }

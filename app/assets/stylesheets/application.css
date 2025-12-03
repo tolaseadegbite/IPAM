@@ -102,3 +102,7 @@ h4, h5, h6 {
 .absolute {
   position: absolute;
 }
+
+.hide {
+  display: none;
+}
