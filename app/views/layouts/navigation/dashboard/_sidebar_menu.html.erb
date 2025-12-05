@@ -61,9 +61,9 @@
           <% end %>
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
-          <%= link_to users_path, 
+          <%= link_to admin_users_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(users_path) ? { current: "page" } : {}) do %>
+                      aria: (current_page?(admin_users_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--users" aria-hidden="true"></span>
             Users
           <% end %>

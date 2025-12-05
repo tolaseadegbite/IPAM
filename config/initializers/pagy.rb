@@ -2,7 +2,7 @@
 
 # Pagy Variables
 # See https://ddnexus.github.io/pagy/docs/api/pagy#variables
-Pagy::DEFAULT[:limit] = 42
+Pagy::DEFAULT[:limit] = 44
 
 # Limit extra: Allow the client to request a custom limit per page with an optional selector UI
 # See https://ddnexus.github.io/pagy/docs/extras/limit

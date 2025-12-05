@@ -22,6 +22,10 @@ Rails.application.routes.draw do
     resource :sudo, only: [ :new, :create ]
   end
 
+  namespace :admin do
+    resources :users
+  end
+
   resource :dashboard, only: [ :show ]
 
   # --- Core Resources ---

@@ -9,6 +9,9 @@ class User < ApplicationRecord
     password_salt.last(10)
   end
 
+  def self.ransackable_attributes(auth_object = nil)
+    [ "username", "admin", "created_at", "email" ]
+  end
 
   has_many :sessions, dependent: :destroy
   has_many :events, dependent: :destroy
@@ -35,7 +38,7 @@ class User < ApplicationRecord
     events.create! action: "password_changed"
   end
 
-  after_update if: [:verified_previously_changed?, :verified?] do
+  after_update if: [ :verified_previously_changed?, :verified? ] do
     events.create! action: "email_verified"
   end
 end

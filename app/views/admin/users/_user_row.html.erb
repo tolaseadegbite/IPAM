@@ -1,0 +1,32 @@
+<tr id="<%= dom_id user, :table_row %>" class="border-b last:border-0 hover:bg-shade-light">
+  <td class="p-4 font-medium"><%= user.username %></td>
+  <td class="p-4 text-subtle"><%= user.email %></td>
+  <td class="p-4">
+    <% if user.admin? %>
+      <span class="bg-purple-100 text-purple-700 pi-2 pb-1 rounded-md text-xs font-bold">ADMIN</span>
+    <% else %>
+      <span class="text-subtle text-sm">User</span>
+    <% end %>
+  </td>
+  <td class="p-4">
+    <% if user.verified? %>
+      <span class="text-green-600 text-sm font-semibold">Verified</span>
+    <% else %>
+      <span class="text-orange-500 text-sm">Unverified</span>
+    <% end %>
+  </td>
+  <td class="flex items-center justify-end gap-4">
+    <%= link_to "Edit", edit_admin_user_path(user),
+                class: "text-orange-500 hover:text-orange-600",
+                data: { turbo_frame: "modal" } %>
+
+    <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+    <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{user.username}'?" do %>
+      <p class="text-sm text-subtle mbe-4">This will permanently delete this user. This action cannot be undone.</p>
+      <div class="flex items-center justify-end gap">
+        <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
+        <%= button_to "Continue", admin_user_path(user), method: :delete, class: "btn btn--negative" %>
+      </div>
+    <% end %>
+  </td>
+</tr>

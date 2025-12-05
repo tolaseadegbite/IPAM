@@ -1,0 +1,68 @@
+<%= form_with(model: [:admin, user], html: { contents: true, data: { controller: "password-generator" } }) do |form| %>
+  <%= render "shared/error_messages", object: user %>
+
+  <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-4">
+    
+    <%# --- Row 1: Identity --- %>
+    <div class="col-span-1">
+      <%= form.label :username, class: "block font-medium mbe-1" %>
+      <%= form.text_field :username, required: true, autofocus: true, autocomplete: "off", class: "input" %>
+    </div>
+
+    <div class="col-span-1">
+      <%= form.label :email, class: "block font-medium mbe-1" %>
+      <%= form.email_field :email, required: true, autocomplete: "off", class: "input" %>
+    </div>
+
+    <%# --- Row 2: Security --- %>
+    <div class="col-span-1">
+      <%= form.label :password, class: "block font-medium mbe-1" %>
+      <div class="relative">
+        <%= form.password_field :password, 
+            placeholder: user.new_record? ? "Required" : "Leave blank to keep current", 
+            class: "input", 
+            data: { password_generator_target: "input" } %>
+            
+        <button type="button" 
+                data-action="password-generator#toggleVisibility"
+                class="absolute pi-3 flex items-center text-subtle hover:text-orange-500"
+                style="right: 0; top: 0; bottom: 0;"
+                tabindex="-1">
+          <span class="icon icon--eye"></span>
+        </button>
+      </div>
+      <% if user.persisted? %>
+        <p class="text-xs text-subtle mbs-1">Leave blank to keep current password.</p>
+      <% end %>
+    </div>
+
+    <div class="col-span-1 flex items-end">
+      <button type="button" 
+              data-action="password-generator#generate" 
+              class="btn btn--primary"> 
+        Generate Secure Password
+      </button>
+    </div>
+
+    <%# --- Row 3: Permissions --- %>
+    <div class="col-span-1 col-span-2@md mbs-2">
+      <fieldset class="flex flex-col gap-2">
+        <div class="flex items-center gap">
+          <%= form.check_box :admin, class: "input" %>
+          <%= form.label :admin, "Administrator Access", class: "text-sm font-medium" %>
+        </div>
+        
+        <div class="flex items-center gap">
+          <%= form.check_box :verified, class: "input" %>
+          <%= form.label :verified, "Email Verified", class: "text-sm font-medium" %>
+        </div>
+      </fieldset>
+    </div>
+
+  </div>
+
+  <div class="mbs-4 flex gap-3 items-center">
+    <%= form.submit class: "btn bg-orange-400 text-white font-semibold pi-4 pb-2" %>
+    <%= link_to "Cancel", admin_users_path, class: "text-subtle", data: { turbo_frame: "_top" } %>
+  </div>
+<% end %>

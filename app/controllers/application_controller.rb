@@ -10,14 +10,6 @@ class ApplicationController < ActionController::Base
 
   include Pagy::Backend
 
-  def pending_follow_ups
-    @pending_follow_ups = current_user.follow_up_tasks
-                                    .where(completed_at: nil)
-                                    .order(due_at: :asc)
-                                    .includes(invitation: [ :event, :contact ])
-                                    .limit(15)
-  end
-
   private
 
   def set_current_user_from_session
@@ -48,6 +40,12 @@ class ApplicationController < ActionController::Base
   def require_sudo
     unless Current.session.sudo?
       redirect_to new_sessions_sudo_path(proceed_to_url: request.original_url)
+    end
+  end
+
+  def require_admin
+    unless Current.user.admin?
+      redirect_to root_path, alert: "You are not authorized to access that page."
     end
   end
 end

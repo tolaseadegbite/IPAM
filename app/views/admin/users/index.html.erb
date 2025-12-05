@@ -1,0 +1,56 @@
+<% content_for :title, "Users" %>
+
+<% content_for :page_header do %>
+  <h4 class="font-semibold">Users Management</h4>
+<% end %>
+
+<% content_for :header_action_buttons do %>
+  <%= link_to "New User", new_admin_user_path,
+              class: "btn bg-orange-400 text-white font-semibold rounded-md p-2 show@md",
+              data: { turbo_frame: "modal" } %>
+<% end %>
+
+<%# Mobile Floating Action Button %>
+<div class="absolute hide@md" style="bottom: 10rem; right: 1rem; z-index: 9999">
+  <%= link_to new_admin_user_path, class: "btn bg-orange-400 text-white font-semibold rounded-full p-5", data: { turbo_frame: "modal" } do %>
+    <span class="icon icon--plus"></span>
+  <% end %>
+</div>
+
+<div class="p-4 i-full">
+  <%= turbo_frame_tag :users_table do %>
+    
+    <%# --- DESKTOP VIEW --- %>
+    <div class="show@md relative i-full overflow-x-auto border rounded-md bg-surface">
+      <table class="table i-full text-left">
+        <thead class="bg-shade font-semibold">
+          <tr>
+            <th class="p-4"><%= sort_link(@search, :username, class: "font-semibold") %></th>
+            <th class="p-4"><%= sort_link(@search, :email, class: "font-semibold") %></th>
+            <th class="p-4">Role</th>
+            <th class="p-4">Status</th>
+            <th class="p-4 text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="users-table">
+          <% if @users.empty? %>
+            <tr><td colspan="5" class="text-center p-8">No Users Found.</td></tr>
+          <% else %>
+            <%= render partial: "admin/users/user_row", collection: @users, as: :user %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%# --- MOBILE VIEW --- %>
+    <div id="users-cards" class="hide@md flex flex-col gap-4">
+      <% if @users.empty? %>
+        <p class="text-subtle text-center p-8">No users found.</p>
+      <% else %>
+        <%= render partial: "admin/users/user_card", collection: @users, as: :user %>
+      <% end %>
+    </div>
+
+    <%= render "shared/pagination", pagy: @pagy %>
+  <% end %>
+</div>
