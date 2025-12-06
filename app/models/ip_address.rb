@@ -14,6 +14,11 @@ class IpAddress < ApplicationRecord
 
   # Enums
   enum :status, { available: 0, active: 1, reserved: 2, blacklisted: 3 }
+  enum :reachability_status, { unknown: 0, up: 1, down: 2 }, prefix: true
+
+  def mark_seen!
+    update!(reachability_status: :up, last_seen_at: Time.current)
+  end
 
   # Validations
   validates :address, presence: true, uniqueness: true

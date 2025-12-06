@@ -3,6 +3,8 @@ class Device < ApplicationRecord
 
   include PgSearch::Model
 
+  before_save :normalize_mac_address
+
   # Search by Name, Serial, or Tag.
   multisearchable against: [ :name, :serial_number, :asset_tag ]
 
@@ -41,5 +43,11 @@ class Device < ApplicationRecord
     if retired? && ip_address.present?
       errors.add(:status, "cannot be Retired while holding an IP Address. Release the IP first.")
     end
+  end
+
+  private
+
+  def normalize_mac_address
+    self.mac_address = mac_address.downcase.gsub("-", ":") if mac_address.present?
   end
 end

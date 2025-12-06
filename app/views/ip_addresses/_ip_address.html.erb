@@ -1,29 +1,57 @@
-<div id="<%= dom_id ip_address %>" class="card flex flex-col justify-between">
+<div id="<%= dom_id ip_address %>" class="card flex flex-col justify-between relative overflow-hidden">
+
   <div>
-    <div class="font-mono font-bold text-lg"><%= link_to ip_address.address, ip_address, class: "text-sky-500 hover:text-sky-600", data: { turbo_frame: "_top" } %></div>
-    <div class="text-xs text-subtle"><%= ip_address.subnet.name %></div>
-  </div>
-
-  <div class="mbs-2">
-    <% if ip_address.device %>
-      <div class="text-sm font-medium"><%= link_to ip_address.device.name, device_path(ip_address.device), data: { turbo_frame: "_top" } %></div>
-      <div class="text-xs text-subtle"><%= ip_address.device.employee&.first_name || "Unassigned" %></div>
-    <% else %>
-      <span class="text-xs text-subtle italic">Empty Slot</span>
-    <% end %>
-  </div>
-
-  <div class="mbs-2 pbs-2 flex justify-between items-center">
-    <% status_class = ip_address.available? ? "text-green-600" : (ip_address.active? ? "text-red-600" : "text-yellow-600") %>
-    <span class="text-xs font-bold uppercase <%= status_class %>"><%= ip_address.status %></span>
-    
-    <div class="flex gap-4 items-center text-xs font-semibold">
-      <%= link_to "View IP", ip_address, class: "hover:text-orange-600 text-subtle", data: { turbo_frame: "_top" } %>
-
-      <%# Edit Status (Reserved/Blacklisted) %>
-      <%= link_to edit_ip_address_path(ip_address), class: "text-subtle hover:text-orange-500", data: { turbo_frame: "modal" } do %>
-        <span class="">Edit</span>
+    <div class="flex justify-between items-start">
+      <div>
+        <div class="font-mono font-bold text-lg text-primary">
+          <%= link_to ip_address.address, ip_address, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+        </div>
+        <div class="text-xs text-subtle"><%= ip_address.subnet.name %></div>
+      </div>
+      
+      <% if ip_address.reachability_status_up? %>
+        <!--<span class="font-mono bg-green-100 text-green-700 text-xs pi-2 pb-1" title="Online Now">ON</span>-->
+        <div class="text-xs text-subtle italic flex items-center gap-2 h-10">
+          <span class="rounded-full bg-green-500 animate-pulse" style="width: 0.6rem; height: 0.6rem;"></span>
+        </div>
+      <% elsif ip_address.last_seen_at %>
+        <span class="text-subtle" title="Last seen <%= time_ago_in_words(ip_address.last_seen_at) %> ago">
+          <%= time_ago_in_words(ip_address.last_seen_at, include_seconds: false) %>
+        </span>
       <% end %>
+    </div>
+
+    <div class="mbs-3">
+      <% if ip_address.device %>
+        <div class="flex items-center gap-2">
+          <span class="icon icon--monitor text-subtle text-xs"></span>
+          <div class="text-sm font-medium"><%= link_to ip_address.device.name, device_path(ip_address.device), data: { turbo_frame: "_top" } %></div>
+        </div>
+        <div class="text-xs text-subtle mis-5"><%= ip_address.device.employee&.first_name || "Unassigned" %></div>
+      <% else %>
+        <div class="text-xs text-subtle italic flex items-center gap-2 h-10">
+          Empty Slot
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mbs-3 border-t pbs-2 flex justify-between items-center">
+      <!-- Admin Status (Intent) -->
+      <% status_badge = case ip_address.status 
+         when "available" then "text-green-600"
+         when "active" then "text-sky-600"
+         when "reserved" then "text-yellow-600"
+         when "blacklisted" then "text-red-600"
+         end %>
+      <span class="font-semibold uppercase font-mono <%= status_badge %>">
+        <%= ip_address.status %>
+      </span>
+      
+      <div class="flex gap-3 text-xs font-semibold">
+        <%= link_to edit_ip_address_path(ip_address), class: "text-subtle hover:text-orange-500", data: { turbo_frame: "modal" } do %>
+          Edit
+        <% end %>
+      </div>
     </div>
   </div>
 </div>

@@ -208,6 +208,7 @@ GEM
     net-imap (0.5.12)
       date
       net-protocol
+    net-ping (2.0.8)
     net-pop (0.1.2)
       net-protocol
     net-protocol (0.2.2)
@@ -448,6 +449,7 @@ DEPENDENCIES
   kamal
   letter_opener_web (~> 3.0)
   mission_control-jobs
+  net-ping (~> 2.0)
   pagy (~> 9.4)
   paper_trail (~> 17.0)
   pg (~> 1.6)

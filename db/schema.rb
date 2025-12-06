@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_03_150832) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_05_064127) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -38,6 +38,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_150832) do
     t.bigint "department_id", null: false
     t.integer "device_type", default: 0, null: false
     t.bigint "employee_id"
+    t.string "mac_address"
     t.string "name", null: false
     t.text "notes"
     t.string "serial_number", null: false
@@ -47,6 +48,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_150832) do
     t.index ["department_id"], name: "index_devices_on_department_id"
     t.index ["device_type"], name: "index_devices_on_device_type"
     t.index ["employee_id"], name: "index_devices_on_employee_id"
+    t.index ["mac_address"], name: "index_devices_on_mac_address", unique: true
     t.index ["serial_number"], name: "index_devices_on_serial_number", unique: true
   end
 
@@ -75,7 +77,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_150832) do
     t.inet "address", null: false
     t.datetime "created_at", null: false
     t.bigint "device_id"
+    t.datetime "last_seen_at"
     t.text "notes"
+    t.integer "reachability_status", default: 0
     t.integer "status", default: 0, null: false
     t.bigint "subnet_id", null: false
     t.datetime "updated_at", null: false

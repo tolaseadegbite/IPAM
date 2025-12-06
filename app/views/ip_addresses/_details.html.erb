@@ -1,31 +1,63 @@
-<div class="card rounded bg-main">
-    <div class="flex items-end justify-between mbe-6 border-be pbe-4">
-      <div>
-         <h1 class="text-4xl font-mono font-bold text-primary"><%= @ip_address.address %></h1>
-         <div class="text-sky-500"><%= @ip_address.subnet.name %></div>
-      </div>
-      <div>
-        <% status_class = @ip_address.available? ? "bg-green-100 text-green-800" : (@ip_address.active? ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800") %>
-        <span class="<%= status_class %> pi-4 by-2 rounded-md text-lg font-bold uppercase"><%= @ip_address.status %></span>
-      </div>
+<div class="card rounded-md bg-main">
+  <div class="flex items-start justify-between mbe-6 border-be pbe-4">
+    <div>
+        <div class="flex items-center gap-3">
+          <h1 class="text-4xl font-mono font-bold text-primary"><%= @ip_address.address %></h1>
+          
+          <!-- Online/Offline Pill -->
+          <% if @ip_address.reachability_status_up? %>
+            <span class="flex items-center gap-1 bg-green-100 text-green-700 pi-2 pb-1 rounded-full text-xs font-bold uppercase">
+              <span class="bg-green-500 rounded-full animate-pulse" style="width: 1rem; height: 1rem;"></span> Online
+            </span>
+          <% else %>
+            <span class="bg-gray-100 text-gray-500 pi-2 pb-1 rounded-full text-xs font-bold uppercase">Offline</span>
+          <% end %>
+        </div>
+        <div class="text-sky-500"><%= @ip_address.subnet.name %></div>
     </div>
+    
+    <div class="text-end">
+      <div class="text-sm font-semibold text-subtle uppercase mbe-2">Administrative Status</div>
+      <% status_class = @ip_address.available? ? "bg-green-100 text-green-800" : (@ip_address.active? ? "bg-blue-100 text-blue-800" : "bg-yellow-100 text-yellow-800") %>
+      <span class="<%= status_class %> pi-3 pb-1 rounded-md text-sm font-bold uppercase"><%= @ip_address.status %></span>
+    </div>
+  </div>
 
-    <div class="grid grid-cols-2 gap-6">
+  <!-- Monitoring Stats -->
+  <div class="grid grid-cols-2 gap-6 mbe-6 card">
       <div>
-        <label class="block text-xs text-subtle uppercase font-bold mbe-1">Connected Device</label>
-        <% if @ip_address.device %>
-          <div class="font-bold text-lg"><%= link_to @ip_address.device.name, @ip_address.device, class: "text-green-600 hover:underline" %></div>
-          <div class="text-sm text-subtle"><%= @ip_address.device.serial_number %></div>
-        <% else %>
-          <span class="italic text-gray-400">None</span>
-        <% end %>
-      </div>
-      
-      <div class="flex justify-end">
-        <div>
-            <label class="block text-xs text-subtle uppercase font-bold mbe-1">Notes</label>
-            <p class="text-sm"><%= @ip_address.notes.presence || "No notes." %></p>
+        <label class="block text-sm text-subtle uppercase font-bold mbe-1">Last Seen</label>
+        <div class="text-sm font-mono">
+          <% if @ip_address.last_seen_at %>
+            <%= @ip_address.last_seen_at.strftime("%b %d, %H:%M:%S") %>
+            <span class="text-xs">(<%= time_ago_in_words(@ip_address.last_seen_at) %> ago)</span>
+          <% else %>
+            Never
+          <% end %>
         </div>
       </div>
+      <div>
+        <label class="block text-sm text-subtle uppercase font-bold mbe-1">Ping Status</label>
+        <div class="text-sm font-mono"><%= @ip_address.reachability_status.upcase %></div>
+      </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-6">
+    <div>
+      <label class="block text-xs text-subtle uppercase font-bold mbe-1">Connected Device</label>
+      <% if @ip_address.device %>
+        <div class="font-bold text-lg"><%= link_to @ip_address.device.name, @ip_address.device, class: "text-green-600 hover:underline" %></div>
+        <div class="text-sm text-subtle"><%= @ip_address.device.serial_number %></div>
+      <% else %>
+        <span class="italic text-gray-400">None</span>
+      <% end %>
     </div>
+    
+    <div class="flex justify-end">
+      <div>
+        <label class="block text-xs text-subtle uppercase font-bold mbe-1">Notes</label>
+        <p class="text-sm"><%= @ip_address.notes.presence || "No notes." %></p>
+      </div>
+    </div>
+  </div>
 </div>
