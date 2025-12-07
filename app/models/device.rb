@@ -21,7 +21,9 @@ class Device < ApplicationRecord
   enum :device_type, { laptop: 0, desktop: 1, all_in_one: 2, printer: 3, server: 4, tablet: 5 }
   enum :status, { active: 0, in_storage: 1, in_repair: 2, retired: 3, lost: 4 }
 
-  validates :serial_number, uniqueness: { case_sensitive: false }
+  validates :serial_number, uniqueness: { case_sensitive: true }
+  validates :asset_tag, uniqueness: { case_sensitive: true }
+  validates :mac_address, uniqueness: { case_sensitive: false }
   validates :name, presence: true # Hostname
   validates :device_type, presence: true
   validates :status, presence: true
@@ -30,7 +32,7 @@ class Device < ApplicationRecord
   validate :ip_released_if_retired
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[ name asset_tag serial_number device_type status created_at updated_at ]
+    %w[ name asset_tag serial_number mac_address device_type critical status created_at updated_at ]
   end
 
   def self.ransackable_associations(auth_object = nil)

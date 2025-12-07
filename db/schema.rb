@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_05_064127) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_07_060411) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -35,21 +35,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_064127) do
   create_table "devices", force: :cascade do |t|
     t.string "asset_tag"
     t.datetime "created_at", null: false
+    t.boolean "critical", default: false
     t.bigint "department_id", null: false
     t.integer "device_type", default: 0, null: false
     t.bigint "employee_id"
     t.string "mac_address"
     t.string "name", null: false
     t.text "notes"
-    t.string "serial_number", null: false
+    t.string "serial_number"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index ["asset_tag"], name: "index_devices_on_asset_tag", unique: true
     t.index ["department_id"], name: "index_devices_on_department_id"
     t.index ["device_type"], name: "index_devices_on_device_type"
     t.index ["employee_id"], name: "index_devices_on_employee_id"
     t.index ["mac_address"], name: "index_devices_on_mac_address", unique: true
-    t.index ["serial_number"], name: "index_devices_on_serial_number", unique: true
   end
 
   create_table "employees", force: :cascade do |t|
@@ -86,6 +85,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_064127) do
     t.index ["address"], name: "index_ip_addresses_on_address", unique: true
     t.index ["device_id"], name: "index_ip_addresses_on_device_id"
     t.index ["subnet_id"], name: "index_ip_addresses_on_subnet_id"
+  end
+
+  create_table "network_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "device_id"
+    t.inet "ip_address"
+    t.integer "kind", default: 0
+    t.string "message", null: false
+    t.index ["device_id"], name: "index_network_events_on_device_id"
   end
 
   create_table "pg_search_documents", force: :cascade do |t|
@@ -136,5 +144,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_064127) do
   add_foreign_key "events", "users"
   add_foreign_key "ip_addresses", "devices"
   add_foreign_key "ip_addresses", "subnets"
+  add_foreign_key "network_events", "devices"
   add_foreign_key "sessions", "users"
 end

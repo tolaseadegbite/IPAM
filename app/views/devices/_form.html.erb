@@ -9,16 +9,24 @@
       <%= form.text_field :name, class: "input" %>
     </div>
     <div class="col-span-1">
-      <%= form.label :serial_number, class: "block font-medium mbe-1" %>
-      <%= form.text_field :serial_number, class: "input" %>
+      <%= form.label :device_type, class: "block font-medium mbe-1" %>
+      <%= form.select :device_type, Device.device_types.keys.map { |k| [k.humanize, k] }, {}, { class: "input cursor-pointer" } %>
     </div>
     <div class="col-span-1">
       <%= form.label :mac_address, "Mac Address", class: "block font-medium mbe-1" %>
       <%= form.text_field :mac_address, class: "input" %>
     </div>
     <div class="col-span-1">
-      <%= form.label :device_type, class: "block font-medium mbe-1" %>
-      <%= form.select :device_type, Device.device_types.keys.map { |k| [k.humanize, k] }, {}, { class: "input cursor-pointer" } %>
+      <%= form.label :serial_number, class: "block font-medium mbe-1" %>
+      <%= form.text_field :serial_number, class: "input" %>
+    </div>
+    <div class="col-span-1">
+      <%= form.label :asset_tag, class: "block font-medium mbe-1" %>
+      <%= form.text_field :asset_tag, class: "input" %>
+    </div>
+    <div class="col-span-1 flex items-center gap mbs-6">
+      <%= label_tag :critical, "Critical device?", class: "text-sm font-medium cursor-pointer" %>
+      <%= form.check_box :critical, class: "switch cursor-pointer", role: "switch" %>
     </div>
   </div>
 

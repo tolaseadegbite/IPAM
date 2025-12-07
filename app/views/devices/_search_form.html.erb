@@ -33,7 +33,20 @@
           <%= f.search_field :ip_address_address_string_cont, placeholder: "192.168...", class: "input" %>
         </div>
 
-        <%# 4. Type Filter %>
+        <%# 4. Mac Address Filter (NEW) %>
+        <div class="col-span-1">
+          <%= f.label :mac_address_cont, "Mac Address", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+          <%= f.search_field :mac_address_cont, placeholder: "52:03.:fz...", class: "input" %>
+        </div>
+
+        <%# 6. Critical Filter %>
+        <div class="col-span-1">
+          <%= f.label :critical_eq, "Critical device?", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+          
+          <%= f.select :critical_eq, [['Yes', true], ['No', false]], { include_blank: 'All' }, { class: "input cursor-pointer" } %>
+        </div>
+
+        <%# 5. Type Filter %>
         <div class="col-span-1">
           <%= f.label :device_type_eq, "Type", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.select :device_type_eq, Device.device_types.map { |k, v| [k.humanize, v] }, 
@@ -41,7 +54,7 @@
                 { class: "input cursor-pointer" } %>
         </div>
 
-        <%# 5. Status Filter %>
+        <%# 6. Status Filter %>
         <div class="col-span-1">
           <%= f.label :status_eq, "Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.select :status_eq, Device.statuses.map { |k, v| [k.humanize, v] }, 
@@ -49,7 +62,7 @@
                 { class: "input cursor-pointer" } %>
         </div>
 
-        <%# 6. Actions %>
+        <%# 7. Actions %>
         <div class="col-span-1 flex gap-2">
           <%= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
           <%= link_to "Clear", devices_path, class: "btn btn--primary", data: { turbo_frame: "devices_table", action: "click->search-filter#clear" } %>

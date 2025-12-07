@@ -26,7 +26,9 @@ Rails.application.routes.draw do
     resources :users
   end
 
-  resource :dashboard, only: [ :show ]
+  resource :dashboard, only: [ :show ] do
+    post :scan
+  end
 
   # --- Core Resources ---
   resources :branches
@@ -63,7 +65,7 @@ Rails.application.routes.draw do
 
   # --- Root Path ---
   # The dashboard or main inventory list
-  root "ip_addresses#index"
+  root "dashboards#show"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

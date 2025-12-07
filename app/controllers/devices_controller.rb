@@ -121,8 +121,7 @@ class DevicesController < ApplicationController
     def device_params
       params.require(:device).permit(
         :name, :mac_address, :serial_number, :asset_tag, :device_type,
-        :status, :notes, :department_id, :employee_id
-        # Note: ip_address_id is NOT permitted here, handled manually
+        :status, :critical, :notes, :department_id, :employee_id
       )
     end
 end

@@ -10,6 +10,9 @@
   <td class="p-4 font-mono text-sm text-sky-500">
     <%= device.ip_address&.address.presence || "Nil" %>
   </td>
+  <td class="p-4 font-mono text-sm text-green-500">
+    <%= device&.mac_address.presence || "Nil" %>
+  </td>
   <td class="p-4 text-sm">
     <%= device.employee&.full_name.presence || "Owner: Nil" %>
     
@@ -22,7 +25,18 @@
       <% end %>
     </div>
   </td>
-  <td class="p-4 text-xs font-semibold uppercase"><%= device.status.presence || "Nil" %></td>
+  <td class="p-4">
+    <% status_color = case device.status 
+       when 'active' then 'bg-green-100 text-green-800'
+       when 'on_leave' then 'bg-yellow-100 text-yellow-800'
+       when 'terminated' then 'bg-red-100 text-red-800'
+       end %>
+
+    <span class="<%= status_color %> font-medium pi-2 pb-1 rounded-md text-sm"><%= device.status.presence || "Nil" %></span>
+  </td>
+  <td class="p-4">
+    <%= device.critical %>
+  </td>
   <td class="text-end">
     <div class="flex items-center justify-end gap-4">
       <%= link_to "Edit", edit_device_path(device), class: "text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>

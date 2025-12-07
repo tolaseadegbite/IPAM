@@ -1,0 +1,310 @@
+<div id="dashboard_metrics">
+    <!-- HEADER (Moved inside partial for Real-Time Updates) -->
+    <div class="flex justify-between items-center mbe-6">
+        <div>
+            <h1 class="text-2xl font-bold text-primary">Network Overview</h1>
+            <p class="text-sm text-subtle">
+                <!-- This now updates automatically when the job finishes -->
+                Last Scan: <span class="text-primary"><%= time_ago_in_words(IpAddress.maximum(:last_seen_at) || Time.current) %> ago</span>
+            </p>
+        </div>
+
+        <!-- BUTTON LOGIC -->
+        <% if local_assigns[:scanning] %>
+        <!-- 1. Scanning State (Disabled, pulsating) -->
+        <button class="btn btn--primary text-sm cursor-not-allowed opacity-75 flex items-center gap-2" disabled>
+            <span class="rounded-full bg-white animate-pulse" style="width: 6px; height: 6px;"></span>
+            Scanning now...
+        </button>
+        <% else %>
+            <!-- 2. Normal State -->
+            <%= button_to scan_dashboard_path, 
+                    method: :post, 
+                    class: "btn btn--primary text-sm cursor-pointer", 
+                    title: "Click to run immediate scan",
+                    data: { turbo_submits_with: "Requesting..." } do %>
+                Scan Now
+            <% end %>
+        <% end %>
+    </div>
+
+  <!-- ROW 1: HEADS UP DISPLAY -->
+  <div class="grid grid-cols-1 grid-cols-3@md gap-4 mbe-6">
+    <!-- 1. Reachability -->
+    <div class="card p-4 flex flex-col justify-between">
+      <div class="flex justify-between items-start">
+        <div>
+          <div class="text-subtle text-xs font-bold uppercase">Network Heartbeat</div>
+          <div class="text-4xl font-bold text-primary mbs-1">
+            <%= online_count %> <span class="text-lg text-subtle font-normal">/ <%= total_ips %></span>
+          </div>
+        </div>
+        <!-- Micro Chart -->
+        <div class="relative" style="width: 40px; height: 40px;">
+           <svg viewBox="0 0 36 36" class="i-full b-full">
+              <path class="text-subtle opacity-50" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4" />
+              <path style="color: #22c55e;" stroke-dasharray="<%= (online_count.to_f / total_ips * 100).to_i rescue 0 %>, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4" />
+           </svg>
+        </div>
+      </div>
+      <div class="text-xs text-green-500 font-bold mbs-2 flex items-center gap-1">
+        <span class="rounded-full bg-green-500 animate-pulse" style="width: 6px; height: 6px;"></span>
+        System Operational
+      </div>
+    </div>
+
+    <!-- 2. Rogue Counter -->
+    <div class="card p-4 flex flex-col justify-between">
+      <div class="flex justify-between items-start">
+        <div>
+          <div class="text-subtle text-xs font-bold uppercase">Rogue / Unknown</div>
+          <div class="text-4xl font-bold <%= rogue_count > 0 ? 'text-red-500' : 'text-primary' %> mbs-1">
+            <%= rogue_count %>
+          </div>
+        </div>
+        <div class="text-2xl">⚠️</div>
+      </div>
+      <div class="text-xs text-subtle">
+        Unidentified devices on network.
+      </div>
+    </div>
+
+    <!-- 3. Capacity Utilization -->
+    <div class="card p-4 flex flex-col justify-between">
+      <div>
+        <div class="flex justify-between mbe-1">
+          <div class="text-subtle text-xs font-bold uppercase">IP Capacity</div>
+          <div class="text-xs font-bold text-primary"><%= utilization_percent %>%</div>
+        </div>
+        <label>
+          <%= tag.progress value: utilization_percent, max: 100, class: "progress i-full", role: "progressbar" %>
+          <span class="sr-only">Loading progress</span>
+        </label>
+      </div>
+      <div class="text-xs text-subtle mbs-2">
+        Global utilization across all subnets.
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 1.5: NETWORK COMPOSITION CHARTS -->
+  <div class="card p-4 mbe-6">
+    <h3 class="font-semibold text-lg mbe-4">Network Composition</h3>
+    
+    <div class="grid grid-cols-1 grid-cols-2@sm gap-8">
+      <!-- Reachability Chart -->
+      <div class="flex flex-col items-center">
+        <h4 class="text-xs text-subtle uppercase font-bold mbe-2">Reachability Status</h4>
+        <div class="relative i-full" style="block-size: 250px;">
+          <%= tag.canvas role: "img", data: { 
+              controller: "chart", 
+              chart_type_value: "doughnut", 
+              chart_options_value: { maintainAspectRatio: false, cutout: "70%", plugins: { legend: { display: false } } }.to_json,
+              chart_data_value: reachability_chart.to_json 
+          } %>
+          <div class="absolute inset-0 flex flex-col items-center justify-center" style="top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;">
+            <div class="text-3xl font-bold"><%= online_count %></div>
+            <div class="text-xs text-subtle uppercase">Online</div>
+          </div>
+        </div>
+        <div class="flex gap-4 mbs-4">
+          <div class="flex items-center gap-2 text-xs">
+            <span class="rounded-full" style="width: 8px; height: 8px; background-color: #22c55e;"></span> Online
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="rounded-full" style="width: 8px; height: 8px; background-color: #f3f4f6;"></span> Offline
+          </div>
+        </div>
+      </div>
+
+      <!-- Allocation Chart -->
+      <div class="flex flex-col items-center">
+        <h4 class="text-xs text-subtle uppercase font-bold mbe-2">IP Allocation</h4>
+        <div class="relative i-full" style="block-size: 250px;">
+          <%= tag.canvas role: "img", data: { 
+              controller: "chart", 
+              chart_type_value: "pie", 
+              chart_options_value: { maintainAspectRatio: false, plugins: { legend: { display: false } } }.to_json,
+              chart_data_value: allocation_chart.to_json 
+          } %>
+        </div>
+        <div class="flex flex-wrap justify-center gap-3 mbs-4">
+          <div class="flex items-center gap-2 text-xs">
+            <span class="rounded-full" style="width: 8px; height: 8px; background-color: #0ea5e9;"></span> Active
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="rounded-full" style="width: 8px; height: 8px; background-color: #eab308;"></span> Reserved
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="rounded-full" style="width: 8px; height: 8px; background-color: #22c55e;"></span> Available
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="rounded-full" style="width: 8px; height: 8px; background-color: #ef4444;"></span> Blacklisted
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: SPLIT VIEW -->
+  <div class="grid grid-cols-1 grid-cols-2@lg gap-6 mbe-6">
+    
+    <!-- LEFT: Subnet Health -->
+    <div class="card flex flex-col">
+      <div class="p-4 border-be border-main bg-surface">
+        <h3 class="font-semibold text-base">Subnet Health</h3>
+      </div>
+      <div class="p-4 flex-1 overflow-y-auto" style="max-block-size: 350px;">
+        <% subnets.each do |subnet| %>
+          <% 
+            raw_percent = (subnet.used_ips.to_f / subnet.total_ips * 100)
+            percent = (subnet.used_ips > 0 && raw_percent < 1) ? 1 : raw_percent.to_i
+            
+            bar_color = if percent > 90 then "#ef4444" 
+                        elsif percent > 70 then "#eab308" 
+                        else "#22c55e" 
+                        end
+          %>
+          <div class="mbe-4 last:mbe-0">
+            <div class="flex justify-between text-sm mbe-1">
+              <span class="font-medium"><%= link_to subnet.name, subnet, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %></span>
+              <span class="text-xs text-subtle"><%= subnet.used_ips %>/<%= subnet.total_ips %></span>
+            </div>
+            <div class="relative i-full bg-shade rounded-full overflow-hidden" style="block-size: 8px;">
+              <div class="b-full rounded-full" style="inline-size: <%= percent %>%; background-color: <%= bar_color %>;"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- RIGHT: Action Lists -->
+    <div class="flex flex-col gap-4">
+      <!-- Rogue List -->
+      <div class="card">
+        <div class="p-3 border-be border-main bg-surface flex justify-between items-center">
+          <h3 class="font-semibold text-base text-red-500">Rogue Devices</h3>
+          <%= link_to "View All", ip_addresses_path(q: { device_id_null: true, reachability_status_eq: 1 }), class: "text-xs hover:text-orange-500" %>
+        </div>
+        <div class="p-0">
+          <% if rogue_devices.any? %>
+            <table class="i-full text-sm">
+              <tbody>
+                <% rogue_devices.each do |ip| %>
+                  <tr class="border-be border-main last:border-0">
+                    <td class="p-3 font-bold"><%= link_to ip.address, ip, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %></td>
+                    <td class="p-3 text-subtle text-xs"><%= link_to ip.subnet.name, ip.subnet, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %></td>
+                    <td class="p-3 text-end">
+                      <%= link_to "Register", edit_ip_address_path(ip), class: "btn hover:bg-orange-500", data: { turbo_frame: "modal" } %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <div class="p-4 text-center text-xs text-subtle italic">No rogue devices found.</div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Ghost Assets -->
+      <div class="card">
+        <div class="p-3 border-be border-main bg-surface flex justify-between items-center">
+          <h3 class="font-semibold text-base">Ghost Assets (>30 Days)</h3>
+        </div>
+        <div class="p-0">
+          <% if ghost_assets.any? %>
+            <table class="i-full text-sm">
+              <tbody>
+                <% ghost_assets.each do |ip| %>
+                  <tr class="border-be border-main last:border-0">
+                    <td class="p-3">
+                      <div class="font-bold"><%= ip.device.name %></div>
+                      <div class="text-xs text-subtle"><%= ip.device.serial_number %></div>
+                    </td>
+                    <td class="p-3 text-end text-xs text-subtle">Last seen <%= time_ago_in_words(ip.last_seen_at) %> ago</td>
+                    <td class="p-3 text-end">
+                      <%= button_to "Reclaim", ip_address_path(ip, ip_address: { status: "available", device_id: nil }), method: :patch, class: "text-link text-xs" %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <div class="p-4 text-center text-xs text-subtle italic">No ghost assets found.</div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Critical Watchlist & Activity -->
+  <div class="grid grid-cols-1 grid-cols-2@lg gap-6">
+    
+    <!-- Critical Watchlist -->
+    <div class="card">
+      <div class="pbe-4 border-be border-main bg-surface">
+        <h3 class="font-semibold text-base">Critical Watchlist</h3>
+      </div>
+      <div class="pbs-4 grid grid-cols-1 grid-cols-2 gap-2">
+        <% critical_devices.each do |device| %>
+          <% 
+             ip = device.ip_address 
+             is_online = ip&.reachability_status_up?
+          %>
+          <div class="border rounded-md pb-2 pi-4 flex justify-between items-center <%= is_online ? '' : '' %>">
+            <div>
+              <div class="font-bold text-sm"><%= link_to device.name, device, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %></div>
+              <div class="text-xs text-subtle"><%= link_to ip&.address, ip, class: "hover:text-orange-500", data: { turbo_frame: "_top" } || "No IP" %></div>
+            </div>
+            <% if is_online %>
+              <span class="rounded-full bg-green-500" style="width: 8px; height: 8px;" title="Online"></span>
+            <% else %>
+              <span class="rounded-full bg-red-500 animate-pulse" style="width: 8px; height: 8px;" title="CRITICAL OFFLINE"></span>
+            <% end %>
+          </div>
+        <% end %>
+        <% if critical_devices.empty? %>
+          <div class="col-span-2 text-center text-subtle text-xs italic">No devices marked as Critical.</div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Recent Activity Log -->
+    <div class="card flex flex-col">
+      <div class="pbe-4 border-be border-main bg-surface">
+        <h3 class="font-semibold text-base">Network Log</h3>
+      </div>
+      <div class="overflow-y-auto" style="max-block-size: 250px;">
+        <% if recent_events.any? %>
+          <table class="i-full text-xs">
+            <tbody>
+              <% recent_events.each do |event| %>
+                <tr class="border-be">
+                  <td class="p-3 text-subtle whitespace-nowrap" style="width: 1%;">
+                    <%= time_ago_in_words(event.created_at) %> ago
+                  </td>
+                  <td class="p-3">
+                    <div class="font-bold <%= event.kind_drift? ? 'text-orange-600' : 'text-primary' %>">
+                      <%= event.kind.humanize %>
+                    </div>
+                    <div class="text-subtle"><%= event.message %></div>
+                  </td>
+                  <td class="p-3 text-end">
+                    <div class="font-bold"><%= event.ip_address %></div>
+                    <% if event.device %>
+                      <div class="text-subtle"><%= link_to event.device.name, event.device, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %></div>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <div class="p-4 text-center text-subtle italic text-xs">No network events recorded.</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+</div>

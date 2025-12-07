@@ -1,12 +1,27 @@
-<% content_for :title, "Dashboard" %>
+<% content_for :title, "Network Dashboard" %>
+
+<!-- 1. ADD THE LISTENER -->
+<%= turbo_stream_from "monitoring" %>
 
 <% content_for :page_header do %>
   <h4 class="font-semibold">Dashboard</h4>
 <% end %>
 
-
 <div class="p-4 i-full">
-
-    <h1 class="text-center text-5xl">Dashboard page coming soon..</h1>
+  
+  <!-- We pass all instance variables as locals so the partial works for both Controller AND Service -->
+  <%= render "metrics", 
+    online_count: @online_count, 
+    total_ips: @total_ips, 
+    rogue_count: @rogue_count, 
+    utilization_percent: @utilization_percent, 
+    reachability_chart: @reachability_chart, 
+    allocation_chart: @allocation_chart,
+    subnets: @subnets,
+    rogue_devices: @rogue_devices,
+    ghost_assets: @ghost_assets,
+    critical_devices: @critical_devices,
+    recent_events: @recent_events
+  %>
 
 </div>

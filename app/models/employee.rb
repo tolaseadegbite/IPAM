@@ -2,16 +2,16 @@ class Employee < ApplicationRecord
   # has_paper_trail
 
   include PgSearch::Model
-  
+
   # Search by Name or Email
-  multisearchable against: [:first_name, :last_name]
+  multisearchable against: [ :first_name, :last_name ]
 
   belongs_to :department
   has_many :devices # History: "What devices does Sarah have?"
 
   enum :status, { active: 0, on_leave: 1, terminated: 2 }
 
-  validates :first_name, :last_name, presence: true
+  validates :first_name, presence: true
   validates :status, presence: true
 
   def full_name

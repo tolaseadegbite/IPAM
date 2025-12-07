@@ -11,7 +11,7 @@ class CreateDevices < ActiveRecord::Migration[8.1]
       # Relationships
       t.references :department, null: false, foreign_key: true
       # Nullable: A device might be in storage and not assigned to a person yet
-      t.references :employee, null: true, foreign_key: true 
+      t.references :employee, null: true, foreign_key: true
 
       t.timestamps
     end
@@ -20,6 +20,6 @@ class CreateDevices < ActiveRecord::Migration[8.1]
     add_index :devices, :serial_number, unique: true
     add_index :devices, :asset_tag, unique: true
     # Optimization: Speeds up "Find all Laptops"
-    add_index :devices, :device_type 
+    add_index :devices, :device_type
   end
 end

@@ -12,7 +12,7 @@
       <% if ip_address.reachability_status_up? %>
         <!--<span class="font-mono bg-green-100 text-green-700 text-xs pi-2 pb-1" title="Online Now">ON</span>-->
         <div class="text-xs text-subtle italic flex items-center gap-2 h-10">
-          <span class="rounded-full bg-green-500 animate-ping" style="width: 0.6rem; height: 0.6rem;"></span>
+          <span class="rounded-full bg-green-500 animate-pulse" style="width: 0.6rem; height: 0.6rem;"></span>
         </div>
       <% elsif ip_address.last_seen_at %>
         <span class="text-subtle" title="Last seen <%= time_ago_in_words(ip_address.last_seen_at) %> ago">

@@ -6,20 +6,31 @@
       <div class="font-semibold text-lg leading-tight"><%= link_to (device.name.presence || "Nil"), device, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
       <span class="text-sm text-subtle uppercase font-semibold"><%= device.device_type&.humanize.presence || "Nil" %></span>
     </div>
-    <span class="text-sm font-bold pi-2 pb-1 rounded-md bg-shade uppercase">
-      <%= device.status.presence || "Nil" %>
-    </span>
+
+    <div>
+      <% status_color = case device.status 
+        when 'active' then 'bg-green-100 text-green-800'
+        when 'on_leave' then 'bg-yellow-100 text-yellow-800'
+        when 'terminated' then 'bg-red-100 text-red-800'
+        end %>
+
+      <span class="<%= status_color %> font-medium pi-2 pb-1 rounded-md text-sm"><%= device.status.presence || "Nil" %></span>
+
+      <% if device.critical? %>
+        <span class="font-medium pi-2 pb-1 rounded-md text-sm bg-blue-100 text-blue-800">Critical device</span>
+      <% end %>
+    </div>
   </div>
 
   <%# --- Details: Serial & Tag --- %>
   <div class="grid grid-cols-2 gap-2 text-sm">
     <div>
       <span class="text-sm text-subtle block">Serial</span>
-      <span class="font-mono"><%= device.serial_number.presence || "Nil" %></span>
+      <span><%= device.serial_number.presence || "Nil" %></span>
     </div>
     <div class="text-end">
       <span class="text-sm text-subtle block">Asset Tag</span>
-      <span class="font-mono"><%= device.asset_tag.presence || "Nil" %></span>
+      <span><%= device.asset_tag.presence || "Nil" %></span>
     </div>
   </div>
 
@@ -27,7 +38,17 @@
   <div class="p-2 bg-shade rounded-md border flex items-center gap-2">
     <span class="icon icon--globe text-subtle"></span>
     <% if device.ip_address %>
-      <span class="font-mono text-sky-500 font-semibold"><%= device.ip_address.address %></span>
+      <span class="text-sky-500"><%= device.ip_address.address %></span>
+    <% else %>
+      <span class="text-subtle italic">Nil</span>
+    <% end %>
+  </div>
+
+  <%# --- Mac Address --- %>
+  <div class="p-2 bg-shade rounded-md border flex items-center gap-2">
+    <span class="icon icon--monitor text-subtle"></span>
+    <% if device.mac_address %>
+      <span class="text-green-500"><%= device.mac_address %></span>
     <% else %>
       <span class="text-subtle italic">Nil</span>
     <% end %>
