@@ -12,6 +12,8 @@ class DepartmentsController < ApplicationController
 
   def new
     @department = Department.new
+
+    @department.branch_id = params[:branch_id] if params[:branch_id].present?
   end
 
   def edit
