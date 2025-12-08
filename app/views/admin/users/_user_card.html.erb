@@ -4,7 +4,7 @@
       <div class="flex items-center gap-2">
         <span class="text-lg font-semibold text-main"><%= user.username %></span>
         <% if user.admin? %>
-          <span class="bg-purple-100 text-purple-700 pi-2 rounded-md font-semibold">ADMIN</span>
+          <span class="bg-purple-100 text-purple-700 pi-2 rounded-md font-medium">ADMIN</span>
         <% end %>
       </div>
       <span class="text-sm text-subtle"><%= user.email %></span>

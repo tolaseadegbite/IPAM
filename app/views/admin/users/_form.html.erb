@@ -13,7 +13,9 @@
       <%= form.label :email, class: "block font-medium mbe-1" %>
       <%= form.email_field :email, required: true, autocomplete: "off", class: "input" %>
     </div>
+  </div>
 
+  <div class="grid grid-cols-1 gap-4 mbe-4">
     <%# --- Row 2: Security --- %>
     <div class="col-span-1">
       <%= form.label :password, class: "block font-medium mbe-1" %>
@@ -36,14 +38,16 @@
       <% end %>
     </div>
 
-    <div class="col-span-1 flex items-end">
+    <div class="col-span-1">
       <button type="button" 
               data-action="password-generator#generate" 
-              class="btn btn--primary"> 
+              class="btn btn--primary i-full"> 
         Generate Secure Password
       </button>
     </div>
+  </div>
 
+  <div class="grid grid-cols-1 gap-4 mbe-4">
     <%# --- Row 3: Permissions --- %>
     <div class="col-span-1 col-span-2@md mbs-2">
       <fieldset class="flex flex-col gap-2">
@@ -58,7 +62,6 @@
         </div>
       </fieldset>
     </div>
-
   </div>
 
   <div class="mbs-4 flex gap-3 items-center">
