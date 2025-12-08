@@ -59,6 +59,10 @@ Rails.application.routes.draw do
     member do
       get :edit_status
     end
+
+    collection do
+      get :select_options
+    end
   end
 
   get "search", to: "search#index"
