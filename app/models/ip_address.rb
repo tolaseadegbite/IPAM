@@ -33,13 +33,23 @@ class IpAddress < ApplicationRecord
     Arel.sql("host(address)")
   end
 
+  # This returns ONLY rogue devices if true is passed
+  scope :rogue_only, ->(boolean = true) {
+    return all unless boolean
+    where(reachability_status: :up, device_id: nil)
+  }
+
   # Ransack
   def self.ransackable_attributes(auth_object = nil)
-    %w[address_string status subnet_id created_at updated_at]
+    %w[address_string status reachability_status subnet_id created_at updated_at]
   end
 
   def self.ransackable_associations(auth_object = nil)
     %w[device subnet]
+  end
+
+  def self.ransackable_scopes(auth_object = nil)
+    [ :rogue_only ]
   end
 
   private

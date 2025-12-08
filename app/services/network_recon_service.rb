@@ -1,36 +1,56 @@
 class NetworkReconService
+  # Entry point for scanning a specific subnet.
+  # This performs "Phase A" of the broadcast (individual IP updates).
   def self.scan_subnet(subnet_cidr)
     new.scan_subnet(subnet_cidr)
   end
 
+  # Entry point for the "Evening Summary".
+  # This performs "Phase B" (charts, totals, unlocking the UI).
+  def self.broadcast_global_stats
+    new.broadcast_dashboard_stats
+  end
+
   def scan_subnet(subnet_cidr)
     start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    Rails.logger.info "[NetworkRecon] Starting scan for #{subnet_cidr}..."
 
-    Rails.logger.info "Starting Network Scan for #{subnet_cidr}..."
-
+    # 1. Execute Nmap (System Call)
+    # ----------------------------------------------------------------
     windows_path_raw = "/mnt/c/Program Files (x86)/Nmap/nmap.exe"
     nmap_bin = File.exist?(windows_path_raw) ? "'#{windows_path_raw}'" : "sudo nmap"
 
+    # -sn: Ping Scan (disable port scan)
+    # -PR: ARP Ping (fastest for local LAN)
+    # -n:  No DNS resolution (speed optimization)
     command = "#{nmap_bin} -sn -PR -n #{subnet_cidr}"
     output = `#{command}`
 
+    # 2. Parse Results
+    # ----------------------------------------------------------------
     active_hosts = parse_nmap_output(output)
 
+    # Pre-fetch existing records to minimize N+1 queries during the loop
     found_ips = active_hosts.map { |h| h[:ip] }
     ip_records_map = IpAddress.where(address: found_ips).index_by { |r| r.address.to_s }
 
     found_macs = active_hosts.map { |h| h[:mac] }.compact
     device_records_map = Device.where(mac_address: found_macs).index_by(&:mac_address)
 
+    # 3. Process Updates (Transactional)
+    # ----------------------------------------------------------------
     ActiveRecord::Base.transaction do
-      # Part A: Online Hosts
+      # A. Update Online Hosts
       active_hosts.each do |host_data|
         ip_record = ip_records_map[host_data[:ip]]
-        next unless ip_record
+        next unless ip_record # Skip if IP isn't in our IPAM database
+
+        # This triggers the "Phase A" broadcast (Green Dot pop-up)
         process_host_update(ip_record, host_data, device_records_map)
       end
 
-      # Part B: Offline Hosts
+      # B. Update Offline Hosts
+      # Identify IPs in this subnet that were previously 'up' but were NOT found in this scan
       offline_ips = IpAddress.where("address <<= ?", subnet_cidr)
                              .where.not(address: found_ips)
                              .where(reachability_status: :up)
@@ -40,6 +60,7 @@ class NetworkReconService
       if offline_ids.any?
         IpAddress.where(id: offline_ids).update_all(reachability_status: :down)
 
+        # Broadcast individual "Down" states immediately
         IpAddress.includes(:device, :subnet).where(id: offline_ids).each do |offline_ip|
           Turbo::StreamsChannel.broadcast_replace_to(
             "monitoring",
@@ -48,24 +69,23 @@ class NetworkReconService
             locals: { ip_address: offline_ip }
           )
         end
-        Rails.logger.info "Marked #{offline_ids.count} hosts as OFFLINE."
+        Rails.logger.info "[NetworkRecon] Marked #{offline_ids.count} hosts as OFFLINE in #{subnet_cidr}."
       end
     end
 
-    # --- NEW: Broadcast Global Stats ---
-    broadcast_dashboard_stats
-    # -----------------------------------
+    # NOTE: We do NOT broadcast global stats here anymore.
+    # We wait for the Job to finish all subnets.
 
     end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     duration = (end_time - start_time).round(2)
-
-    Rails.logger.info "Network Scan Completed: Found #{active_hosts.count} active hosts in #{duration} seconds."
+    Rails.logger.info "[NetworkRecon] Subnet scan completed in #{duration}s."
   end
 
-  private
-
-  # NEW METHOD: Calculates totals and updates the Charts/Big Numbers
+  # This method aggregates the final data and pushes the "Dashboard Refresh".
+  # It is now public so the Job can call it at the very end.
   def broadcast_dashboard_stats
+    Rails.logger.info "[NetworkRecon] Broadcasting Global Dashboard Stats..."
+
     # 1. Aggregates
     stats = IpAddress.group(:reachability_status, :device_id).count
     total_ips = IpAddress.count
@@ -99,7 +119,7 @@ class NetworkReconService
       } ]
     }
 
-    # 3. Lists (Re-fetching fresh data for the dashboard)
+    # 3. Lists (Heavy queries, limited by scope)
     subnets = Subnet.joins("LEFT JOIN ip_addresses ON ip_addresses.subnet_id = subnets.id")
                      .select("subnets.id, subnets.name, subnets.network_address,
                               COUNT(ip_addresses.id) as total_ips,
@@ -127,8 +147,13 @@ class NetworkReconService
                                 .order(created_at: :desc)
                                 .limit(10)
 
-    # 4. Broadcast the WHOLE Partial
-    # Broadcast the partial with scanning: false
+    # 4. Timestamp & Cache
+    last_scan = Time.current
+    Rails.cache.write("last_network_scan_completed_at", last_scan)
+
+    # 5. Broadcast (Phase B)
+    # This replaces the `dashboard_metrics` container, updating charts, timestamps,
+    # and crucially, setting `scanning: false` to unlock the UI button.
     Turbo::StreamsChannel.broadcast_replace_to(
       "monitoring",
       target: "dashboard_metrics",
@@ -140,17 +165,18 @@ class NetworkReconService
         utilization_percent: utilization_percent,
         reachability_chart: reachability_chart,
         allocation_chart: allocation_chart,
-        # ... pass subnets, rogues, etc ...
         subnets: subnets,
         rogue_devices: rogue_devices,
         ghost_assets: ghost_assets,
         critical_devices: critical_devices,
         recent_events: recent_events,
-
-        scanning: false # <--- RESTORES THE BUTTON
+        last_scan: last_scan, # Explicit timestamp matching job finish
+        scanning: false       # UNLOCK THE BUTTON
       }
     )
   end
+
+  private
 
   def process_host_update(ip_record, host_data, device_records_map)
     updates = {
@@ -158,29 +184,29 @@ class NetworkReconService
       reachability_status: :up
     }
 
+    # Device association logic
     if host_data[:mac].present?
       known_device = device_records_map[host_data[:mac]]
 
       if known_device
+        # Drift Detection: Did the device move IPs?
         if ip_record.device_id != known_device.id
-          Rails.logger.info "DRIFT DETECTED: '#{known_device.name}' moved to #{host_data[:ip]}"
+          Rails.logger.info "[NetworkRecon] Drift detected: '#{known_device.name}' -> #{host_data[:ip]}"
 
           NetworkEvent.create!(
             kind: :drift,
             ip_address: host_data[:ip],
             device: known_device,
-            message: "Device '#{known_device.name}' moved from previous location to #{host_data[:ip]}"
+            message: "Device '#{known_device.name}' moved to #{host_data[:ip]}"
           )
 
-          IpAddress.where(device_id: known_device.id, status: :active)
-                   .update_all(device_id: nil, status: :available)
-
-          IpAddress.where(device_id: known_device.id)
-                   .update_all(device_id: nil)
+          # Clear old associations for this device
+          IpAddress.where(device_id: known_device.id).update_all(device_id: nil, status: :available)
 
           updates[:device_id] = known_device.id
         end
 
+        # Auto-activate IP if it was available
         if ip_record.available?
           updates[:status] = :active
         end
@@ -188,8 +214,9 @@ class NetworkReconService
     end
 
     ip_record.update_columns(updates)
-    ip_record.assign_attributes(updates)
+    ip_record.assign_attributes(updates) # Update in memory for the partial
 
+    # Broadcast individual IP update (Phase A)
     Turbo::StreamsChannel.broadcast_replace_to(
       "monitoring",
       target: ip_record,
@@ -212,13 +239,9 @@ class NetworkReconService
       next unless report.include?("Host is up")
 
       mac_match = report.match(/MAC Address: ([0-9A-F:-]+)/i)
+      mac_address = mac_match ? mac_match[1].downcase.gsub("-", ":") : nil
 
-      if mac_match
-        mac_address = mac_match[1].downcase.gsub("-", ":")
-        hosts << { ip: ip_address, mac: mac_address }
-      else
-        hosts << { ip: ip_address, mac: nil }
-      end
+      hosts << { ip: ip_address, mac: mac_address }
     end
     hosts
   end

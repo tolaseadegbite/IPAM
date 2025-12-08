@@ -34,7 +34,24 @@
                 { class: "input cursor-pointer" } %>
         </div>
 
-        <%# 4. Actions %>
+        <%# 4. Reachability Status Filter %>
+        <div class="col-span-1">
+          <%= f.label :reachability_status_eq, "Reachability Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+          
+          <%= f.select :reachability_status_eq, IpAddress.reachability_statuses.map { |k, v| [k.humanize, v] }, { include_blank: "Select Reachability status" }, { class: "input cursor-pointer" } %>
+        </div>
+
+        <%# 5. Rogue Filter (NEW) %>  
+        <div class="col-span-1">
+          <label class="block text-xs font-bold uppercase text-subtle mbe-1">Security Filter</label>
+
+          <div class="flex items-center gap border p-4 rounded-md">
+            <%= label_tag :rogue_only, "Rogue devices?", class: "text-sm font-medium cursor-pointer" %>
+            <%= f.check_box :rogue_only, class: "switch cursor-pointer", role: "switch" %>
+          </div>
+        </div>
+
+        <%# 6. Actions %>
         <div class="col-span-1 flex gap-2">
           <%= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
           <%= link_to "Clear", ip_addresses_path, class: "btn btn--primary", data: { turbo_frame: "ip_addresses", action: "click->search-filter#clear" } %>

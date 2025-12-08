@@ -9,7 +9,7 @@
 
 <div class="p-4 i-full">
   
-  <!-- We pass all instance variables as locals so the partial works for both Controller AND Service -->
+  <!-- METRICS PARTIAL -->
   <%= render "metrics", 
     online_count: @online_count, 
     total_ips: @total_ips, 
@@ -21,7 +21,9 @@
     rogue_devices: @rogue_devices,
     ghost_assets: @ghost_assets,
     critical_devices: @critical_devices,
-    recent_events: @recent_events
+    recent_events: @recent_events,
+    last_scan: @last_scan,  # <--- ADD THIS LINE
+    scanning: false 
   %>
 
 </div>

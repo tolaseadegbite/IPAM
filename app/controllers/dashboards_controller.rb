@@ -1,25 +1,21 @@
 class DashboardsController < ApplicationController
   def show
     load_dashboard_data
-
     render :show, locals: dashboard_locals(scanning: false)
   end
 
   def scan
-    # 1. Trigger Job
     NetworkScanJob.perform_later
+    load_dashboard_data # Reload data to get current state for the immediate response
 
-    # 2. Update UI to "Scanning" state immediately
-    load_dashboard_data
-
+    # Broadcast "Scanning..." state immediately to lock the button
     Turbo::StreamsChannel.broadcast_replace_to(
       "monitoring",
       target: "dashboard_metrics",
       partial: "dashboards/metrics",
-      locals: dashboard_locals(scanning: true) # <--- THIS FLIPS THE BUTTON
+      locals: dashboard_locals(scanning: true)
     )
 
-    # 3. No redirect needed (Turbo handles the stream), but good practice to respond
     head :ok
   end
 
@@ -71,6 +67,10 @@ class DashboardsController < ApplicationController
     @ghost_assets = IpAddress.active.where(reachability_status: :down).where("last_seen_at < ?", 30.days.ago).includes(:device, :subnet).limit(5)
     @critical_devices = Device.where(critical: true).includes(:ip_address).limit(10)
     @recent_events = NetworkEvent.includes(:device).order(created_at: :desc).limit(10)
+
+    # 4. Timestamp (NEW)
+    # Read from cache to match the Service, fallback to DB, fallback to Now
+    @last_scan = Rails.cache.read("last_network_scan_completed_at") || IpAddress.maximum(:last_seen_at) || Time.current
   end
 
   def dashboard_locals(scanning: false)
@@ -86,6 +86,7 @@ class DashboardsController < ApplicationController
       ghost_assets: @ghost_assets,
       critical_devices: @critical_devices,
       recent_events: @recent_events,
+      last_scan: @last_scan, # <--- Pass the instance variable
       scanning: scanning
     }
   end

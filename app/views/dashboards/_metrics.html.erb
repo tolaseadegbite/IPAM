@@ -1,32 +1,36 @@
 <div id="dashboard_metrics">
-    <!-- HEADER (Moved inside partial for Real-Time Updates) -->
-    <div class="flex justify-between items-center mbe-6">
-        <div>
-            <h1 class="text-2xl font-bold text-primary">Network Overview</h1>
-            <p class="text-sm text-subtle">
-                <!-- This now updates automatically when the job finishes -->
-                Last Scan: <span class="text-primary"><%= time_ago_in_words(IpAddress.maximum(:last_seen_at) || Time.current) %> ago</span>
-            </p>
-        </div>
 
-        <!-- BUTTON LOGIC -->
-        <% if local_assigns[:scanning] %>
-        <!-- 1. Scanning State (Disabled, pulsating) -->
-        <button class="btn btn--primary text-sm cursor-not-allowed opacity-75 flex items-center gap-2" disabled>
-            <span class="rounded-full bg-white animate-pulse" style="width: 6px; height: 6px;"></span>
-            Scanning now...
-        </button>
-        <% else %>
-            <!-- 2. Normal State -->
-            <%= button_to scan_dashboard_path, 
-                    method: :post, 
-                    class: "btn btn--primary text-sm cursor-pointer", 
-                    title: "Click to run immediate scan",
-                    data: { turbo_submits_with: "Requesting..." } do %>
-                Scan Now
-            <% end %>
-        <% end %>
+  <!-- HEADER -->
+  <div class="flex justify-between items-end mbe-6">
+    <div>
+      <h1 class="text-2xl font-bold text-primary">Network Overview</h1>
+      <p class="text-sm text-subtle">
+        Last Scan: 
+        <!-- STIMULUS TIMEAGO CONTROLLER -->
+        <span class="font-mono text-primary"
+              data-controller="timeago"
+              data-timeago-date-value="<%= last_scan.iso8601 %>">
+          <%= time_ago_in_words(last_scan) %> ago
+        </span>
+      </p>
     </div>
+
+    <!-- BUTTON LOGIC -->
+    <% if local_assigns[:scanning] %>
+      <button class="btn btn--primary text-sm cursor-not-allowed opacity-75 flex items-center gap-2" disabled>
+        <span class="rounded-full bg-white animate-pulse" style="width: 6px; height: 6px;"></span>
+        Scanning now...
+      </button>
+    <% else %>
+      <%= button_to scan_dashboard_path, 
+            method: :post, 
+            class: "btn btn--primary text-sm cursor-pointer", 
+            title: "Click to run immediate scan",
+            data: { turbo_submits_with: "Requesting..." } do %>
+        Scan Now
+      <% end %>
+    <% end %>
+  </div>
 
   <!-- ROW 1: HEADS UP DISPLAY -->
   <div class="grid grid-cols-1 grid-cols-3@md gap-4 mbe-6">
@@ -59,7 +63,7 @@
         <div>
           <div class="text-subtle text-xs font-bold uppercase">Rogue / Unknown</div>
           <div class="text-4xl font-bold <%= rogue_count > 0 ? 'text-red-500' : 'text-primary' %> mbs-1">
-            <%= rogue_count %>
+            <%= link_to rogue_count, ip_addresses_path(q: { device_id_null: true, reachability_status_eq: 1 }), data: { turbo_frame: '_top' } %>
           </div>
         </div>
         <div class="text-2xl">⚠️</div>
@@ -99,7 +103,7 @@
           <%= tag.canvas role: "img", data: { 
               controller: "chart", 
               chart_type_value: "doughnut", 
-              chart_options_value: { maintainAspectRatio: false, cutout: "70%", plugins: { legend: { display: false } } }.to_json,
+              chart_options_value: { maintainAspectRatio: false, cutout: "80%", plugins: { legend: { display: false } } }.to_json,
               chart_data_value: reachability_chart.to_json 
           } %>
           <div class="absolute inset-0 flex flex-col items-center justify-center" style="top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;">
@@ -251,19 +255,34 @@
           <% 
              ip = device.ip_address 
              is_online = ip&.reachability_status_up?
+             
+             card_classes = is_online ? "" : "border-red-500"
           %>
-          <div class="border rounded-md pb-2 pi-4 flex justify-between items-center <%= is_online ? '' : '' %>">
+          <div class="border rounded-md p-2 flex justify-between items-center <%= card_classes %>">
             <div>
-              <div class="font-bold text-sm"><%= link_to device.name, device, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %></div>
-              <div class="text-xs text-subtle"><%= link_to ip&.address, ip, class: "hover:text-orange-500", data: { turbo_frame: "_top" } || "No IP" %></div>
+              <div class="font-bold text-sm">
+                <%= link_to device.name, device, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+              </div>
+              
+              <div class="text-xs text-subtle font-mono">
+                <% if ip %>
+                  <%= link_to ip.address, ip, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+                <% else %>
+                  <!-- Using your class text-red-500 -->
+                  <span class="text-red-500 font-bold">No IP Assigned</span>
+                <% end %>
+              </div>
             </div>
+            
             <% if is_online %>
               <span class="rounded-full bg-green-500" style="width: 8px; height: 8px;" title="Online"></span>
             <% else %>
-              <span class="rounded-full bg-red-500 animate-pulse" style="width: 8px; height: 8px;" title="CRITICAL OFFLINE"></span>
+              <!-- Red Pulse for both Down IPs and Missing IPs -->
+              <span class="rounded-full bg-red-500 animate-pulse" style="width: 8px; height: 8px;" title="CRITICAL ALERT"></span>
             <% end %>
           </div>
         <% end %>
+        
         <% if critical_devices.empty? %>
           <div class="col-span-2 text-center text-subtle text-xs italic">No devices marked as Critical.</div>
         <% end %>

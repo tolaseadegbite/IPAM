@@ -10,7 +10,6 @@ export default class extends Controller {
   closeOnClickOutside(event) {
     const isOutside = !this.element.contains(event.target)
     const isVisible = !this.filtersTarget.classList.contains("hide")
-    // Check if the click is on a submit button or the clear link inside the form
     const isActionInside = this.filtersTarget.contains(event.target)
 
     if (isOutside && isVisible && !isActionInside) {
@@ -18,18 +17,19 @@ export default class extends Controller {
     }
   }
 
-  // NEW: Clears all inputs visually
+  // UPDATED: Handles text, selects, AND checkboxes correctly
   clear(event) {
-    // The link will handle the Turbo Request to reset the table.
-    // We just need to empty the UI fields.
-    
     const inputs = this.filtersTarget.querySelectorAll("input, select")
     
     inputs.forEach((input) => {
-      // Don't clear hidden fields (like authenticity_token) or submit buttons
+      // Skip hidden fields (CSRF tokens) and buttons
       if (input.type === "hidden" || input.type === "submit") return
       
-      input.value = ""
+      if (input.type === "checkbox" || input.type === "radio") {
+        input.checked = false
+      } else {
+        input.value = ""
+      }
     })
   }
 }
