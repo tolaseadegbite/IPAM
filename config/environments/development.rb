@@ -45,9 +45,6 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
-  # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
-
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
@@ -87,6 +84,11 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :letter_opener_web
   config.action_mailer.perform_deliveries = true
 
-  config.action_mailer.default_url_options = { host: "127.0.0.1", port: 3000 }
-  Rails.application.routes.default_url_options = { host: "127.0.0.1", port: 3000 }
+  config.action_mailer.default_url_options = { host: "192.168.13.185", port: 3000 }
+  Rails.application.routes.default_url_options = { host: "192.168.13.185", port: 3000 }
+  # Rails.application.routes.default_url_options = { host: "127.0.0.1", port: 3000 }
+
+  # Allow websocket connections from external devices
+  config.action_cable.disable_request_forgery_protection = true
+  config.action_cable.url = "/cable"
 end
