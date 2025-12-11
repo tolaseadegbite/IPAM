@@ -31,7 +31,7 @@
           <span class="icon icon--monitor text-subtle text-xs"></span>
           <div class="text-sm font-medium"><%= link_to ip_address.device.name, device_path(ip_address.device), data: { turbo_frame: "_top" } %></div>
         </div>
-        <div class="text-xs text-subtle mis-5"><%= ip_address.device.employee&.first_name || "Unassigned" %></div>
+        <div class="text-xs text-subtle mis-5"><%= ip_address.device.employee&.first_name || "Unassigned to an employee" %></div>
       <% else %>
         <div class="text-xs text-subtle italic flex items-center gap-2 h-10">
           Empty Slot
