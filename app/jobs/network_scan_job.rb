@@ -2,24 +2,17 @@ class NetworkScanJob < ApplicationJob
   queue_as :monitoring
 
   def perform
-    Rails.logger.info "[NetworkScanJob] Starting scheduled network scan..."
+    subnets = Subnet.all.to_a
+    batch_id = Time.current.to_i
+    
+    # Store the count of jobs we are about to launch
+    Rails.cache.write("scan_batch_#{batch_id}", subnets.count)
 
-    # 1. Iterate through all subnets (Phase A)
-    # This process is blocking. The Dashboard button will remain "Scanning..." (pulsing)
-    # while this loop runs, because we haven't sent the unlock signal yet.
-    # Users will see individual IP cards updating in real-time.
-    Subnet.find_each do |subnet|
-      # Format the CIDR (e.g., "192.168.1.0/24")
-      cidr_string = "#{subnet.network_address}/#{subnet.network_address.prefix}"
+    Rails.logger.info "[NetworkScanJob] Spawning #{subnets.count} parallel jobs (Batch #{batch_id})..."
 
-      NetworkReconService.scan_subnet(cidr_string)
+    subnets.each do |subnet|
+      # Fan out: Enqueue all jobs simultaneously
+      SubnetScanJob.perform_later(subnet.id, batch_id)
     end
-
-    # 2. Broadcast Global Summary (Phase B)
-    # Now that ALL subnets are processed, we calculate the totals, generate the charts,
-    # set the timestamp, and unlock the "Scan Now" button on the dashboard.
-    NetworkReconService.broadcast_global_stats
-
-    Rails.logger.info "[NetworkScanJob] Scan complete. Dashboard broadcast sent."
   end
 end

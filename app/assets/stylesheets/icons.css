@@ -33,6 +33,7 @@ img.icon {
 .icon--ellipsis { --svg: url("ellipsis.svg"); }
 .icon--eye { --svg: url("eye.svg"); }
 .icon--square-pen { --svg: url("square-pen.svg"); }
+.icon--monitor-x { --svg: url("monitor-x.svg"); }
 .icon--building { --svg: url("building.svg"); }
 .icon--pen { --svg: url("pen.svg"); }
 .icon--plus { --svg: url("plus.svg"); }
@@ -42,6 +43,7 @@ img.icon {
 .icon--map-pinned { --svg: url("map-pinned.svg"); }
 .icon--warehouse { --svg: url("warehouse.svg"); }
 .icon--user { --svg: url("user.svg"); }
+.icon--triangle-alert { --svg: url("triangle-alert.svg"); }
 .icon--monitor { --svg: url("monitor.svg"); }
 .icon--message-square-text { --svg: url("message-square-text.svg"); }
 .icon--mail { --svg: url("mail.svg"); }

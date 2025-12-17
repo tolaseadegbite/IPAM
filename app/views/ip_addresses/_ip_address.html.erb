@@ -15,7 +15,7 @@
           <span class="rounded-full bg-green-500 animate-pulse" style="width: 0.6rem; height: 0.6rem;"></span>
         </div>
       <% elsif ip_address.last_seen_at %>
-        <span class="text-subtle" title="Last seen <%= time_ago_in_words(ip_address.last_seen_at) %> ago">
+        <span class="text-subtle text-sm text-end" title="Last seen <%= time_ago_in_words(ip_address.last_seen_at) %> ago">
           <%= time_ago_in_words(ip_address.last_seen_at, include_seconds: false) %>
         </span>
       <% else %>

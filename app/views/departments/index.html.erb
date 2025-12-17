@@ -1,7 +1,7 @@
 <% content_for :title, "Departments" %>
 
 <% content_for :page_header do %>
-  <h4 class="font-semibold">Departments (<%= Department.count %>)</h4>
+  <h4 class="font-semibold">Departments (<%= @pagy.count %>)</h4>
 <% end %>
 
 <% content_for :header_action_buttons do %>

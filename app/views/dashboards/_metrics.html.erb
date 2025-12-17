@@ -63,7 +63,7 @@
         <div>
           <div class="text-subtle text-xs font-bold uppercase">Rogue / Unknown</div>
           <div class="text-4xl font-bold <%= rogue_count > 0 ? 'text-red-500' : 'text-primary' %> mbs-1">
-            <%= link_to rogue_count, ip_addresses_path(q: { device_id_null: true, reachability_status_eq: 1 }), data: { turbo_frame: '_top' } %>
+            <%= link_to rogue_count, ip_addresses_path(q: { rogue_only: true }), data: { turbo_frame: '_top' } %>
           </div>
         </div>
         <div class="text-2xl">⚠️</div>
@@ -188,7 +188,7 @@
       <div class="card">
         <div class="p-3 border-be border-main bg-surface flex justify-between items-center">
           <h3 class="font-semibold text-base text-red-500">Rogue Devices</h3>
-          <%= link_to "View All", ip_addresses_path(q: { device_id_null: true, reachability_status_eq: 1 }), class: "text-xs hover:text-orange-500" %>
+          <%= link_to "View All", ip_addresses_path(q: { rogue_only: true }), class: "text-xs hover:text-orange-500" %>
         </div>
         <div class="p-0">
           <% if rogue_devices.any? %>

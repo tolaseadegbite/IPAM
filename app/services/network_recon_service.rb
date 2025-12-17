@@ -23,7 +23,13 @@ class NetworkReconService
     # -sn: Ping Scan (disable port scan)
     # -PR: ARP Ping (fastest for local LAN)
     # -n:  No DNS resolution (speed optimization)
-    command = "#{nmap_bin} -sn -PR -n #{subnet_cidr}"
+
+    # old command
+    # command = "#{nmap_bin} -sn -PR -n #{subnet_cidr}"
+
+    # new command (Fast & Aggressive):
+    command = "#{nmap_bin} -sn -PR -n -T4 --min-parallelism 100 --max-rtt-timeout 100ms #{subnet_cidr}"
+
     output = `#{command}`
 
     # 2. Parse Results

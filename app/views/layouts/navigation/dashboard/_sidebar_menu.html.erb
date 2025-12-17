@@ -6,7 +6,7 @@
 
   <div class="sidebar-menu__content">
     <div class="sidebar-menu__group">
-      <%# <div class="sidebar-menu__group-label">MAIN</div> %>
+      <div class="sidebar-menu__group-label">MAIN</div>
       <div class="sidebar-menu__items">
         <nav class="">
           <%= link_to dashboard_path, class: "flex gap-4 btn sidebar-menu__button mbe-1" do %>
@@ -35,8 +35,14 @@
             <span class="icon icon--users-round" aria-hidden="true"></span>
             Employees
           <% end %>
+        </nav>
+      </div>
+    </div>
 
-          <%# Adds `aria-current="page"` if the current page matches the link's path. %>
+    <div class="sidebar-menu__group">
+      <div class="sidebar-menu__group-label">ASSET MANAGEMENT</div>
+      <div class="sidebar-menu__items">
+        <nav class="">
           <%= link_to subnets_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(subnets_path) ? { current: "page" } : {}) do %>
@@ -59,8 +65,36 @@
             <span class="icon icon--monitor" aria-hidden="true"></span>
             Devices
           <% end %>
+        </nav>
+      </div>
+    </div>
+                       
+    <div class="sidebar-menu__group">
+      <div class="sidebar-menu__group-label">SECURITY</div>
+      <div class="sidebar-menu__items">
+        <nav class="">
+          <%= link_to ip_addresses_path(q: { rogue_only: true }), 
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
+                      aria: (current_page?(subnets_path) ? { current: "page" } : {}) do %>
+            <span class="icon icon--triangle-alert" aria-hidden="true"></span>
+            Rogue Devices
+          <% end %>
 
           <%# Adds `aria-current="page"` if the current page matches the link's path. %>
+          <%= link_to devices_path(q: { critical_eq: true }), 
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
+                      aria: (current_page?(ip_addresses_path) ? { current: "page" } : {}) do %>
+            <span class="icon icon--monitor-x" aria-hidden="true"></span>
+            Critical Devices
+          <% end %>
+        </nav>
+      </div>
+    </div>
+
+    <div class="sidebar-menu__group">
+      <div class="sidebar-menu__group-label">USER MANAGEMENT</div>
+      <div class="sidebar-menu__items">
+        <nav class="">
           <%= link_to admin_users_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(admin_users_path) ? { current: "page" } : {}) do %>
