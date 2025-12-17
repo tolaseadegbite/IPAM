@@ -12,6 +12,13 @@
               data-timeago-date-value="<%= last_scan.iso8601 %>">
           <%= time_ago_in_words(last_scan) %> ago
         </span>
+
+        <!-- NEW: DURATION DISPLAY -->
+        <% if local_assigns[:duration] && duration.to_f > 0 %>
+          <span class="text-xs text-subtle ml-1">
+            (Duration: <%= duration %>s)
+          </span>
+        <% end %>
       </p>
     </div>
 

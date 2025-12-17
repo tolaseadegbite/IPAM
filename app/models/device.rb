@@ -1,5 +1,5 @@
 class Device < ApplicationRecord
-  # has_paper_trail
+  has_paper_trail ignore: [:updated_at, :created_at]
 
   include PgSearch::Model
 

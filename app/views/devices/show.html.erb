@@ -49,4 +49,16 @@
       <%= render "devices/network_and_owner_cards" %>
     </div>
   </div>
+  
+  <div class="mbs-6">
+    <%# --- NEW: AUDIT LOG SECTION --- %>
+    <%# We load versions for the device AND its IP address history if available %>
+    <% 
+      device_versions = @device.versions.limit(20).order(created_at: :desc)
+      # Optional: Merge IP history if you want to see IP changes on this page too
+    %>
+
+    <%# Pass the parent object (@device) explicitly %>
+    <%= render "shared/audit_log", records: device_versions, parent: @device %>
+  </div
 </div>

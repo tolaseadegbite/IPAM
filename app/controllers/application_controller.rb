@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   before_action :set_current_request_details
   before_action :set_current_user_from_session
   before_action :authenticate
+  before_action :set_paper_trail_whodunnit
 
   include Pagy::Backend
 

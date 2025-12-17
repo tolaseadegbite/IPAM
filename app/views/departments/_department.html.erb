@@ -1,7 +1,7 @@
 <tr id="<%= dom_id(department, :table_row) %>">
-  <td class="p-4 font-semibold"><span><%= link_to department.name, department, class: "text-lg text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
+  <td class="p-3 font-semibold"><span><%= link_to department.name, department, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
 
-  <td class="p-4"><span><%= department.branch.name %></span></td>
+  <td class="p-3"><span><%= department.branch.name %></span></td>
 
   <td class="flex items-center justify-end gap-4">
     <%= link_to "Edit", edit_department_path(department),

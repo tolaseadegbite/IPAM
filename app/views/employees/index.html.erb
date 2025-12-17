@@ -23,14 +23,14 @@
   <%= turbo_frame_tag :employees_table do %>
     
     <%# --- DESKTOP VIEW: Table (Visible on medium screens and up) --- %>
-    <div class="show@md relative i-full overflow-x-auto border rounded-md bg-surface">
+    <div class="show@md relative i-full overflow-x-auto border rounded-md">
       <table class="table i-full text-left">
         <thead class="bg-shade font-semibold">
           <tr>
-            <th class="p-4"><%= sort_link(@search, :full_name, class: "font-semibold") %></th>
-            <th class="p-4"><%= sort_link(@search, :department_name, "Department name", class: "font-semibold") %></th>
-            <th class="p-4"><%= sort_link(@search, :status, class: "font-semibold") %></th>
-            <th class="p-4 text-end font-semibold">Actions</th>
+            <th class="p-3"><%= sort_link(@search, :full_name, class: "font-semibold") %></th>
+            <th class="p-3"><%= sort_link(@search, :department_name, "Department name", class: "font-semibold") %></th>
+            <th class="p-3"><%= sort_link(@search, :status, class: "font-semibold") %></th>
+            <th class="p-3 text-end font-semibold">Actions</th>
           </tr>
         </thead>
         <tbody id="employees-table">

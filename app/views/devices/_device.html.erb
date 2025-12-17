@@ -1,19 +1,19 @@
 <tr id="<%= dom_id(device, :table_row) %>">
-  <td class="p-4">
+  <td class="p-3">
     <div class="font-semibold"><%= link_to (device.name.presence || "Nil"), device, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
     <div class="text-xs text-subtle"><%= device.device_type&.humanize.presence || "Nil" %></div>
   </td>
-  <!--<td class="p-4 text-sm">
+  <!--<td class="p-3 text-sm">
     <div class="font-mono"><%= device.serial_number.presence || "Nil" %></div>
     <div class="text-xs text-subtle"><span class="font-semibold">Tag:</span> <%= device.asset_tag.presence || "Nil" %></div>
   </td>-->
-  <td class="p-4 font-mono text-sm text-sky-500">
+  <td class="p-3 font-mono text-sm text-sky-500">
     <%= device.ip_address&.address.presence || "Nil" %>
   </td>
-  <td class="p-4 font-mono text-sm text-green-500">
+  <td class="p-3 font-mono text-sm text-green-500">
     <%= device&.mac_address.presence || "Nil" %>
   </td>
-  <td class="p-4 text-sm">
+  <td class="p-3 text-sm">
     <%= device.employee&.full_name.presence || "Owner: Nil" %>
     
     <div class="text-xs text-subtle">

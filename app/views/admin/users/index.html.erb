@@ -21,15 +21,15 @@
   <%= turbo_frame_tag :users_table do %>
     
     <%# --- DESKTOP VIEW --- %>
-    <div class="show@md relative i-full overflow-x-auto border rounded-md bg-surface">
+    <div class="show@md relative i-full overflow-x-auto border rounded-md">
       <table class="table i-full text-left">
         <thead class="bg-shade font-semibold">
           <tr>
-            <th class="p-4"><%= sort_link(@search, :username, class: "font-semibold") %></th>
-            <th class="p-4"><%= sort_link(@search, :email, class: "font-semibold") %></th>
-            <th class="p-4">Role</th>
-            <th class="p-4">Status</th>
-            <th class="p-4 text-end">Actions</th>
+            <th class="p-3"><%= sort_link(@search, :username, class: "font-semibold") %></th>
+            <th class="p-3"><%= sort_link(@search, :email, class: "font-semibold") %></th>
+            <th class="p-3">Role</th>
+            <th class="p-3">Status</th>
+            <th class="p-3 text-end">Actions</th>
           </tr>
         </thead>
         <tbody id="users-table">

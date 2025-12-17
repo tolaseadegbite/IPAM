@@ -1,6 +1,6 @@
 class IpAddress < ApplicationRecord
-  # has_paper_trail
-
+  has_paper_trail ignore: [:last_seen_at, :updated_at, :created_at]
+  
   include PgSearch::Model
 
   # Search by the IP string itself

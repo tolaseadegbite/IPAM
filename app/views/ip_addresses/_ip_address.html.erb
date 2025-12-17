@@ -3,7 +3,7 @@
   <div>
     <div class="flex justify-between items-start">
       <div>
-        <div class="font-mono font-bold text-lg text-primary">
+        <div class="font-mono font-bold text-primary text-sm">
           <%= link_to ip_address.address, ip_address, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
         </div>
         <div class="text-xs text-subtle"><%= ip_address.subnet.name %></div>
@@ -39,7 +39,7 @@
       <% end %>
     </div>
 
-    <div class="mbs-3 border-t pbs-2 flex justify-between items-center">
+    <div class="mbs-3 pbs-2 flex justify-between items-center">
       <!-- Admin Status (Intent) -->
       <% status_badge = case ip_address.status 
          when "available" then "text-green-600"
@@ -47,7 +47,7 @@
          when "reserved" then "text-yellow-600"
          when "blacklisted" then "text-red-600"
          end %>
-      <span class="font-semibold uppercase font-mono <%= status_badge %>">
+      <span class="font-semibold text-xs uppercase font-mono <%= status_badge %>">
         <%= ip_address.status %>
       </span>
       

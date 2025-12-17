@@ -1,5 +1,5 @@
 class Branch < ApplicationRecord
-  #   has_paper_trail
+  has_paper_trail ignore: [:updated_at, :created_at]
 
   has_many :departments, dependent: :restrict_with_error # Don't delete dept if people are in it
   has_many :devices, through: :departments # Optimization for reporting

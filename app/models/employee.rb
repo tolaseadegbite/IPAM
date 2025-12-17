@@ -1,6 +1,6 @@
 class Employee < ApplicationRecord
-  # has_paper_trail
-
+  has_paper_trail ignore: [:updated_at, :created_at]
+  
   include PgSearch::Model
 
   # Search by Name or Email

@@ -71,8 +71,11 @@ class DashboardsController < ApplicationController
     # 4. Timestamp (NEW)
     # Read from cache to match the Service, fallback to DB, fallback to Now
     @last_scan = Rails.cache.read("last_network_scan_completed_at") || IpAddress.maximum(:last_seen_at) || Time.current
-  end
 
+    # 5. Duration (NEW)
+    @last_duration = Rails.cache.read("last_scan_duration") || 0
+  end
+  
   def dashboard_locals(scanning: false)
     {
       online_count: @online_count,
@@ -86,7 +89,8 @@ class DashboardsController < ApplicationController
       ghost_assets: @ghost_assets,
       critical_devices: @critical_devices,
       recent_events: @recent_events,
-      last_scan: @last_scan, # <--- Pass the instance variable
+      last_scan: @last_scan,
+      duration: @last_duration,
       scanning: scanning
     }
   end

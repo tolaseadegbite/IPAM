@@ -27,3 +27,11 @@
     <%= render "ip_addresses/details" %>
   </div>
 </div>
+
+<div class="m-4">
+  <% 
+     # Get the history for this IP
+     ip_versions = @ip_address.versions.order(created_at: :desc).limit(20) 
+  %>
+  <%= render "shared/audit_log", records: ip_versions, parent: @ip_address %>
+</div>

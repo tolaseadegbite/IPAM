@@ -1,9 +1,9 @@
 <tr id="<%= dom_id(employee, :table_row) %>">
-  <td class="p-4 font-semibold"><span><%= link_to employee.full_name, employee, class: "text-lg text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
+  <td class="p-3 font-semibold"><span><%= link_to employee.full_name, employee, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
 
-  <td class="p-4"><%= employee.department.name %> <span class="text-sm text-subtle block"><%= link_to employee.department.branch.name, branch_path(employee.department.branch), class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
+  <td class="p-3"><%= employee.department.name %> <span class="text-sm text-subtle block"><%= link_to employee.department.branch.name, branch_path(employee.department.branch), class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
 
-  <td class="p-4">
+  <td class="p-3">
     <% status_color = case employee.status 
        when 'active' then 'bg-green-100 text-green-800'
        when 'on_leave' then 'bg-yellow-100 text-yellow-800'

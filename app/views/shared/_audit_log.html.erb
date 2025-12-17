@@ -1,0 +1,94 @@
+  <div class="pb-4">
+    <h3 class="font-bold text-lg">Audit Log</h3>
+  </div>
+  
+  <div class="overflow-x-auto border rounded-md">
+    <table class="table i-full text-sm text-left">
+      <thead class="bg-shade font-semibold text-subtle rounded-lg">
+        <tr>
+          <th class="p-3">When</th>
+          <th class="p-3">Who</th>
+          <th class="p-3">Action</th>
+          <th class="p-3">Changes</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        <% records.each do |version| %>
+          <tr class="">
+            <td class="p-3 whitespace-nowrap text-subtle">
+              <%= time_ago_in_words(version.created_at) %> ago
+            </td>
+            <td class="p-3 font-medium">
+              <%# Logic to handle User IDs vs "Network Scanner" string %>
+              <% if version.whodunnit.to_i > 0 && (user = User.find_by(id: version.whodunnit)) %>
+                <%= link_to user.username, "#", class: "text-green-600" %>
+              <% else %>
+                <span class="text-orange-600"><%= version.whodunnit || "System" %></span>
+              <% end %>
+            </td>
+            <td class="p-3">
+              <span class="uppercase text-xs font-bold pi-2 pb-1 rounded 
+                <%= version.event == 'destroy' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700' %>">
+                <%= version.event %>
+              </span>
+            </td>
+            <td class="p-3">
+  
+              <%# --- 1. CONTEXT HEADER (The Fix) --- %>
+              <%# If this log is about an IP Address, show WHICH IP it is %>
+              <% if version.item_type == "IpAddress" %>
+                <%# Try to find the live IP object, or restore it from history if deleted %>
+                <% ip_obj = version.item || version.reify %>
+                <div class="mb-2 pbe-2 border-be flex items-center gap-2">
+                  <span class="uppercase font-bold text-gray-400 border border-gray-200 pi-1 rounded">IP</span>
+                  <span class="text-xs font-mono font-semibold text-sky-600">
+                    <%= ip_obj&.address || "Unknown IP" %>
+                  </span>
+                </div>
+              <% end %>
+
+              <%# --- 2. EXISTING CHANGES LIST --- %>
+              <% if version.changeset.present? %>
+                <div class="flex flex-col gap-1">
+                  <% version.changeset.each do |key, (before, after)| %>
+                    <%# Ensure key is a string for comparison %>
+                    <% next if %w[updated_at created_at last_seen_at].include?(key.to_s) %>
+                    
+                    <div class="text-xs font-mono">
+                      <span class="font-bold text-subtle"><%= key.to_s.humanize %>:</span>
+                      
+                      <%# Handle 'Create' events where 'before' is nil %>
+                      <% if before.present? %>
+                        <span class="text-red-500 line-through"><%= before.to_s.truncate(30) %></span>
+                        <span class="text-subtle pi-1">→</span>
+                      <% end %>
+                      
+                      <span class="text-green-600 font-bold"><%= after.to_s.truncate(30) %></span>
+                    </div>
+                  <% end %>
+                </div>
+              <% else %>
+                <span class="text-subtle text-xs italic opacity-50">No details recorded</span>
+              <% end %>
+            </td>
+
+          </tr>
+        <% end %>
+        <% if records.empty? %>
+          <tr><td colspan="4" class="p-4 text-center text-subtle italic">No history recorded yet.</td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+<% unless local_assigns[:hide_footer] %>
+  <div class="p-4 flex justify-center">
+    <% if parent.present? && parent.versions.count > 20 %>
+      <%= link_to versions_path(item_type: parent.class.name, item_id: parent.id), class: "btn hover:bg-orange-500 transition" do %>
+        View Full History (<%= parent.versions.count %> entries)
+      <% end %>
+    <% elsif records.empty? %>
+      <span class="text-xs text-subtle">No records found.</span>
+    <% end %>
+  </div>
+<% end %>

@@ -77,4 +77,11 @@
       </div>
     </div>
   </div>
+
+  <div class="mbs-4">
+    <% 
+      branch_versions = @branch.versions.order(created_at: :asc).limit(20) 
+    %>
+    <%= render "shared/audit_log", records: branch_versions, parent: @branch %>
+  </div>
 </div>

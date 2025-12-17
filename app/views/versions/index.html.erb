@@ -1,0 +1,24 @@
+<% content_for :title, "Audit History" %>
+
+<% content_for :page_header do %>
+  <div class="flex items-center gap-4">
+    <%# Back button logic %>
+    <% if @item %>
+      <%= link_to polymorphic_path(@item), class: "btn btn--subtle btn--icon" do %>
+        <span class="icon icon--chevron-left"></span>
+      <% end %>
+      <h4 class="font-semibold">History: <%= @item.try(:name) || @item.try(:full_name) || "Item ##{@item.id}" %>  (<%= @pagy.count %>)</h4>
+    <% else %>
+      <h4 class="font-semibold">Global Audit Log (<%= @pagy.count %>)</h4>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="p-4 i-full">
+  <%# Reuse your existing partial logic, but applied to the main page %>
+  <%= render "shared/audit_log", records: @versions, hide_footer: true %>
+  
+  <div class="p-4 border-t">
+    <%= render "shared/pagination", pagy: @pagy %>
+  </div>
+</div>

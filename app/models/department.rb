@@ -1,6 +1,6 @@
 class Department < ApplicationRecord
-  # has_paper_trail
-
+  has_paper_trail ignore: [:updated_at, :created_at]
+  
   NAMES = [
     "Account",
     "DHRM",

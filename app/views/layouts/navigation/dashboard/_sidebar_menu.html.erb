@@ -92,7 +92,7 @@
     </div>
 
     <div class="sidebar-menu__group">
-      <div class="sidebar-menu__group-label">USER MANAGEMENT</div>
+      <div class="sidebar-menu__group-label">USER MANAGEMENT & Audit</div>
       <div class="sidebar-menu__items">
         <nav class="">
           <%= link_to admin_users_path, 
@@ -100,6 +100,13 @@
                       aria: (current_page?(admin_users_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--users" aria-hidden="true"></span>
             Users
+          <% end %>
+
+          <%= link_to versions_path, 
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
+                      aria: (current_page?(versions_path) ? { current: "page" } : {}) do %>
+            <span class="icon icon--history" aria-hidden="true"></span>
+            History
           <% end %>
         </nav>
       </div>

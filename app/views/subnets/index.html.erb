@@ -21,15 +21,15 @@
   <%= turbo_frame_tag :subnets_table do %>
     
     <%# --- DESKTOP VIEW: Table (Visible on medium screens and up) --- %>
-    <div class="show@md relative i-full overflow-x-auto border rounded-md bg-surface">
+    <div class="show@md relative i-full overflow-x-auto border rounded-md">
       <table class="table i-full text-left">
         <thead class="bg-shade font-semibold">
           <tr>
-            <th class="p-4"><%= sort_link(@search, :name, class: "font-semibold") %></th>
-            <th class="p-4"><%= sort_link(@search, :network_address, "Network / CIDR", class: "font-semibold") %></th>
-            <th class="p-4"><%= sort_link(@search, :gateway, class: "font-semibold") %></th>
-            <th class="p-4"><%= sort_link(@search, :vlan_id, "VLAN", class: "font-semibold") %></th>
-            <th class="p-4 text-end">Actions</th>
+            <th class="p-3"><%= sort_link(@search, :name, class: "font-semibold") %></th>
+            <th class="p-3"><%= sort_link(@search, :network_address, "Network / CIDR", class: "font-semibold") %></th>
+            <th class="p-3"><%= sort_link(@search, :gateway, class: "font-semibold") %></th>
+            <th class="p-3"><%= sort_link(@search, :vlan_id, "VLAN", class: "font-semibold") %></th>
+            <th class="p-3 text-end">Actions</th>
           </tr>
         </thead>
         <tbody id="subnets-table">

@@ -84,4 +84,11 @@
       <% end %>
     </div>
   </div>
+
+  <div class="mbs-4">
+    <% 
+      subnet_versions = @subnet.versions.order(created_at: :desc).limit(20) 
+    %>
+    <%= render "shared/audit_log", records: subnet_versions, parent: @subnet %>
+  </div>
 </div>

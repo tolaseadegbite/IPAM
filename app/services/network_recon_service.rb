@@ -154,12 +154,23 @@ class NetworkReconService
                                 .limit(10)
 
     # 4. Timestamp & Cache
+    # --- NEW TIMING LOGIC ---
+    # 1. Calculate Duration (Now - Start Time)
+    start_time = Rails.cache.read("scan_batch_start_time")
+    duration = if start_time
+                 (Time.current - start_time).round(2) # Returns seconds (e.g., 2.45)
+               else
+                 0
+               end
+    
+    # 2. Save duration to cache so it persists on Page Refresh (GET request)
+    Rails.cache.write("last_scan_duration", duration)
+
+    # 3. Timestamp & Cache (Existing)
     last_scan = Time.current
     Rails.cache.write("last_network_scan_completed_at", last_scan)
 
-    # 5. Broadcast (Phase B)
-    # This replaces the `dashboard_metrics` container, updating charts, timestamps,
-    # and crucially, setting `scanning: false` to unlock the UI button.
+    # 4. Broadcast (Add 'duration' to locals)
     Turbo::StreamsChannel.broadcast_replace_to(
       "monitoring",
       target: "dashboard_metrics",
@@ -176,8 +187,9 @@ class NetworkReconService
         ghost_assets: ghost_assets,
         critical_devices: critical_devices,
         recent_events: recent_events,
-        last_scan: last_scan, # Explicit timestamp matching job finish
-        scanning: false       # UNLOCK THE BUTTON
+        last_scan: last_scan, 
+        duration: duration,   # <--- PASS THE DURATION HERE
+        scanning: false 
       }
     )
   end
@@ -185,6 +197,7 @@ class NetworkReconService
   private
 
   def process_host_update(ip_record, host_data, device_records_map)
+    # 1. Prepare the attributes
     updates = {
       last_seen_at: Time.current,
       reachability_status: :up
@@ -195,10 +208,10 @@ class NetworkReconService
       known_device = device_records_map[host_data[:mac]]
 
       if known_device
-        # Drift Detection: Did the device move IPs?
+        # Drift Detection
         if ip_record.device_id != known_device.id
+          # Log the Alert for the Dashboard
           Rails.logger.info "[NetworkRecon] Drift detected: '#{known_device.name}' -> #{host_data[:ip]}"
-
           NetworkEvent.create!(
             kind: :drift,
             ip_address: host_data[:ip],
@@ -206,23 +219,33 @@ class NetworkReconService
             message: "Device '#{known_device.name}' moved to #{host_data[:ip]}"
           )
 
-          # Clear old associations for this device
+          # Clear old associations
           IpAddress.where(device_id: known_device.id).update_all(device_id: nil, status: :available)
 
           updates[:device_id] = known_device.id
         end
 
-        # Auto-activate IP if it was available
+        # Auto-activate IP
         if ip_record.available?
           updates[:status] = :active
         end
       end
     end
 
-    ip_record.update_columns(updates)
-    ip_record.assign_attributes(updates) # Update in memory for the partial
+    # 2. Apply updates and Trigger PaperTrail
+    # We wrap this in a block to attribute these changes to the Scanner.
+    PaperTrail.request(whodunnit: 'Network Scanner') do
+      ip_record.assign_attributes(updates)
+      
+      # We check 'changed?' to avoid database calls if nothing happened.
+      # Because we configured 'ignore: [:last_seen_at]' in the model, 
+      # PaperTrail will automatically SKIP creating a version if ONLY time changed.
+      if ip_record.changed?
+        ip_record.save! 
+      end
+    end
 
-    # Broadcast individual IP update (Phase A)
+    # 3. Broadcast to Dashboard (SolidCable)
     Turbo::StreamsChannel.broadcast_replace_to(
       "monitoring",
       target: ip_record,

@@ -1,5 +1,6 @@
 class Subnet < ApplicationRecord
-  # has_paper_trail
+  has_paper_trail ignore: [:updated_at, :created_at]
+
   has_many :ip_addresses, dependent: :destroy
 
   validates :name, presence: true

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "versions/index"
   mount MissionControl::Jobs::Engine, at: "/jobs"
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
@@ -64,6 +65,9 @@ Rails.application.routes.draw do
       get :select_options
     end
   end
+
+  # Auditing
+  resources :versions, only: [:index]
 
   get "search", to: "search#index"
 
