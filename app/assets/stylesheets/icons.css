@@ -31,7 +31,7 @@ img.icon {
 .icon--chevrons-right { --svg: url("chevrons-right.svg"); }
 .icon--chevron-right { --svg: url("chevron-right.svg"); }
 .icon--ellipsis { --svg: url("ellipsis.svg"); }
-.icon--eye { --svg: url("eye.svg"); }
+.icon--history { --svg: url("history.svg"); }
 .icon--square-pen { --svg: url("square-pen.svg"); }
 .icon--monitor-x { --svg: url("monitor-x.svg"); }
 .icon--building { --svg: url("building.svg"); }

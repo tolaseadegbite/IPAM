@@ -3,12 +3,13 @@
 
   <div class="grid grid-cols-1 grid-cols-2@md gap-4">
     <div class="col-span-1">
-      <%= form.label :name, "Department Function", class: "block font-medium mbe-1" %>
-      <%= form.select :name, Department::NAMES, { prompt: "Select Standard Department" }, { class: "input w-full p-2 border rounded cursor-pointer" } %>
+      <%= form.label :name, "Department name", class: "block mbe-1" %>
+      <%= form.text_field :name, autofocus: true, class: "input" %> 
+      <%#= form.select :name, Department::NAMES, { prompt: "Select Standard Department" }, { class: "input" } %>
     </div>
 
     <div class="col-span-1">
-      <%= form.label :branch_id, class: "block font-medium mbe-1" %>
+      <%= form.label :branch_id, class: "block mbe-1" %>
       
       <% if department.branch_id %>
         <%# 1. Hidden field to ensure value is sent %>
@@ -18,13 +19,13 @@
         <%= form.collection_select :branch_id, 
               Branch.order(:name), :id, :name, 
               {}, # No prompt needed
-              { class: "input w-full p-2 border rounded bg-gray-100 cursor-not-allowed", disabled: true } %>
+              { class: "input", disabled: true } %>
       <% else %>
         <%# Standard Dropdown %>
         <%= form.collection_select :branch_id, 
               Branch.order(:name), :id, :name, 
               { prompt: "Select Branch" }, 
-              { class: "input w-full p-2 border rounded cursor-pointer" } %>
+              { class: "input cursor-pointer block" } %>
       <% end %>
     </div>
   </div>

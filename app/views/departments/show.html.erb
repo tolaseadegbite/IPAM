@@ -41,25 +41,16 @@
   <div class="grid grid-cols-1 grid-cols-2@md gap-6">
     <%# --- Employee List --- %>
     <div class="col-span-1">
-      <h3 class="font-bold text-lg mbe-4 border-be pbe-2">Employees (<%= @department.employees.count %>)</h3>
+      <div class="flex items-center justify-between mbe-4 border-be pbe-2">
+        <h3 class="font-bold text-lg">Employees (<%= @department.employees.count %>)</h3>
+        <%= link_to "Add Employee", new_employee_path(department_id: @department.id), class: "text-sm text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
+      </div>
       <% if @department.employees.any? %>
-        <ul class="flex flex-col gap-2 max-h-96 overflow-y-auto">
-          <% @department.employees.each do |employee| %>
-            <li class="card rounded-md p-2">
-              <%= link_to employee, class: "flex items-center justify-between hover:text-orange-600" do %>
-                <span class="font-medium"><%= employee.first_name %> <%= employee.last_name %></span>
-
-                <% status_color = case employee.status 
-                when 'active' then 'bg-green-100 text-green-800'
-                when 'on_leave' then 'bg-yellow-100 text-yellow-800'
-                when 'terminated' then 'bg-red-100 text-red-800'
-                end %>
-
-                <span class="text-xs <%= status_color %> pi-2 pb-1 border rounded-md"><%= employee.status.humanize %></span>
-              <% end %>
-            </li>
+        <%= content_tag(:ul, id: dom_id(@department, :employees), class: "flex flex-col gap-2") do %>
+          <% @employees.each do |employee| %>
+            <%= render "departments/employee_show_card", employee: employee %>
           <% end %>
-        </ul>
+        <% end %>
       <% else %>
         <p class="text-subtle italic">No employees assigned.</p>
       <% end %>
@@ -67,11 +58,14 @@
 
     <%# --- Device List --- %>
     <div class="col-span-1">
-      <h3 class="font-bold text-lg mbe-4 border-be pbe-2">Devices (<%= @department.devices.count %>)</h3>
+      <div class="flex items-center justify-between mbe-4 border-be pbe-2">
+        <h3 class="font-bold text-lg">Devices (<%= @department.employees.count %>)</h3>
+        <%= link_to "Add Device", new_device_path(department_id: @department.id), class: "text-sm text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
+      </div>
       <% if @department.devices.any? %>
-        <ul class="flex flex-col gap-2 max-h-96 overflow-y-auto">
+        <%= content_tag(:div, id: dom_id(@department, :devices), class: "grid grid-cols-1 grid-cols-2@md gap-3") do %>
           <% @department.devices.each do |device| %>
-            <li class="card p-4 transition">
+            <div class="card p-4 transition">
               <%= link_to device, class: "block hover:text-orange-600" do %>
                 <div class="flex justify-between">
                   <span class="font-medium text-sm"><%= device.name %></span>
@@ -79,20 +73,32 @@
                 </div>
                 <div class="text-xs text-subtle"><%= device.device_type.humanize %></div>
               <% end %>
-            </li>
+            </div>
           <% end %>
-        </ul>
+        <% end %>
       <% else %>
         <p class="text-subtle italic">No devices assigned.</p>
       <% end %>
     </div>
   </div>
 
-  <div class="mbs-4">
+  <%# --- AUDIT LOG SECTION --- %>
+  <div class="mbs-6">
     <% 
-      dept_versions = @department.versions.order(created_at: :asc).limit(20) 
+      # 1. Department History (Self)
+      dept_query = PaperTrail::Version.where(item_type: 'Department', item_id: @department.id)
+
+      # 2. Employee History (Children)
+      emp_query = PaperTrail::Version.where(item_type: 'Employee', item_id: @department.employee_ids)
+
+      # 3. Device History (Children)
+      dev_query = PaperTrail::Version.where(item_type: 'Device', item_id: @department.device_ids)
+
+      # 4. Merge, Sort, and Limit
+      combined_versions = dept_query.or(emp_query).or(dev_query).order(created_at: :desc).limit(20)
     %>
-    <%= render "shared/audit_log", records: dept_versions, parent: @department %>
+
+    <%= render "shared/audit_log", records: combined_versions, parent: @department %>
   </div>
 
 </div>

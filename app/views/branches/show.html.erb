@@ -39,49 +39,44 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 grid-cols-3@md gap-6">
+  <div class="">
     <%# --- Branch Info --- %>
     <div id="branch_details" class="col-span-1">
       <%= render "branches/details" %>
     </div>
 
     <%# --- Associated Departments --- %>
-    <div class="col-span-2">
-      <div class="">
-        <div class="flex items-center justify-between mbe-4 border-be pbe-2">
-          <h3 class="font-bold text-lg">Departments</h3>
-          <%= link_to "Add Dept", new_department_path(branch_id: @branch.id), class: "text-sm text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
-        </div>
-        
-        <div id="<%= dom_id(@branch, :departments) %>" class="mbs-4">
-          <% if @branch.departments.any? %>
-            <div class="flex flex-col gap-2">
-              <% @branch.departments.each do |dept| %>
-                <div class="card p-4 flex items-center justify-between transition">
-                  <div>
-                    <div class="font-medium"><%= link_to dept.name, dept, class: "hover:text-orange-600" %></div>
-                    <div class="text-sm text-subtle"><%= dept.employees.count %> Employees</div>
-                  </div>
-                  <div class="text-sm font-mono text-subtle">
-                    <%= dept.devices.count %> Devices
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          <% else %>
-            <div id="empty_state">
-              <%= render "shared/empty_state", object: "department" %>
-            </div>
-          <% end %>
-        </div>
+    <div class="mbs-6">
+      <div class="flex items-center justify-between mbe-4 border-be pbe-2">
+        <h3 class="font-bold text-lg">Departments (<%= @branch.departments.count %>)</h3>
+        <%= link_to "Add Dept", new_department_path(branch_id: @branch.id), class: "text-sm text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
       </div>
+      
+      <% if @branch.departments.any? %>
+        <%= content_tag(:div, id: dom_id(@branch, :departments), class: "grid grid-cols-1 grid-cols-2@md gap-3") do %>
+          <% @departments.each do |department| %>
+            <%= render 'branches/department_show_card', department: department %> 
+          <% end %>
+        <% end %>
+      <% else %>
+        <div id="empty_state">
+          <%= render "shared/empty_state", object: "department" %>
+        </div>
+      <% end %>
     </div>
   </div>
 
-  <div class="mbs-4">
+  <%# --- AUDIT LOG SECTION --- %>
+  <div class="mbs-6">
     <% 
-      branch_versions = @branch.versions.order(created_at: :asc).limit(20) 
+      # 1. Branch History
+      branch_query = PaperTrail::Version.where(item_type: 'Branch', item_id: @branch.id)
+
+      dept_query = PaperTrail::Version.where(item_type: 'Department', item_id: @branch.department_ids)
+
+      combined_versions = branch_query.or(dept_query).order(created_at: :desc).limit(20)
     %>
-    <%= render "shared/audit_log", records: branch_versions, parent: @branch %>
+
+    <%= render "shared/audit_log", records: combined_versions, parent: @branch %>
   </div>
 </div>

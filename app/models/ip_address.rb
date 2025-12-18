@@ -1,5 +1,5 @@
 class IpAddress < ApplicationRecord
-  has_paper_trail ignore: [:last_seen_at, :updated_at, :created_at]
+  has_paper_trail ignore: [:last_seen_at, :updated_at, :created_at, :reachability_status]
   
   include PgSearch::Model
 

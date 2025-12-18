@@ -12,6 +12,7 @@ class EmployeesController < ApplicationController
 
   def new
     @employee = Employee.new
+    @employee.department_id = params[:department_id] if params[:department_id].present?
   end
 
   def edit
@@ -27,6 +28,7 @@ class EmployeesController < ApplicationController
           render turbo_stream: [
              turbo_stream.prepend("employees-table", partial: "employees/employee", locals: { employee: @employee }),
             turbo_stream.prepend("employees-cards", partial: "employees/employee_card", locals: { employee: @employee }),
+            turbo_stream.prepend(helpers.dom_id(@employee.department, :employees), partial: "departments/employee_show_card", locals: { employee: @employee }),
             turbo_stream.update("new_employee", ""), # Clear the form/modal
             turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Employee created successfully." })
           ]

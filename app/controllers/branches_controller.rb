@@ -2,12 +2,13 @@ class BranchesController < ApplicationController
   before_action :set_branch, only: %i[ show edit update destroy ]
 
   def index
-    records = Branch.order(created_at: :desc)
+    records = Branch.order(:name)
     @search = records.ransack(params[:q])
     @pagy, @branches = pagy(@search.result)
   end
 
   def show
+    @departments = @branch.departments.order(:name)
   end
 
   def new

@@ -8,49 +8,94 @@
 
     <div class="col-span-1">
       <%= form.label :first_name, class: "block font-medium mbe-1" %>
-      <%= form.text_field :first_name, class: "input w-full p-2 border rounded" %>
+      <%= form.text_field :first_name, autofocus: true, class: "input w-full p-2 border rounded" %>
     </div>
     
     <div class="col-span-1">
       <%= form.label :last_name, class: "block font-medium mbe-1" %>
       <%= form.text_field :last_name, class: "input w-full p-2 border rounded" %>
     </div>
-
-    <div class="col-span-1">
-      <label class="block font-medium mbe-1">Branch</label>
-      <% 
-         selected_branch_id = employee.department&.branch_id 
-      %>
-      <%= select_tag "branch_id", 
-            options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
-            prompt: "Select Branch First",
-            class: "input w-full p-2 border rounded cursor-pointer",
-            data: { 
-              dependent_select_target: "select", 
-              action: "change->dependent-select#load" 
-            } %>
-    </div>
     
-    <div class="col-span-1">
-      <%= form.label :department_id, class: "block font-medium mbe-1" %>
+    <% if employee.department_id %>
       
-      <%= turbo_frame_tag "department_options_frame", data: { dependent_select_target: "frame" } do %>
-        
+      <%= form.hidden_field :department_id %>
+
+      <div class="col-span-1">
+        <label class="block font-medium mbe-1">Branch</label>
         <% 
-           departments = if selected_branch_id
-                           Department.where(branch_id: selected_branch_id).order(:name)
-                         else
-                           []
-                         end
+          selected_branch_id = employee.department&.branch_id 
         %>
+        <%= select_tag "branch_id",
+              options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
+              prompt: "Select Branch First",
+              disabled: true,
+              class: "input",
+              data: { 
+                dependent_select_target: "select",
+                action: "change->dependent-select#load"
+              } %>
+      </div>
+      
+      <div class="col-span-1">
+        <%= form.label :department_id, class: "block font-medium mbe-1" %>
         
-        <%= form.select :department_id, 
-              options_from_collection_for_select(departments, :id, :name, employee.department_id),
-              { prompt: "Select Branch to see Departments" },
-              { class: "input w-full p-2 border rounded cursor-pointer" } %>
-              
-      <% end %>
-    </div>
+        <%= turbo_frame_tag "department_options_frame", data: { dependent_select_target: "frame" } do %>
+          
+          <% 
+            departments = if selected_branch_id
+                            Department.where(branch_id: selected_branch_id).order(:name)
+                          else
+                            []
+                          end
+          %>
+          
+          <%= form.select :department_id, 
+                options_from_collection_for_select(departments, :id, :name, employee.department_id),
+                { prompt: "Select Branch to see Departments" },
+                { class: "input", disabled: true } %>
+                
+        <% end %>
+      </div>
+
+    <% else %>
+
+        <div class="col-span-1">
+        <label class="block font-medium mbe-1">Branch</label>
+        <% 
+          selected_branch_id = employee.department&.branch_id 
+        %>
+        <%= select_tag "branch_id", 
+              options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
+              prompt: "Select Branch First",
+              class: "input w-full p-2 border rounded cursor-pointer",
+              data: { 
+                dependent_select_target: "select", 
+                action: "change->dependent-select#load" 
+              } %>
+      </div>
+      
+      <div class="col-span-1">
+        <%= form.label :department_id, class: "block font-medium mbe-1" %>
+        
+        <%= turbo_frame_tag "department_options_frame", data: { dependent_select_target: "frame" } do %>
+          
+          <% 
+            departments = if selected_branch_id
+                            Department.where(branch_id: selected_branch_id).order(:name)
+                          else
+                            []
+                          end
+          %>
+          
+          <%= form.select :department_id, 
+                options_from_collection_for_select(departments, :id, :name, employee.department_id),
+                { prompt: "Select Branch to see Departments" },
+                { class: "input w-full p-2 border rounded cursor-pointer" } %>
+                
+        <% end %>
+      </div>
+
+    <% end %>
     
     <div class="col-span-1">
       <%= form.label :status, class: "block font-medium mbe-1" %>

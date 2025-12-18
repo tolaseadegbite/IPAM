@@ -8,6 +8,7 @@ class DepartmentsController < ApplicationController
   end
 
   def show
+    @employees = @department.employees.order(:first_name)
   end
 
   def new

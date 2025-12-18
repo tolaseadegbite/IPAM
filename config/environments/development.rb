@@ -84,9 +84,16 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :letter_opener_web
   config.action_mailer.perform_deliveries = true
 
-  config.action_mailer.default_url_options = { host: "192.168.13.185", port: 3000 }
-  Rails.application.routes.default_url_options = { host: "192.168.13.185", port: 3000 }
-  # Rails.application.routes.default_url_options = { host: "127.0.0.1", port: 3000 }
+
+  # Make the app availbale for other hosts on the network
+  # 1. Whitelist your LAN IPs so Rails doesn't block the connection
+  config.hosts << "192.168.30.244"
+  config.hosts << "192.168.13.185"
+  config.hosts << "127.0.0.1"
+
+  # 2. Update default URLs to your NEW primary IP
+  config.action_mailer.default_url_options = { host: "192.168.30.244", port: 3000 }
+  Rails.application.routes.default_url_options = { host: "192.168.30.244", port: 3000 }
 
   # Allow websocket connections from external devices
   config.action_cable.disable_request_forgery_protection = true
