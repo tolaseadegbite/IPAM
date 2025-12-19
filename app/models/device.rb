@@ -1,12 +1,12 @@
 class Device < ApplicationRecord
-  has_paper_trail ignore: [:updated_at, :created_at]
+  has_paper_trail ignore: [ :updated_at, :created_at ]
 
   include PgSearch::Model
 
   before_save :normalize_mac_address
 
   # Search by Name, Serial, or Tag.
-  multisearchable against: [ :name, :serial_number, :asset_tag ]
+  multisearchable against: [ :name ]
 
   belongs_to :department
   belongs_to :employee, optional: true # Optional: New laptops might be in storage (no owner)
@@ -18,11 +18,11 @@ class Device < ApplicationRecord
   delegate :branch, to: :department
   delegate :name, to: :department, prefix: true
 
-  enum :device_type, { laptop: 0, desktop: 1, all_in_one: 2, printer: 3, server: 4, tablet: 5 }
+  enum :device_type, { desktop: 0, all_in_one: 1, laptop: 2, printer: 3, server: 4, tablet: 5 }
   enum :status, { active: 0, in_storage: 1, in_repair: 2, retired: 3, lost: 4 }
 
-  validates :serial_number, uniqueness: { case_sensitive: true }
-  validates :asset_tag, uniqueness: { case_sensitive: true }
+  # validates :serial_number, uniqueness: { case_sensitive: false }
+  # validates :asset_tag, uniqueness: { case_sensitive: false }
   validates :mac_address, uniqueness: { case_sensitive: false }
   validates :name, presence: true # Hostname
   validates :device_type, presence: true
@@ -32,7 +32,7 @@ class Device < ApplicationRecord
   validate :ip_released_if_retired
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[ name asset_tag serial_number mac_address device_type critical status created_at updated_at ]
+    %w[ name mac_address device_type critical status created_at updated_at ]
   end
 
   def self.ransackable_associations(auth_object = nil)

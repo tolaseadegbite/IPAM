@@ -4,8 +4,8 @@ one:
   department: one
   employee: one
   name: MyString
-  serial_number: MyString
-  asset_tag: MyString
+  # serial_number: MyString
+  # asset_tag: MyString
   device_type: 1
   model_number: MyString
   status: 1
@@ -15,8 +15,8 @@ two:
   department: two
   employee: two
   name: MyString
-  serial_number: MyString
-  asset_tag: MyString
+  # serial_number: MyString
+  # asset_tag: MyString
   device_type: 1
   model_number: MyString
   status: 1

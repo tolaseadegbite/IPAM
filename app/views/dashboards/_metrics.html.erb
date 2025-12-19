@@ -42,7 +42,7 @@
   <!-- ROW 1: HEADS UP DISPLAY -->
   <div class="grid grid-cols-1 grid-cols-3@md gap-4 mbe-6">
     <!-- 1. Reachability -->
-    <div class="card p-4 flex flex-col justify-between">
+    <div class="card bg-white p-4 flex flex-col justify-between">
       <div class="flex justify-between items-start">
         <div>
           <div class="text-subtle text-xs font-bold uppercase">Network Heartbeat</div>
@@ -65,7 +65,7 @@
     </div>
 
     <!-- 2. Rogue Counter -->
-    <div class="card p-4 flex flex-col justify-between">
+    <div class="card bg-white p-4 flex flex-col justify-between">
       <div class="flex justify-between items-start">
         <div>
           <div class="text-subtle text-xs font-bold uppercase">Rogue / Unknown</div>
@@ -81,7 +81,7 @@
     </div>
 
     <!-- 3. Capacity Utilization -->
-    <div class="card p-4 flex flex-col justify-between">
+    <div class="card bg-white p-4 flex flex-col justify-between">
       <div>
         <div class="flex justify-between mbe-1">
           <div class="text-subtle text-xs font-bold uppercase">IP Capacity</div>
@@ -99,7 +99,7 @@
   </div>
 
   <!-- ROW 1.5: NETWORK COMPOSITION CHARTS -->
-  <div class="card p-4 mbe-6">
+  <div class="card bg-white p-4 mbe-6">
     <h3 class="font-semibold text-lg mbe-4">Network Composition</h3>
     
     <div class="grid grid-cols-1 grid-cols-2@sm gap-8">
@@ -161,8 +161,8 @@
   <div class="grid grid-cols-1 grid-cols-2@lg gap-6 mbe-6">
     
     <!-- LEFT: Subnet Health -->
-    <div class="card flex flex-col">
-      <div class="p-4 border-be border-main bg-surface">
+    <div class="card bg-white flex flex-col">
+      <div class="p-4 border-be border-main">
         <h3 class="font-semibold text-base">Subnet Health</h3>
       </div>
       <div class="p-4 flex-1 overflow-y-auto" style="max-block-size: 350px;">
@@ -192,8 +192,8 @@
     <!-- RIGHT: Action Lists -->
     <div class="flex flex-col gap-4">
       <!-- Rogue List -->
-      <div class="card">
-        <div class="p-3 border-be border-main bg-surface flex justify-between items-center">
+      <div class="card bg-white">
+        <div class="p-3 border-be border-main flex justify-between items-center">
           <h3 class="font-semibold text-base text-red-500">Rogue Devices</h3>
           <%= link_to "View All", ip_addresses_path(q: { rogue_only: true }), class: "text-xs hover:text-orange-500" %>
         </div>
@@ -219,8 +219,8 @@
       </div>
 
       <!-- Ghost Assets -->
-      <div class="card">
-        <div class="p-3 border-be border-main bg-surface flex justify-between items-center">
+      <div class="card bg-white">
+        <div class="p-3 border-be border-main flex justify-between items-center">
           <h3 class="font-semibold text-base">Ghost Assets (>30 Days)</h3>
         </div>
         <div class="p-0">
@@ -231,7 +231,7 @@
                   <tr class="border-be border-main last:border-0">
                     <td class="p-3">
                       <div class="font-bold"><%= ip.device.name %></div>
-                      <div class="text-xs text-subtle"><%= ip.device.serial_number %></div>
+                      <div class="text-xs text-subtle"><%#= ip.device.serial_number %></div>
                     </td>
                     <td class="p-3 text-end text-xs text-subtle">Last seen <%= time_ago_in_words(ip.last_seen_at) %> ago</td>
                     <td class="p-3 text-end">
@@ -253,8 +253,8 @@
   <div class="grid grid-cols-1 grid-cols-2@lg gap-6">
     
     <!-- Critical Watchlist -->
-    <div class="card">
-      <div class="pbe-4 border-be border-main bg-surface">
+    <div class="card bg-white">
+      <div class="pbe-4 border-be border-main">
         <h3 class="font-semibold text-base">Critical Watchlist</h3>
       </div>
       <div class="pbs-4 grid grid-cols-1 grid-cols-2 gap-2">
@@ -297,8 +297,8 @@
     </div>
 
     <!-- Recent Activity Log -->
-    <div class="card flex flex-col">
-      <div class="pbe-4 border-be border-main bg-surface">
+    <div class="card bg-white flex flex-col">
+      <div class="pbe-4 border-be border-main">
         <h3 class="font-semibold text-base">Network Log</h3>
       </div>
       <div class="overflow-y-auto" style="max-block-size: 250px;">

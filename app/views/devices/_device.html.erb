@@ -4,8 +4,8 @@
     <div class="text-xs text-subtle"><%= device.device_type&.humanize.presence || "Nil" %></div>
   </td>
   <!--<td class="p-3 text-sm">
-    <div class="font-mono"><%= device.serial_number.presence || "Nil" %></div>
-    <div class="text-xs text-subtle"><span class="font-semibold">Tag:</span> <%= device.asset_tag.presence || "Nil" %></div>
+    <div class="font-mono"><%#= device.serial_number.presence || "Nil" %></div>
+    <div class="text-xs text-subtle"><span class="font-semibold">Tag:</span> <%#= device.asset_tag.presence || "Nil" %></div>
   </td>-->
   <td class="p-3 font-mono text-sm text-sky-500">
     <%= device.ip_address&.address.presence || "Nil" %>

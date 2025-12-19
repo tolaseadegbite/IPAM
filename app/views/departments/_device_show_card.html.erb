@@ -1,0 +1,17 @@
+<div class="card p-4 transition">
+    <%= link_to device, class: "block hover:text-orange-600" do %>
+        <div class="flex justify-between">
+            <div>
+                <span class="font-medium text-sm"><%= device.name %></span>
+                <span class="text-xs text-subtle"><%#= device.asset_tag %></span>
+                <div class="text-xs text-subtle"><%= device.device_type.humanize %></div>
+            </div>
+
+            <div>
+                <% if device.employee.present? %>
+                    <div class="text-xs text-subtle"><%= device.employee&.first_name %></div>
+                <% end %>
+            </div>
+        </div>
+    <% end %>
+</div>

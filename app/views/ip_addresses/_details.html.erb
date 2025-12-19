@@ -47,7 +47,7 @@
       <label class="block text-xs text-subtle uppercase font-bold mbe-1">Connected Device</label>
       <% if @ip_address.device %>
         <div class="font-bold text-lg"><%= link_to @ip_address.device.name, @ip_address.device, class: "text-green-600 hover:underline" %></div>
-        <div class="text-sm text-subtle"><%= @ip_address.device.serial_number %></div>
+        <div class="text-sm text-subtle"><%#= @ip_address.device.serial_number %></div>
       <% else %>
         <span class="italic text-gray-400">None</span>
       <% end %>

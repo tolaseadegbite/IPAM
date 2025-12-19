@@ -2,5 +2,5 @@
   <%= select_tag "device[employee_id]", 
         options_from_collection_for_select(employees, :id, :full_name),
         prompt: "Select Owner",
-        class: "input w-full p-2 border rounded cursor-pointer" %>
+        class: "input cursor-pointer" %>
 <% end %>

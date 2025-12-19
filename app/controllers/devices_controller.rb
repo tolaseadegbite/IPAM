@@ -2,7 +2,7 @@ class DevicesController < ApplicationController
   before_action :set_device, only: %i[ show edit update destroy ]
 
   def index
-    records = Device.includes(:department, :employee, :ip_address).order(:serial_number)
+    records = Device.includes(:department, :employee, :ip_address).order(:name)
     @search = records.ransack(params[:q])
     @pagy, @devices = pagy(@search.result)
   end
@@ -12,6 +12,7 @@ class DevicesController < ApplicationController
 
   def new
     @device = Device.new
+    @device.department_id = params[:department_id] if params[:department_id].present?
   end
 
   def edit
@@ -40,8 +41,9 @@ class DevicesController < ApplicationController
         format.html { redirect_to devices_path, notice: "Device registered." }
         format.turbo_stream do
           render turbo_stream: [
-             turbo_stream.prepend("devices-table", partial: "devices/device", locals: { device: @device }),
+            turbo_stream.prepend("devices-table", partial: "devices/device", locals: { device: @device }),
             turbo_stream.prepend("devices-cards", partial: "devices/device_card", locals: { device: @device }),
+            turbo_stream.prepend(helpers.dom_id(@device.department, :devices), partial: "departments/device_show_card", locals: { device: @device }),
             turbo_stream.update("new_device", ""), # Clear the form/modal
             turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device registered." })
           ]
@@ -120,7 +122,7 @@ class DevicesController < ApplicationController
 
     def device_params
       params.require(:device).permit(
-        :name, :mac_address, :serial_number, :asset_tag, :device_type,
+        :name, :mac_address, :device_type,
         :status, :critical, :notes, :department_id, :employee_id
       )
     end

@@ -59,21 +59,13 @@
     <%# --- Device List --- %>
     <div class="col-span-1">
       <div class="flex items-center justify-between mbe-4 border-be pbe-2">
-        <h3 class="font-bold text-lg">Devices (<%= @department.employees.count %>)</h3>
+        <h3 class="font-bold text-lg">Devices (<%= @department.devices.count %>)</h3>
         <%= link_to "Add Device", new_device_path(department_id: @department.id), class: "text-sm text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
       </div>
       <% if @department.devices.any? %>
-        <%= content_tag(:div, id: dom_id(@department, :devices), class: "grid grid-cols-1 grid-cols-2@md gap-3") do %>
+        <%= content_tag(:div, id: dom_id(@department, :devices), class: "grid grid-cols-1 grid-cols-2@md gap-2") do %>
           <% @department.devices.each do |device| %>
-            <div class="card p-4 transition">
-              <%= link_to device, class: "block hover:text-orange-600" do %>
-                <div class="flex justify-between">
-                  <span class="font-medium text-sm"><%= device.name %></span>
-                  <span class="text-xs text-subtle font-mono"><%= device.asset_tag %></span>
-                </div>
-                <div class="text-xs text-subtle"><%= device.device_type.humanize %></div>
-              <% end %>
-            </div>
+            <%= render "departments/device_show_card", device: device %>
           <% end %>
         <% end %>
       <% else %>

@@ -6,7 +6,7 @@
   <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-6">
     <div class="col-span-1">
       <%= form.label :name, "Hostname", class: "block font-medium mbe-1" %>
-      <%= form.text_field :name, class: "input" %>
+      <%= form.text_field :name, autofocus: true, class: "input" %>
     </div>
     <div class="col-span-1">
       <%= form.label :device_type, class: "block font-medium mbe-1" %>
@@ -15,14 +15,6 @@
     <div class="col-span-1">
       <%= form.label :mac_address, "Mac Address", class: "block font-medium mbe-1" %>
       <%= form.text_field :mac_address, class: "input" %>
-    </div>
-    <div class="col-span-1">
-      <%= form.label :serial_number, class: "block font-medium mbe-1" %>
-      <%= form.text_field :serial_number, class: "input" %>
-    </div>
-    <div class="col-span-1">
-      <%= form.label :asset_tag, class: "block font-medium mbe-1" %>
-      <%= form.text_field :asset_tag, class: "input" %>
     </div>
     <div class="col-span-1 flex items-center gap mbs-6">
       <%= label_tag :critical, "Critical device?", class: "text-sm font-medium cursor-pointer" %>
@@ -33,7 +25,6 @@
   <!-- SECTION: Assignment & Network -->
   <h4 class="font-bold border rounded-lg p-4 pb-3 mbe-4">Assignment & Network</h4>
   
-  <!-- CONTROLLER 1: Branch -> Department -->
   <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-6"
        data-controller="dependent-select" 
        data-dependent-select-url-value="<%= select_options_departments_path %>"
@@ -41,56 +32,97 @@
        data-dependent-select-extra-param-value="target_model=device"
        data-dependent-select-frame-id-value="department_options_frame">
 
-    <!-- 1. Branch Select (Triggers Department reload) -->
-    <div class="col-span-1">
-      <label class="block font-medium mbe-1">Branch</label>
-      <% selected_branch_id = device.department&.branch_id %>
-      <%= select_tag "branch_id", 
-            options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
-            prompt: "Select Branch First",
-            class: "input cursor-pointer",
-            data: { 
-              dependent_select_target: "select", 
-              action: "change->dependent-select#load" 
-            } %>
-    </div>
+    <% if device.department_id %>
+      
+      <!-- IMPORTANT: This sends the value since the selects below are disabled -->
+      <%= form.hidden_field :department_id %>
 
-    <!-- CONTROLLER 2: Department -> Employee -->
-    <!-- 2. Department Select (Target for Controller 1, Trigger for Controller 2) -->
-    <div class="col-span-1"
-         data-controller="dependent-select"
-         data-dependent-select-url-value="<%= select_options_employees_path %>"
-         data-dependent-select-param-value="department_id"
-         data-dependent-select-frame-id-value="employee_options_frame">
+      <!-- 1. Branch Select (Pre-selected & Disabled) -->
+      <div class="col-span-1">
+        <label class="block font-medium mbe-1">Branch</label>
+        <% selected_branch_id = device.department&.branch_id %>
+        <%= select_tag "branch_id", 
+              options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
+              prompt: "Select Branch First",
+              disabled: true,
+              class: "input bg-gray-100 cursor-not-allowed" %>
+      </div>
 
-      <%= form.label :department_id, class: "block font-medium mbe-1" %>
-      <%= turbo_frame_tag "department_options_frame" do %>
-        <% 
-            departments = if selected_branch_id
-                            Department.where(branch_id: selected_branch_id).order(:name)
-                          else
-                            []
-                          end
-        %>
-        <%= form.select :department_id, 
-              options_from_collection_for_select(departments, :id, :name, device.department_id),
-              { prompt: "Select Branch to see Departments" },
-              { class: "input cursor-pointer", 
-                data: { 
-                  dependent_select_target: "select", 
-                  action: "change->dependent-select#load" 
-                } 
+      <!-- 2. Department Select (Pre-selected & Disabled) -->
+      <div class="col-span-1">
+        <%= form.label :department_id, class: "block font-medium mbe-1" %>
+        
+        <!-- We don't strictly need the Turbo Frame here since it's static, but keeping structure is fine -->
+        <%= turbo_frame_tag "department_options_frame" do %>
+          <% 
+             # Load only the relevant departments
+             departments = Department.where(branch_id: selected_branch_id).order(:name)
+          %>
+          <%= form.select :department_id, 
+                options_from_collection_for_select(departments, :id, :name, device.department_id),
+                { prompt: "Select Branch to see Departments" },
+                { 
+                  disabled: true, 
+                  class: "input bg-gray-100 cursor-not-allowed" 
+                } %>
+        <% end %>
+      </div>
+
+    <% else %>
+
+      <!-- STANDARD EDITABLE MODE -->
+      
+      <!-- 1. Branch Select -->
+      <div class="col-span-1">
+        <label class="block font-medium mbe-1">Branch</label>
+        <% selected_branch_id = device.department&.branch_id %>
+        <%= select_tag "branch_id", 
+              options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
+              prompt: "Select Branch First",
+              class: "input cursor-pointer",
+              data: { 
+                dependent_select_target: "select", 
+                action: "change->dependent-select#load" 
               } %>
-      <% end %>
-    </div>
+      </div>
 
-    <!-- 3. Employee Select (Target for Controller 2) -->
+      <!-- 2. Department Select (Dependent) -->
+      <div class="col-span-1"
+           data-controller="dependent-select"
+           data-dependent-select-url-value="<%= select_options_employees_path %>"
+           data-dependent-select-param-value="department_id"
+           data-dependent-select-frame-id-value="employee_options_frame">
+
+        <%= form.label :department_id, class: "block font-medium mbe-1" %>
+        <%= turbo_frame_tag "department_options_frame" do %>
+          <% 
+              departments = if selected_branch_id
+                              Department.where(branch_id: selected_branch_id).order(:name)
+                            else
+                              []
+                            end
+          %>
+          <%= form.select :department_id, 
+                options_from_collection_for_select(departments, :id, :name, device.department_id),
+                { prompt: "Select Branch to see Departments" },
+                { class: "input cursor-pointer",
+                  data: { 
+                    dependent_select_target: "select", 
+                    action: "change->dependent-select#load" 
+                  } 
+                } %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- 3. Employee Select (Works for both scenarios) -->
     <div class="col-span-1">
       <%= form.label :employee_id, "Assign Owner", class: "block font-medium mbe-1" %>
       <%= turbo_frame_tag "employee_options_frame" do %>
           <% 
+            # If department is set (via Controller or via Dependent Select), load employees
             employees = if device.department_id
-                          Employee.where(department_id: device.department_id, status: :active)
+                          Employee.where(department_id: device.department_id, status: :active).order(:first_name)
                         else
                           []
                         end
@@ -100,13 +132,7 @@
                 { class: "input cursor-pointer" } %>
       <% end %>
     </div>
-
-    <!-- 4. Status Select -->
-    <!--<div class="col-span-1">
-      <%#= form.label :status, "Device status", class: "block font-medium mbe-1" %>
-      <%#= form.select :status, Device.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "input cursor-pointer" } %>
-    </div>
-  </div>-->
+  </div>
     
   <!-- SECTION: IP Assignment (Dependent Select) -->
   <div class="col-span-full card" 

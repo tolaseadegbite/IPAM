@@ -25,10 +25,10 @@ class NetworkReconService
     # -n:  No DNS resolution (speed optimization)
 
     # old command
-    # command = "#{nmap_bin} -sn -PR -n #{subnet_cidr}"
+    command = "#{nmap_bin} -sn -PR -n #{subnet_cidr}"
 
     # new command (Fast & Aggressive):
-    command = "#{nmap_bin} -sn -PR -n -T4 --min-parallelism 100 --max-rtt-timeout 250ms #{subnet_cidr}"
+    # command = "#{nmap_bin} -sn -PR -n -T4 --min-parallelism 100 --max-rtt-timeout 250ms #{subnet_cidr}"
 
     output = `#{command}`
 

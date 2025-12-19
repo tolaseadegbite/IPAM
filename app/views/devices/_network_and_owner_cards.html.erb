@@ -15,6 +15,22 @@
 <% end %>
 </div>
 
+<%# Mac Address Card %>
+<div class="card bg-white shadow-sm">
+<h3 class="font-bold text-lg mbe-4 border-be pbe-2 flex items-center gap-2">
+    <span class="icon icon--monitor"></span> MAC ADDR
+</h3>
+<% if @device.ip_address %>
+    <div class="text-center p-4 bg-blue-50 border border-blue-100 rounded-md">
+        <div class="font-mono text-2xl font-bold text-blue-700 mbe-1"><%= @device.mac_address %></div>
+    </div>
+<% else %>
+    <div class="text-center p-4 bg-gray-50 border border-dashed rounded text-subtle">
+        No MAC Address Assigned
+    </div>
+<% end %>
+</div>
+
 <%# Owner Card %>
 <div class="card p-6 border rounded bg-white shadow-sm">
 <h3 class="font-bold text-lg mbe-4 border-be pbe-2 flex items-center gap-2">

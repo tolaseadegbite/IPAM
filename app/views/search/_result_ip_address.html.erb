@@ -19,8 +19,17 @@
     </div>
     <div class="text-right text-sm">
       <% if item.device %>
-        <div class="text-subtle">Assigned to:</div>
-        <div class="font-semibold"><%= link_to item.device.name, item, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
+        <div class="text-subtle mbe-3">Assigned to:</div>
+        <div class="flex items-center gap-3 text-subtle">
+          <span class="icon icon--monitor"></span> 
+          <%= link_to item.device.name, item, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+        </div>
+        <% if item.device.employee.present? %>
+          <div class="flex items-center gap-3 text-subtle text-sm">
+            <span class="icon icon--user"></span> 
+            <%= link_to item.device.employee.full_name, item, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+          </div>
+        <% end %>
       <% else %>
         <span class="text-gray-400 italic">Unassigned</span>
       <% end %>

@@ -163,8 +163,8 @@
 #     # when the counter 'i' resets for different device types in the same department.
 #     device = Device.create!(
 #       name: "#{name}-#{type.to_s[0].upcase}",
-#       serial_number: Faker::Device.serial + "-#{dept.id}-#{i}-#{type}",
-#       asset_tag: "TAG-#{dept.id}-#{i}-#{type.to_s[0]}",
+##       serial_number: Faker::Device.serial + "-#{dept.id}-#{i}-#{type}",
+##       asset_tag: "TAG-#{dept.id}-#{i}-#{type.to_s[0]}",
 #       device_type: type,
 #       status: :active,
 #       department: dept,
