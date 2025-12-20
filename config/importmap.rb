@@ -7,3 +7,4 @@ pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
 pin_all_from "app/javascript/controllers", under: "controllers"
 
 pin "chart.js", to: "chart.js"
+pin "@floating-ui/dom", to: "floating_ui_dom.js"
