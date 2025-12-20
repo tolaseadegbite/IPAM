@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
-import { Chart, registerables } from "https://esm.sh/chart.js@4.5.0?standalone"
+// import { Chart, registerables } from "https://esm.sh/chart.js@4.5.0?standalone"
+
+import { Chart, registerables } from "chart.js"
 
 export default class extends Controller {
   static values = { type: { type: String, default: "line" }, data: Object, options: Object }
