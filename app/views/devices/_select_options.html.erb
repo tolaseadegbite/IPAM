@@ -1,0 +1,5 @@
+<%= turbo_frame_tag "device_options_frame" do %>
+  <%= collection_select :ip_address, :device_id, devices, :id, :name, 
+      { include_blank: "Select Device" }, 
+      { class: "input cursor-pointer" } %>
+<% end %>

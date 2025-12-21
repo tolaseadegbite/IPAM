@@ -6,20 +6,93 @@
     <%= form.select :status, IpAddress.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "input cursor-pointer" } %>
   </div>
 
-  <div class="mbe-4">
-    <%= form.label :device_id, "Connected Device", class: "block font-medium mbe-1" %>
-    <%= form.collection_select :device_id, Device.all, :id, :name, 
-        { include_blank: "No Device (Unassigned)" }, 
-        { class: "input cursor-pointer" } %>
+  <!-- SECTION: Device Selection (Drill-down) -->
+  <div class="mbe-4 p-4 border rounded-lg bg-shade">
+    <label class="block font-bold mbe-3 text-sm text-subtle uppercase">Assign Device</label>
+    
+    <!-- 1. OUTER CONTROLLER: Branch -> Department -->
+    <div class="grid grid-cols-1 gap-4"
+         data-controller="dependent-select" 
+         <%# --- CHANGE HERE: Added trigger and field_name params --- %>
+         data-dependent-select-url-value="<%= select_options_departments_path(trigger: 'true', field_name: 'department_filter') %>"
+         data-dependent-select-param-value="branch_id"
+         data-dependent-select-frame-id-value="department_options_frame">
+
+      <!-- Branch Filter -->
+      <div>
+        <label class="block font-medium text-xs text-subtle mbe-1">1. Filter by Branch</label>
+        <% 
+           selected_device = ip_address.device 
+           selected_branch_id = selected_device&.department&.branch_id
+        %>
+        <%= select_tag "branch_filter", 
+              options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
+              prompt: "Select Branch...", 
+              class: "input cursor-pointer",
+              data: { 
+                dependent_select_target: "select", 
+                action: "change->dependent-select#load" 
+              } %>
+      </div>
+
+      <!-- 2. INNER CONTROLLER: Department -> Device -->
+      <div data-controller="dependent-select"
+           data-dependent-select-url-value="<%= select_options_devices_path %>"
+           data-dependent-select-param-value="department_id"
+           data-dependent-select-frame-id-value="device_options_frame">
+           
+        <!-- Department Filter (Does not save to DB) -->
+        <div class="mbe-4">
+          <label class="block font-medium text-xs text-subtle mbe-1">2. Filter by Department</label>
+          <%= turbo_frame_tag "department_options_frame" do %>
+            <% 
+               departments = if selected_branch_id
+                               Department.where(branch_id: selected_branch_id).order(:name)
+                             else
+                               []
+                             end
+            %>
+            <%= select_tag "department_filter", 
+                  options_from_collection_for_select(departments, :id, :name, selected_device&.department_id),
+                  prompt: "Select Branch first",
+                  class: "input cursor-pointer",
+                  data: { 
+                    dependent_select_target: "select", 
+                    action: "change->dependent-select#load" 
+                  } %>
+          <% end %>
+        </div>
+        
+        <!-- 3. TARGET: Device Select (Saves to DB) -->
+        <div>
+          <%= form.label :device_id, "3. Connected Device", class: "block font-medium text-xs text-subtle mbe-1" %>
+          <%= turbo_frame_tag "device_options_frame" do %>
+            <% 
+               # Initial Load Logic
+               devices = if selected_device&.department_id
+                           Device.where(department_id: selected_device.department_id).order(:name)
+                         else
+                           []
+                         end
+            %>
+            <%= form.collection_select :device_id, devices, :id, :name, 
+                { include_blank: "No Device (Unassigned)", selected: ip_address.device_id }, 
+                { class: "input cursor-pointer" } %>
+          <% end %>
+        </div>
+
+      </div>
+    </div>
   </div>
+  <!-- END SECTION -->
 
   <div class="mbe-4">
     <%= form.label :notes, class: "block font-medium mbe-1" %>
-    <%= form.text_area :notes, class: "input" %>
+    <%= form.text_area :notes, class: "input h-24" %>
   </div>
 
   <div class="flex items-center gap-3">
-    <%= form.submit "Update IP", class: "btn bg-orange-400 text-white font-semibold pi-4 pb-2" %>
+    <%= form.submit "Update IP", class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2" %>
     <%= link_to "Cancel", ip_addresses_path, class: "text-subtle", data: { turbo_frame: "modal" } %>
   </div>
 <% end %>

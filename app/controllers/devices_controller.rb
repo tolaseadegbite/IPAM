@@ -115,6 +115,12 @@ class DevicesController < ApplicationController
     end
   end
 
+  def select_options
+    @devices = Device.where(department_id: params[:department_id]).order(:name)
+    # We render a partial that contains just the <option> tags or the whole select
+    render partial: "devices/select_options", locals: { devices: @devices }
+  end
+
   private
     def set_device
       @device = Device.find(params[:id])

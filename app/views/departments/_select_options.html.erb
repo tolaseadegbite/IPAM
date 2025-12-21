@@ -1,17 +1,20 @@
 <%= turbo_frame_tag "department_options_frame" do %>
   <% 
      target_model = params[:target_model] || "employee" 
-     input_name = "#{target_model}[department_id]"
      
-     # FIX: Only add Stimulus attributes if this is for a Device (to trigger Employee load).
-     # For Employees, this is the end of the chain, so we don't want to trigger anything.
+     # 1. Allow an explicit field name (for IP filter), fallback to model[department_id]
+     input_name = params[:field_name] || "#{target_model}[department_id]"
+     
      html_options = {
        prompt: "Select Department",
-       class: "input cursor-pointer",
+       class: "input cursor-pointer", # Added styling to match your other forms
        id: "#{target_model}_department_id"
      }
 
-     if target_model == "device"
+     # 2. Logic: Add Stimulus action if it's a Device OR if we explicitly asked for a trigger
+     should_trigger = (target_model == "device") || (params[:trigger] == "true")
+
+     if should_trigger
        html_options[:data] = { 
          action: "change->dependent-select#load", 
          dependent_select_target: "select" 

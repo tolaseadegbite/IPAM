@@ -25,10 +25,10 @@ class NetworkReconService
     # -n:  No DNS resolution (speed optimization)
 
     # old command
-    command = "#{nmap_bin} -sn -PR -n #{subnet_cidr}"
+    # command = "#{nmap_bin} -sn -PR -n #{subnet_cidr}"
 
     # new command (Fast & Aggressive):
-    # command = "#{nmap_bin} -sn -PR -n -T4 --min-parallelism 100 --max-rtt-timeout 250ms #{subnet_cidr}"
+    command = "#{nmap_bin} -sn -PR -n -T4 --min-parallelism 100 --max-rtt-timeout 250ms #{subnet_cidr}"
 
     output = `#{command}`
 
@@ -159,10 +159,10 @@ class NetworkReconService
     start_time = Rails.cache.read("scan_batch_start_time")
     duration = if start_time
                  (Time.current - start_time).round(2) # Returns seconds (e.g., 2.45)
-               else
+    else
                  0
-               end
-    
+    end
+
     # 2. Save duration to cache so it persists on Page Refresh (GET request)
     Rails.cache.write("last_scan_duration", duration)
 
@@ -187,9 +187,9 @@ class NetworkReconService
         ghost_assets: ghost_assets,
         critical_devices: critical_devices,
         recent_events: recent_events,
-        last_scan: last_scan, 
+        last_scan: last_scan,
         duration: duration,   # <--- PASS THE DURATION HERE
-        scanning: false 
+        scanning: false
       }
     )
   end
@@ -234,14 +234,14 @@ class NetworkReconService
 
     # 2. Apply updates and Trigger PaperTrail
     # We wrap this in a block to attribute these changes to the Scanner.
-    PaperTrail.request(whodunnit: 'Network Scanner') do
+    PaperTrail.request(whodunnit: "Network Scanner") do
       ip_record.assign_attributes(updates)
-      
+
       # We check 'changed?' to avoid database calls if nothing happened.
-      # Because we configured 'ignore: [:last_seen_at]' in the model, 
+      # Because we configured 'ignore: [:last_seen_at]' in the model,
       # PaperTrail will automatically SKIP creating a version if ONLY time changed.
       if ip_record.changed?
-        ip_record.save! 
+        ip_record.save!
       end
     end
 
