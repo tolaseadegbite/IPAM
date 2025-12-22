@@ -5,33 +5,36 @@
   <% end %>
 
   <div class="sidebar-menu__content">
+    
+    <%# --- MAIN GROUP --- %>
     <div class="sidebar-menu__group">
       <div class="sidebar-menu__group-label">MAIN</div>
       <div class="sidebar-menu__items">
         <nav class="">
-          <%= link_to dashboard_path, class: "flex gap-4 btn sidebar-menu__button mbe-1" do %>
+          <%# Dashboard usually doesn't have a resource controller, so current_page? is fine here %>
+          <%= link_to dashboard_path, class: "flex gap-4 btn sidebar-menu__button mbe-1",
+                      aria: (current_page?(dashboard_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--chart-pie" aria-hidden="true"></span>
             Dashboard
           <% end %>
+
           <%= link_to branches_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(branches_path) ? { current: "page" } : {}) do %>
+                      aria: active_for("branches") do %>
             <span class="icon icon--building" aria-hidden="true"></span>
             Branches
           <% end %>
           
-          <%# Adds `aria-current="page"` if the current page matches the link's path. %>
           <%= link_to departments_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(departments_path) ? { current: "page" } : {}) do %>
+                      aria: active_for("departments") do %>
             <span class="icon icon--warehouse" aria-hidden="true"></span>
             Departments
           <% end %>
 
-          <%# Adds `aria-current="page"` if the current page matches the link's path. %>
           <%= link_to employees_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(employees_path) ? { current: "page" } : {}) do %>
+                      aria: active_for("employees") do %>
             <span class="icon icon--users-round" aria-hidden="true"></span>
             Employees
           <% end %>
@@ -39,29 +42,29 @@
       </div>
     </div>
 
+    <%# --- ASSET MANAGEMENT GROUP --- %>
     <div class="sidebar-menu__group">
       <div class="sidebar-menu__group-label">ASSET MANAGEMENT</div>
       <div class="sidebar-menu__items">
         <nav class="">
           <%= link_to subnets_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(subnets_path) ? { current: "page" } : {}) do %>
+                      aria: active_for("subnets") do %>
             <span class="icon icon--network" aria-hidden="true"></span>
             Subnets
           <% end %>
 
-          <%# Adds `aria-current="page"` if the current page matches the link's path. %>
+          <%# NOTE: We add extra logic here to NOT highlight this if we are looking at Rogue Devices (which shares the controller) %>
           <%= link_to ip_addresses_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(ip_addresses_path) ? { current: "page" } : {}) do %>
+                      aria: (controller_name == "ip_addresses" && params[:q].blank? ? { current: "page" } : {}) do %>
             <span class="icon icon--map-pinned" aria-hidden="true"></span>
             Ip Addresses
           <% end %>
 
-          <%# Adds `aria-current="page"` if the current page matches the link's path. %>
           <%= link_to devices_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(devices_path) ? { current: "page" } : {}) do %>
+                      aria: (controller_name == "devices" && params[:q].blank? ? { current: "page" } : {}) do %>
             <span class="icon icon--monitor" aria-hidden="true"></span>
             Devices
           <% end %>
@@ -69,21 +72,22 @@
       </div>
     </div>
                        
+    <%# --- SECURITY GROUP --- %>
     <div class="sidebar-menu__group">
       <div class="sidebar-menu__group-label">SECURITY</div>
       <div class="sidebar-menu__items">
         <nav class="">
+          <%# Keep current_page? here because these rely on specific query params %>
           <%= link_to ip_addresses_path(q: { rogue_only: true }), 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(subnets_path) ? { current: "page" } : {}) do %>
+                      aria: (current_page?(ip_addresses_path(q: { rogue_only: true })) ? { current: "page" } : {}) do %>
             <span class="icon icon--triangle-alert" aria-hidden="true"></span>
             Rogue Devices
           <% end %>
 
-          <%# Adds `aria-current="page"` if the current page matches the link's path. %>
           <%= link_to devices_path(q: { critical_eq: true }), 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(ip_addresses_path) ? { current: "page" } : {}) do %>
+                      aria: (current_page?(devices_path(q: { critical_eq: true })) ? { current: "page" } : {}) do %>
             <span class="icon icon--monitor-x" aria-hidden="true"></span>
             Critical Devices
           <% end %>
@@ -91,20 +95,23 @@
       </div>
     </div>
 
+    <%# --- USER MANAGEMENT --- %>
     <div class="sidebar-menu__group">
       <div class="sidebar-menu__group-label">USER MANAGEMENT & Audit</div>
       <div class="sidebar-menu__items">
         <nav class="">
+          <%# Assuming this controller is named 'admin_users' or just 'users' (adjust string as needed) %>
           <%= link_to admin_users_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(admin_users_path) ? { current: "page" } : {}) do %>
+                      aria: active_for("users") do %>
             <span class="icon icon--users" aria-hidden="true"></span>
             Users
           <% end %>
 
+          <%# PaperTrail usually uses 'versions' controller %>
           <%= link_to versions_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(versions_path) ? { current: "page" } : {}) do %>
+                      aria: active_for("versions") do %>
             <span class="icon icon--history" aria-hidden="true"></span>
             History
           <% end %>

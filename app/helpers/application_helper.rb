@@ -10,4 +10,12 @@ module ApplicationHelper
       "#{page_title} - #{base_title}"
     end
   end
+
+  def active_for(target_controller)
+    if controller_name == target_controller
+      { current: "page" }
+    else
+      {}
+    end
+  end
 end
