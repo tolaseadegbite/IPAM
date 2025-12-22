@@ -1,9 +1,10 @@
-<div class="card p-4 flex items-center justify-between transition">
+<%= link_to department, class: "list-row list-row--link flex items-center justify-between bg-surface hover:text-orange-600" do %>
+  <div class="flex flex-col gap-half">
+      <h5 class="text-sm leading-none font-medium"><%= department.name %></h5>
+      <p class="text-sm text-subtle"><%= department.employees.count %> Employees</p>
+  </div>
+
   <div>
-    <div class="font-medium"><%= link_to department.name, department, class: "hover:text-orange-600" %></div>
-    <div class="text-sm text-subtle"><%= department.employees.count %> Employees</div>
+    <%= pluralize(department.devices.count, "Device") %>
   </div>
-  <div class="text-sm font-mono text-subtle">
-    <%= department.devices.count %> Devices
-  </div>
-</div>
+<% end %>
