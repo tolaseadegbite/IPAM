@@ -26,10 +26,14 @@ class EmployeesController < ApplicationController
         format.html { redirect_to employees_path, notice: "Employee created successfully." }
         format.turbo_stream do
           render turbo_stream: [
-             turbo_stream.prepend("employees-table", partial: "employees/employee", locals: { employee: @employee }),
+            turbo_stream.prepend("employees-table", partial: "employees/employee", locals: { employee: @employee }),
             turbo_stream.prepend("employees-cards", partial: "employees/employee_card", locals: { employee: @employee }),
+
             turbo_stream.prepend(helpers.dom_id(@employee.department, :employees), partial: "departments/employee_show_card", locals: { employee: @employee }),
-            turbo_stream.update("new_employee", ""), # Clear the form/modal
+
+            turbo_stream.remove("no_employees_message"),
+
+            turbo_stream.update("new_employee", ""),
             turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Employee created successfully." })
           ]
         end

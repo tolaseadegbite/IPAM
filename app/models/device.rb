@@ -24,7 +24,7 @@ class Device < ApplicationRecord
   # validates :serial_number, uniqueness: { case_sensitive: false }
   # validates :asset_tag, uniqueness: { case_sensitive: false }
   validates :mac_address, uniqueness: { case_sensitive: false }
-  validates :name, presence: true # Hostname
+  validates :name, presence: true, uniqueness: { case_sensitive: false }
   validates :device_type, presence: true
   validates :status, presence: true
 

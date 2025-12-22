@@ -45,14 +45,15 @@
         <h3 class="font-bold text-lg">Employees (<%= @department.employees.count %>)</h3>
         <%= link_to "Add Employee", new_employee_path(department_id: @department.id), class: "text-sm text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
       </div>
-      <% if @department.employees.any? %>
-        <%= content_tag(:ul, id: dom_id(@department, :employees), class: "flex flex-col gap-2") do %>
-          <% @employees.each do |employee| %>
-            <%= render "departments/employee_show_card", employee: employee %>
-          <% end %>
+
+      <%= content_tag(:ul, id: dom_id(@department, :employees), class: "flex flex-col gap-2") do %>
+        <% @employees.each do |employee| %>
+          <%= render "departments/employee_show_card", employee: employee %>
         <% end %>
-      <% else %>
-        <p class="text-subtle italic">No employees assigned.</p>
+      <% end %>
+
+      <% if @department.employees.empty? %>
+        <p id="no_employees_message" class="text-subtle italic">No employees assigned.</p>
       <% end %>
     </div>
 
@@ -62,14 +63,15 @@
         <h3 class="font-bold text-lg">Devices (<%= @department.devices.count %>)</h3>
         <%= link_to "Add Device", new_device_path(department_id: @department.id), class: "text-sm text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
       </div>
-      <% if @department.devices.any? %>
-        <%= content_tag(:div, id: dom_id(@department, :devices), class: "grid grid-cols-1 grid-cols-2@md gap-2") do %>
-          <% @department.devices.each do |device| %>
-            <%= render "departments/device_show_card", device: device %>
-          <% end %>
+
+      <%= content_tag(:div, id: dom_id(@department, :devices), class: "grid grid-cols-1 grid-cols-2@md gap-2") do %>
+        <% @devices.each do |device| %>
+          <%= render "departments/device_show_card", device: device %>
         <% end %>
-      <% else %>
-        <p class="text-subtle italic">No devices assigned.</p>
+      <% end %>
+
+      <% if @department.devices.empty? %>
+        <p id="no_devices_message" class="text-subtle italic">No devices assigned.</p>
       <% end %>
     </div>
   </div>

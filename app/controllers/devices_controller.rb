@@ -38,17 +38,23 @@ class DevicesController < ApplicationController
         end
 
         respond_to do |format|
-        format.html { redirect_to devices_path, notice: "Device registered." }
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.prepend("devices-table", partial: "devices/device", locals: { device: @device }),
-            turbo_stream.prepend("devices-cards", partial: "devices/device_card", locals: { device: @device }),
-            turbo_stream.prepend(helpers.dom_id(@device.department, :devices), partial: "departments/device_show_card", locals: { device: @device }),
-            turbo_stream.update("new_device", ""), # Clear the form/modal
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device registered." })
-          ]
+          format.html { redirect_to devices_path, notice: "Device registered." }
+          format.turbo_stream do
+            render turbo_stream: [
+              turbo_stream.prepend("devices-table", partial: "devices/device", locals: { device: @device }),
+              turbo_stream.prepend("devices-cards", partial: "devices/device_card", locals: { device: @device }),
+
+              # Prepend to the department list (now guaranteed to exist)
+              turbo_stream.prepend(helpers.dom_id(@device.department, :devices), partial: "departments/device_show_card", locals: { device: @device }),
+
+              # NEW: Remove the "No devices" message if it exists
+              turbo_stream.remove("no_devices_message"),
+
+              turbo_stream.update("new_device", ""),
+              turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device registered." })
+            ]
+          end
         end
-      end
       else
         render :new, status: :unprocessable_entity
         raise ActiveRecord::Rollback # Cancel transaction if device save fails
