@@ -55,7 +55,16 @@
 
           <div class="flex items-center gap border p-4 rounded-md">
             <%= label_tag :rogue_only, "Rogue devices?", class: "text-sm font-medium cursor-pointer" %>
-            <%= f.check_box :rogue_only, class: "switch cursor-pointer", data: { action: "input->debounce#submit" }, role: "switch" %>
+            
+            <%= f.check_box :rogue_only, 
+                  class: "switch cursor-pointer", 
+                  data: { action: "input->debounce#submit" }, 
+                  role: "switch",
+                  # Check if param is "true" OR if Ransack object has it set to true
+                  checked: params.dig(:q, :rogue_only) == "true" || @search.rogue_only == true,
+                  # Don't send "0" when unchecked; just send nothing. Your scope handles nil/false correctly.
+                  include_hidden: false 
+            %>
           </div>
         </div>
 
