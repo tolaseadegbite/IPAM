@@ -28,11 +28,15 @@ module Ipam
     # config.eager_load_paths << Rails.root.join("extras")
 
     config.active_record.yaml_column_permitted_classes = [
-      Symbol, 
-      Date, 
-      Time, 
-      ActiveSupport::TimeWithZone, 
+      Symbol,
+      Date,
+      Time,
+      ActiveSupport::TimeWithZone,
       ActiveSupport::TimeZone
     ]
+
+    # pg_reports
+    config.active_record.query_log_tags_enabled = true
+    config.active_record.query_log_tags = [ :controller, :action ]
   end
 end

@@ -6,7 +6,7 @@
 
 <% content_for :header_action_buttons do %>
   <div class="flex items-center gap-2">
-    <%= link_to "Edit", edit_branch_path(@branch), class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2 show@md", data: { turbo_frame: "modal" } %>
+    <%= link_to "Edit", edit_branch_path(@branch), class: "btn bg-orange-400 text-white font-semibold rounded-md px-4 py-2 show@md", data: { turbo_frame: "modal" } %>
 
     <%#= button_to "Delete", @branch, class: "btn bg-white border border-red-200 text-red-600 font-semibold rounded px-4 py-2 hover:bg-red-50", method: :delete, form: { data: { turbo_confirm: "Are you sure?", turbo: false } } %>
 

@@ -132,6 +132,11 @@
                 { class: "input cursor-pointer" } %>
       <% end %>
     </div>
+
+    <div class="col-span-1">
+      <%= form.label :notes, "Notes", class: "block font-medium mbe-1" %>
+      <%= form.text_area :notes, placeholder: "Notes...", class: "input" %>
+    </div>
   </div>
     
   <!-- SECTION: IP Assignment (Dependent Select) -->

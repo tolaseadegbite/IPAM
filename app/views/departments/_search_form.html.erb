@@ -23,7 +23,7 @@
           <%= f.label :branch_id_eq, "Branch", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.collection_select :branch_id_eq, Branch.order(:name), :id, :name, 
                 { include_blank: "All Branches" }, 
-                { class: "input w-full p-2 border rounded cursor-pointer" } %>
+                { class: "input p-2 border rounded-md cursor-pointer" } %>
         </div>
 
         <%# 3. Actions %>

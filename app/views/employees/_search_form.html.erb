@@ -23,7 +23,7 @@
           <%= f.label :department_branch_id_eq, "Branch", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.collection_select :department_branch_id_eq, Branch.order(:name), :id, :name, 
                 { include_blank: "All Branches" }, 
-                { class: "input w-full p-2 border rounded cursor-pointer" } %>
+                { class: "input p-2 border cursor-pointer" } %>
         </div>
 
         <%# 3. Status Filter %>
@@ -31,7 +31,7 @@
           <%= f.label :status_eq, "Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.select :status_eq, Employee.statuses.map { |k, v| [k.humanize, v] }, 
                 { include_blank: "All Statuses" }, 
-                { class: "input w-full p-2 border rounded cursor-pointer" } %>
+                { class: "input p-2 border cursor-pointer" } %>
         </div>
 
         <%# 4. Actions %>

@@ -67,7 +67,7 @@
         <%= select_tag "branch_id", 
               options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
               prompt: "Select Branch First",
-              class: "input w-full p-2 border rounded cursor-pointer",
+              class: "input p-2 border cursor-pointer",
               data: { 
                 dependent_select_target: "select", 
                 action: "change->dependent-select#load" 
@@ -90,7 +90,7 @@
           <%= form.select :department_id, 
                 options_from_collection_for_select(departments, :id, :name, employee.department_id),
                 { prompt: "Select Branch to see Departments" },
-                { class: "input w-full p-2 border rounded cursor-pointer" } %>
+                { class: "input p-2 border rounded-md cursor-pointer" } %>
                 
         <% end %>
       </div>
@@ -99,12 +99,12 @@
     
     <div class="col-span-1">
       <%= form.label :status, class: "block font-medium mbe-1" %>
-      <%= form.select :status, Employee.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "input w-full p-2 border rounded cursor-pointer" } %>
+      <%= form.select :status, Employee.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "input p-2 border cursor-pointer" } %>
     </div>
   </div>
 
   <div class="mbs-4 flex gap-3">
-    <%= form.submit class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2" %>
+    <%= form.submit class: "btn bg-orange-400 text-white font-semibold px-4 py-2" %>
     <%= link_to "Cancel", employees_path, class: "text-subtle", data: { turbo_frame: "_top" } %>
   </div>
 <% end %>

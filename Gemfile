@@ -84,3 +84,7 @@ gem "faker", "~> 3.5"
 gem "pg_search", "~> 2.3"
 
 gem "net-ping", "~> 2.0"
+
+gem "pg_reports"
+
+gem "marginalia"
