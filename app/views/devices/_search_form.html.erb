@@ -9,13 +9,21 @@
   </button>
 
   <div class="card mbe-4 hide" data-search-filter-target="filters">
-    <%= search_form_for @search, data: { turbo_frame: "devices_table", turbo_action: "advance" } do |f| %>
+    <%= search_form_for @search, 
+        data: { 
+          turbo_frame: "devices_table", 
+          turbo_action: "advance",
+          controller: "debounce" 
+        } do |f| %>
       <div class="grid grid-cols-1 grid-cols-2@md grid-cols-3@lg grid-cols-6@xl gap-4 items-end">
         
         <%# 1. Keyword Search %>
         <div class="col-span-1">
           <%= f.label :name_cont, "Keyword", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.search_field :name_cont, placeholder: "Search name", class: "input" %>
+          <%= f.search_field :name_cont, 
+              placeholder: "Search name", 
+              class: "input",
+              data: { action: "input->debounce#submit" } %>
         </div>
 
         <%# 2. Branch Filter %>
@@ -23,26 +31,32 @@
           <%= f.label :department_branch_id_eq, "Branch", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.collection_select :department_branch_id_eq, Branch.order(:name), :id, :name, 
                 { include_blank: "All Branches" }, 
-                { class: "input cursor-pointer" } %>
+                { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
 
         <%# 3. IP Address Filter (NEW) %>
         <div class="col-span-1">
           <%= f.label :ip_address_address_string_cont, "IP Address", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.search_field :ip_address_address_string_cont, placeholder: "192.168...", class: "input" %>
+          <%= f.search_field :ip_address_address_string_cont, 
+              placeholder: "192.168...", 
+              class: "input",
+              data: { action: "input->debounce#submit" } %>
         </div>
 
         <%# 4. Mac Address Filter (NEW) %>
         <div class="col-span-1">
           <%= f.label :mac_address_cont, "Mac Address", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.search_field :mac_address_cont, placeholder: "52:03.:fz...", class: "input" %>
+          <%= f.search_field :mac_address_cont, 
+              placeholder: "52:03.:fz...", 
+              class: "input",
+              data: { action: "input->debounce#submit" } %>
         </div>
 
         <%# 6. Critical Filter %>
         <div class="col-span-1">
           <%= f.label :critical_eq, "Critical device?", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           
-          <%= f.select :critical_eq, [['Yes', true], ['No', false]], { include_blank: 'All' }, { class: "input cursor-pointer" } %>
+          <%= f.select :critical_eq, [['Yes', true], ['No', false]], { include_blank: 'All' }, { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
 
         <%# 5. Type Filter %>
@@ -50,7 +64,7 @@
           <%= f.label :device_type_eq, "Type", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.select :device_type_eq, Device.device_types.map { |k, v| [k.humanize, v] }, 
                 { include_blank: "All Types" }, 
-                { class: "input cursor-pointer" } %>
+                { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
 
         <%# 6. Status Filter %>
@@ -58,12 +72,12 @@
           <%= f.label :status_eq, "Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.select :status_eq, Device.statuses.map { |k, v| [k.humanize, v] }, 
                 { include_blank: "All Statuses" }, 
-                { class: "input cursor-pointer" } %>
+                { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
 
         <%# 7. Actions %>
         <div class="col-span-1 flex gap-2">
-          <%= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
+          <%#= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
           <%= link_to "Clear", devices_path, class: "btn btn--primary", data: { turbo_frame: "devices_table", action: "click->search-filter#clear" } %>
         </div>
       </div>

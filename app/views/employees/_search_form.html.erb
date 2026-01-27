@@ -9,21 +9,31 @@
   </button>
 
   <div class="card mbe-4 hide" data-search-filter-target="filters">
-    <%= search_form_for @search, data: { turbo_frame: "employees_table", turbo_action: "advance" } do |f| %>
+    <%= search_form_for @search, 
+        data: { 
+          controller: "debounce",
+          turbo_frame: "employees_table", 
+          turbo_action: "advance" 
+        } do |f| %>
       <div class="grid grid-cols-1 grid-cols-2@md grid-cols-4@lg gap-4 items-end">
         
         <%# 1. Name Search (Uses your 'full_name' ransacker) %>
         <div class="col-span-1">
           <%= f.label :full_name_cont, "Name", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.search_field :full_name_cont, placeholder: "Search Name...", class: "input w-full p-2 border rounded" %>
+          <%= f.search_field :full_name_cont, 
+              placeholder: "Search Name...", 
+              class: "input p-2 border rounded",
+              data: { action: "input->debounce#submit" } %>
         </div>
 
         <%# 2. Branch Filter %>
         <div class="col-span-1">
           <%= f.label :department_branch_id_eq, "Branch", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.collection_select :department_branch_id_eq, Branch.order(:name), :id, :name, 
+          <%= f.collection_select :department_branch_id_eq, 
+                Branch.order(:name), :id, :name, 
                 { include_blank: "All Branches" }, 
-                { class: "input p-2 border cursor-pointer" } %>
+                { class: "input p-2 border cursor-pointer", data: { action: "input->debounce#submit" } }
+                 %>
         </div>
 
         <%# 3. Status Filter %>
@@ -31,12 +41,13 @@
           <%= f.label :status_eq, "Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.select :status_eq, Employee.statuses.map { |k, v| [k.humanize, v] }, 
                 { include_blank: "All Statuses" }, 
-                { class: "input p-2 border cursor-pointer" } %>
+                { class: "input p-2 border cursor-pointer", data: { action: "input->debounce#submit" } }
+                 %>
         </div>
 
         <%# 4. Actions %>
         <div class="col-span-1 flex gap-2">
-          <%= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
+          <%#= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
           <%= link_to "Clear", employees_path, class: "btn btn--primary", data: { turbo_frame: "employees_table", action: "click->search-filter#clear" } %>
         </div>
       </div>

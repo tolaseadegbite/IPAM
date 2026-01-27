@@ -9,26 +9,36 @@
   </button>
 
   <div class="card mbe-4 hide" data-search-filter-target="filters">
-    <%= search_form_for @search, data: { turbo_frame: "departments_table", turbo_action: "advance" } do |f| %>
+    <%= search_form_for @search, 
+        data: { 
+          controller: "debounce", 
+          turbo_frame: "departments_table", 
+          turbo_action: "advance" 
+        } do |f| %>
+      
       <div class="grid grid-cols-1 grid-cols-3@md gap-4 items-end">
         
-        <%# 1. Name Search %>
+        <%# 2. Text Search: Add 'input->debounce#submit' %>
         <div class="col-span-1">
           <%= f.label :name_cont, "Department Name", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.search_field :name_cont, placeholder: "Search...", class: "input w-full p-2 border rounded" %>
+          <%= f.search_field :name_cont, 
+              placeholder: "Search...", 
+              class: "input p-2 border rounded",
+              data: { action: "input->debounce#submit" } %>
         </div>
 
-        <%# 2. Branch Filter %>
+        <%# 3. Select Filter: Add 'change->debounce#submit' (No debounce usually needed for selects, but keeps flow consistent) %>
         <div class="col-span-1">
           <%= f.label :branch_id_eq, "Branch", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.collection_select :branch_id_eq, Branch.order(:name), :id, :name, 
                 { include_blank: "All Branches" }, 
-                { class: "input p-2 border rounded-md cursor-pointer" } %>
+                { class: "input p-2 border rounded-md cursor-pointer",
+                  data: { action: "change->debounce#submit" } } %>
         </div>
 
-        <%# 3. Actions %>
+        <%# 4. Actions: You can keep the submit button or remove it since it's now automatic %>
         <div class="col-span-1 flex gap-2">
-          <%= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
+          <%#= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
           <%= link_to "Clear", departments_path, class: "btn btn--primary", data: { turbo_frame: "departments_table", action: "click->search-filter#clear" } %>
         </div>
       </div>

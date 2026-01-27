@@ -9,13 +9,21 @@
   </button>
 
   <div class="card mbe-4 hide" data-search-filter-target="filters">
-    <%= search_form_for @search, data: { turbo_frame: "ip_addresses", turbo_action: "advance" } do |f| %>
+    <%= search_form_for @search, 
+        data: { 
+          turbo_frame: "ip_addresses", 
+          turbo_action: "advance",
+          controller: "debounce"
+        } do |f| %>
       <div class="grid grid-cols-1 grid-cols-2@md grid-cols-4@lg gap-4 items-end">
         
         <%# 1. IP Search %>
         <div class="col-span-1">
           <%= f.label :address_string_cont, "IP Address", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.search_field :address_string_cont, placeholder: "192.168...", class: "input cursor-pointer w-full p-2 border rounded" %>
+          <%= f.search_field :address_string_cont, 
+              placeholder: "192.168...", 
+              class: "input cursor-pointer p-2 border rounded",
+              data: { action: "input->debounce#submit" } %>
         </div>
 
         <%# 2. Subnet Filter %>
@@ -23,7 +31,7 @@
           <%= f.label :subnet_id_eq, "Subnet", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.collection_select :subnet_id_eq, Subnet.order(:name), :id, :name, 
                 { include_blank: "All Subnets" }, 
-                { class: "input cursor-pointer" } %>
+                { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
 
         <%# 3. Status Filter %>
@@ -31,29 +39,29 @@
           <%= f.label :status_eq, "Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.select :status_eq, IpAddress.statuses.map { |k, v| [k.humanize, v] }, 
                 { include_blank: "All Statuses" }, 
-                { class: "input cursor-pointer" } %>
+                { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
 
         <%# 4. Reachability Status Filter %>
         <div class="col-span-1">
           <%= f.label :reachability_status_eq, "Reachability Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           
-          <%= f.select :reachability_status_eq, IpAddress.reachability_statuses.map { |k, v| [k.humanize, v] }, { include_blank: "Select Reachability status" }, { class: "input cursor-pointer" } %>
+          <%= f.select :reachability_status_eq, IpAddress.reachability_statuses.map { |k, v| [k.humanize, v] }, { include_blank: "Select Reachability status" }, { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
 
-        <%# 5. Rogue Filter (NEW) %>  
+        <%# 5. Rogue Filter %>  
         <div class="col-span-1">
           <label class="block text-xs font-bold uppercase text-subtle mbe-1">Security Filter</label>
 
           <div class="flex items-center gap border p-4 rounded-md">
             <%= label_tag :rogue_only, "Rogue devices?", class: "text-sm font-medium cursor-pointer" %>
-            <%= f.check_box :rogue_only, class: "switch cursor-pointer", role: "switch" %>
+            <%= f.check_box :rogue_only, class: "switch cursor-pointer", data: { action: "input->debounce#submit" }, role: "switch" %>
           </div>
         </div>
 
         <%# 6. Actions %>
         <div class="col-span-1 flex gap-2">
-          <%= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
+          <%#= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
           <%= link_to "Clear", ip_addresses_path, class: "btn btn--primary", data: { turbo_frame: "ip_addresses", action: "click->search-filter#clear" } %>
         </div>
       </div>
