@@ -7,17 +7,6 @@ class IpAddressesController < ApplicationController
     @pagy, @ip_addresses = pagy(@search.result)
   end
 
-  # def index
-  #   # Initialize Ransack on the Model directly
-  #   @search = IpAddress.ransack(params[:q])
-
-  #   # Set a default sort if none is provided (optional but good UX)
-  #   @search.sorts = "address asc" if @search.sorts.empty?
-
-  #   # Apply includes and pagination on the RESULT of the search
-  #   @pagy, @ip_addresses = pagy(@search.result.includes(:subnet, :device))
-  # end
-
   def show
   end
 
