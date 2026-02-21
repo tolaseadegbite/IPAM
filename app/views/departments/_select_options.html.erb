@@ -1,24 +1,29 @@
-<%= turbo_frame_tag "department_options_frame" do %>
+<%# 1. Use params[:frame_id] if provided, otherwise default to existing ID %>
+<%= turbo_frame_tag params[:frame_id] || "department_options_frame" do %>
   <% 
      target_model = params[:target_model] || "employee" 
-     
-     # 1. Allow an explicit field name (for IP filter), fallback to model[department_id]
      input_name = params[:field_name] || "#{target_model}[department_id]"
      
      html_options = {
-       prompt: "Select Department",
-       class: "input cursor-pointer", # Added styling to match your other forms
+       prompt: "All Departments", # Changed prompt to be generic
+       class: "input cursor-pointer",
        id: "#{target_model}_department_id"
      }
 
-     # 2. Logic: Add Stimulus action if it's a Device OR if we explicitly asked for a trigger
+     # Logic for existing forms (Device/Employee)
      should_trigger = (target_model == "device") || (params[:trigger] == "true")
 
-     if should_trigger
-       html_options[:data] = { 
-         action: "change->dependent-select#load", 
-         dependent_select_target: "select" 
-       }
+     # 2. Build Actions List
+     # We combine existing dependent logic with any new actions passed via params (like debounce)
+     actions = []
+     actions << "change->dependent-select#load" if should_trigger
+     actions << params[:data_action] if params[:data_action].present?
+
+     # Apply Data Attributes
+     if actions.any? || should_trigger
+       html_options[:data] = {}
+       html_options[:data][:action] = actions.join(" ") if actions.any?
+       html_options[:data][:dependent_select_target] = "select" if should_trigger
      end
   %>
   

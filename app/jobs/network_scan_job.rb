@@ -6,7 +6,7 @@ class NetworkScanJob < ApplicationJob
 
     subnets = Subnet.all.to_a
     batch_id = Time.current.to_i
-    
+
     Rails.cache.write("scan_batch_#{batch_id}", subnets.count)
 
     Rails.logger.info "[NetworkScanJob] Spawning #{subnets.count} parallel jobs (Batch #{batch_id})..."

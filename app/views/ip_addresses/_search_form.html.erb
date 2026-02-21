@@ -8,22 +8,24 @@
     <span>Search & Filter</span>
   </button>
 
-  <div class="card mbe-4 hide" data-search-filter-target="filters">
+  <div class="card bg-main mbe-4" data-search-filter-target="filters">
+    <%# ADD 'turbo_frame: "ip_addresses"' BACK %>
     <%= search_form_for @search, 
         data: { 
           turbo_frame: "ip_addresses", 
           turbo_action: "advance",
-          controller: "debounce"
+          controller: "debounce",
+          action: "input->debounce#submit" 
         } do |f| %>
-      <div class="grid grid-cols-1 grid-cols-2@md grid-cols-4@lg gap-4 items-end">
+      
+      <div class="grid grid-cols-1 grid-cols-2@md grid-cols-3@lg grid-cols-4@xl gap-4 items-center">
         
         <%# 1. IP Search %>
         <div class="col-span-1">
           <%= f.label :address_string_cont, "IP Address", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.search_field :address_string_cont, 
               placeholder: "192.168...", 
-              class: "input cursor-pointer p-2 border rounded",
-              data: { action: "input->debounce#submit" } %>
+              class: "input cursor-pointer w-full p-2 border rounded" %>
         </div>
 
         <%# 2. Subnet Filter %>
@@ -31,47 +33,100 @@
           <%= f.label :subnet_id_eq, "Subnet", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.collection_select :subnet_id_eq, Subnet.order(:name), :id, :name, 
                 { include_blank: "All Subnets" }, 
-                { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
+                { class: "input cursor-pointer" } %>
         </div>
 
-        <%# 3. Status Filter %>
+        <%# --- DEPENDENT DROPDOWNS (Branch -> Department) --- %>
+        <div class="contents" 
+             data-controller="dependent-select"
+             data-dependent-select-url-value="<%= select_options_departments_path(
+                 field_name: 'q[device_department_id_eq]', 
+                 frame_id: 'search_dept_options',
+                 data_action: 'input->debounce#submit'
+               ) %>"
+             data-dependent-select-param-value="branch_id"
+             data-dependent-select-frame-id-value="search_dept_options">
+
+          <%# 3. Branch Filter %>
+          <div class="col-span-1">
+            <%= f.label :device_department_branch_id_eq, "Branch", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+            <%= f.collection_select :device_department_branch_id_eq, Branch.order(:name), :id, :name, 
+                  { include_blank: "All Branches" }, 
+                  { 
+                    class: "input cursor-pointer", 
+                    data: { 
+                      dependent_select_target: "select", 
+                      action: "change->dependent-select#load input->debounce#submit" 
+                    } 
+                  } %>
+          </div>
+
+          <%# 4. Department Filter %>
+          <div class="col-span-1 mbs-2">
+            <%= f.label :device_department_id_eq, "Department", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+            
+            <%= turbo_frame_tag "search_dept_options" do %>
+              <% 
+                 # Logic: If a branch is selected in search params, pre-load its departments
+                 selected_branch = params.dig(:q, :device_department_branch_id_eq)
+                 depts = selected_branch.present? ? Department.where(branch_id: selected_branch).order(:name) : []
+              %>
+              
+              <%= f.collection_select :device_department_id_eq, depts, :id, :name,
+                    { include_blank: selected_branch.present? ? "All Departments" : "Select Branch First" }, 
+                    { 
+                      class: "input cursor-pointer", 
+                      disabled: depts.empty? 
+                    } %>
+            <% end %>
+          </div>
+        </div>
+
+        <%# 5. Status Filter %>
         <div class="col-span-1">
           <%= f.label :status_eq, "Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
           <%= f.select :status_eq, IpAddress.statuses.map { |k, v| [k.humanize, v] }, 
                 { include_blank: "All Statuses" }, 
-                { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
+                { class: "input cursor-pointer" } %>
         </div>
 
-        <%# 4. Reachability Status Filter %>
+        <%# 6. Reachability Status Filter %>
         <div class="col-span-1">
           <%= f.label :reachability_status_eq, "Reachability Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          
-          <%= f.select :reachability_status_eq, IpAddress.reachability_statuses.map { |k, v| [k.humanize, v] }, { include_blank: "Select Reachability status" }, { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
+          <%= f.select :reachability_status_eq, IpAddress.reachability_statuses.map { |k, v| [k.humanize, v] }, 
+                { include_blank: "Select Reachability status" }, 
+                { class: "input cursor-pointer" } %>
         </div>
 
-        <%# 5. Rogue Filter %>  
+        <%# 7. Rogue Filter %>  
         <div class="col-span-1">
           <label class="block text-xs font-bold uppercase text-subtle mbe-1">Security Filter</label>
 
-          <div class="flex items-center gap border p-4 rounded-md">
-            <%= label_tag :rogue_only, "Rogue devices?", class: "text-sm font-medium cursor-pointer" %>
-            
+          <div class="flex items-center justify-between bg-surface gap border pi-3 pb-2 rounded-md">
+            <%= label_tag :rogue_only, "Rogue devices?", class: "text-sm font-medium cursor-pointer mie-2" %>
             <%= f.check_box :rogue_only, 
                   class: "switch cursor-pointer", 
-                  data: { action: "input->debounce#submit" }, 
                   role: "switch",
-                  # Check if param is "true" OR if Ransack object has it set to true
                   checked: params.dig(:q, :rogue_only) == "true" || @search.rogue_only == true,
-                  # Don't send "0" when unchecked; just send nothing. Your scope handles nil/false correctly.
-                  include_hidden: false 
+                  include_hidden: false
             %>
           </div>
         </div>
 
-        <%# 6. Actions %>
+        <%# 8. Actions %>
         <div class="col-span-1 flex gap-2">
-          <%#= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
-          <%= link_to "Clear", ip_addresses_path, class: "btn btn--primary", data: { turbo_frame: "ip_addresses", action: "click->search-filter#clear" } %>
+          <%#= f.submit "Filter", 
+                class: "btn bg-orange-500 hover:bg-orange-600 i-full", 
+                data: { action: "click->search-filter#preventClose" } %>
+          
+          <%= link_to "Clear", ip_addresses_path, 
+                class: "btn btn--primary items-end", 
+                data: { 
+                  # Clear can target the frame because it's a simple GET, 
+                  # but using _top or stream is safer for header updates.
+                  # Let's keep it simple and consistent with the form logic:
+                  action: "click->search-filter#clear click->search-filter#preventClose" 
+                } %>
         </div>
       </div>
     <% end %>
