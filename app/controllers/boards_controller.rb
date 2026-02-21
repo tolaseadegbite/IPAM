@@ -1,4 +1,4 @@
-class BoardsController < DashboardsController
+class BoardsController < ApplicationController
   def index
     # For now, just redirect to the first board (IT Operations)
     redirect_to board_path(Board.first)

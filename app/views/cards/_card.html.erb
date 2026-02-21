@@ -11,7 +11,7 @@
   
   <!-- Title -->
   <div class="font-medium text-sm mbe-1 text-primary">
-    <%= card.title %>
+    <%= link_to card.title, edit_card_path(card), data: { turbo_frame: "modal" }, class: "hover:text-orange-500" %>
   </div>
 
   <!-- Linked Asset (The IPAM Integration) -->

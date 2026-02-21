@@ -19,9 +19,11 @@
 
   <!-- Footer (Add Card) -->
   <div class="p-2 border-bs border-main">
-    <button class="btn btn--primary text-xs border-0">
+    <%= link_to new_card_path(list_id: list.id), 
+          class: "btn btn--primary text-xs border-0", 
+          data: { turbo_frame: "modal" } do %>
       <span class="icon icon--plus">+</span> Add Task
-    </button>
+    <% end %>
   </div>
 
 </div>

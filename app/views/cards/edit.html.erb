@@ -1,0 +1,6 @@
+<%= render "shared/modal" do %>
+  <div data-action="turbo:submit-end->modal#submitEnd">
+    <h2 class="text-xl font-bold mbe-4 text-primary">Edit Task</h2>
+    <%= render "form", card: @card %>
+  </div>
+<% end %>
