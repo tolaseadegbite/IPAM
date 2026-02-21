@@ -49,6 +49,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :lists, only: [] do
+    member do
+      patch :move
+    end
+  end
+
   resources :employees do
     collection do
       get :select_options # New endpoint

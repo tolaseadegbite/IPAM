@@ -1,5 +1,5 @@
 class Card < ApplicationRecord
-  belongs_to :list
+  belongs_to :list, touch: true
 
   # Polymorphic link to Device or IpAddress
   belongs_to :referenceable, polymorphic: true, optional: true

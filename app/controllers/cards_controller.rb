@@ -2,8 +2,18 @@ class CardsController < ApplicationController
   before_action :set_card, only: %i[ edit update destroy move ]
 
   def new
-    # Pre-select the list if we clicked "Add Task" under a specific column
-    @card = Card.new(list_id: params[:list_id])
+    # 1. Standard initialization
+    @card = Card.new(list_id: params[:list_id] || List.first&.id)
+
+    # 2. Handle incoming polymorphic references (from Device/IP show pages)
+    if params[:referenceable_type] && params[:referenceable_id]
+      @card.referenceable_type = params[:referenceable_type]
+      @card.referenceable_id = params[:referenceable_id]
+
+      # Optional: Auto-fill the title to save the admin time
+      ref_object = params[:referenceable_type].constantize.find(params[:referenceable_id])
+      @card.title = "Issue with #{ref_object.respond_to?(:name) ? ref_object.name : ref_object.address}"
+    end
   end
 
   def edit

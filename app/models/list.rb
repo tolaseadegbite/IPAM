@@ -1,5 +1,5 @@
 class List < ApplicationRecord
-  belongs_to :board
+  belongs_to :board, touch: true
 
   # Determine order of cards within this list
   has_many :cards, -> { order(position: :asc) }, dependent: :destroy

@@ -31,19 +31,37 @@
           { multiple: true, class: "cursor-pointer", size: 3, data: { controller: "combobox" } } %>
   </div>
 
-  <!-- Manual Device Link (Optional) -->
-  <div class="mbe-6 p-3 bg-surface border border-main rounded-md">
-    <label class="block font-bold text-xs uppercase text-subtle mbe-2">Link Asset (Optional)</label>
-    <%= form.hidden_field :referenceable_type, value: "Device" %>
-    <%= form.collection_select :referenceable_id, Device.order(:name), :id, :name, 
-          { include_blank: "None", selected: card.referenceable_type == "Device" ? card.referenceable_id : nil }, 
-          { class: "input  cursor-pointer" } %>
+  <!-- Linked Asset Section -->
+  <div class="mbe-6 p-3 bg-shade border border-main rounded-md">
+    <label class="block font-bold text-xs uppercase text-subtle mbe-2">Linked Asset</label>
+    
+    <% if card.referenceable %>
+      <!-- 1. Display mode (if already linked) -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-lg"><%= card.referenceable_type == 'Device' ? '💻' : '🌐' %></span>
+          <span class="font-medium text-sm"><%= card.referenceable.respond_to?(:name) ? card.referenceable.name : card.referenceable.address %></span>
+        </div>
+        
+        <!-- Keep the data in the form hidden fields -->
+        <%= form.hidden_field :referenceable_type %>
+        <%= form.hidden_field :referenceable_id %>
+        
+        <span class="bg-primary text-white px-2 py-0.5 rounded-full uppercase">Locked</span>
+      </div>
+    <% else %>
+      <!-- 2. Select mode (if creating a generic task) -->
+      <div class="flex flex-col gap-2">
+        <%= form.select :referenceable_type, [["Device", "Device"], ["IP Address", "IpAddress"]], { include_blank: "Select Type..." }, { class: "input text-xs" } %>
+        <%= form.collection_select :referenceable_id, Device.order(:name), :id, :name, { include_blank: "Select Device..." }, { class: "input text-xs" } %>
+      </div>
+    <% end %>
   </div>
 
   <!-- Actions -->
   <div class="flex justify-between items-center">
     <div class="flex gap-3 items-center">
-      <%= form.submit "Save Task", class: "btn bg-orange-400 text-white font-semibold rounded px-4 py-2" %>
+      <%= form.submit "Save Task", class: "btn bg-orange-400 text-white font-semibold rounded-md px-4 py-2" %>
       <!-- Close modal button / back link -->
       <%= link_to "Cancel", "#", class: "text-subtle", data: { action: "click->modal#close" } %>
     </div>

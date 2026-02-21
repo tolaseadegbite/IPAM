@@ -1,9 +1,13 @@
-<div id="<%= dom_id list %>" class="flex-item-no-shrink w-80 flex flex-col max-b-full bg-main border rounded-lg shadow-sm">
+<div id="<%= dom_id list %>" data-list-id="<%= list.id %>" class="kanban-column flex-item-no-shrink w-80 flex flex-col max-b-full bg-main border rounded-lg shadow-sm">
   
   <!-- List Header -->
-  <div class="p-3 font-bold text-sm border-be border-main flex gap justify-between items-center bg-shade rounded-lg">
-    <span><%= list.name %></span>
-    <span class="text-xs text-reversed font-mono bg-black pi-2 pb-1 rounded-full">
+  <%# Added 'list-handle' for functional dragging and 'cursor-grab' for UX %>
+  <div class="list-handle cursor-grab p-3 font-bold text-sm border-be border-main flex gap justify-between items-center bg-shade rounded-lg">
+    <div class="flex items-center gap-2">
+      <span class="text-subtle select-none" title="Drag to reorder">⋮⋮</span>
+      <span><%= list.name %></span>
+    </div>
+    <span class="text-xs text-reversed bg-black pi-2 pb-1 rounded-full">
       <%= list.cards.size %>
     </span>
   </div>

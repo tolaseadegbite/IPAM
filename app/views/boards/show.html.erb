@@ -1,3 +1,9 @@
+<!-- 1. Subscribe to the Board's stream -->
+<%= turbo_stream_from @board %>
+
+<!-- 2. Turn on Turbo 8 Morphing for this page -->
+<%= turbo_refreshes_with method: :morph, scroll: :preserve %>
+
 <% content_for :title, @board.name %>
 
 <% content_for :page_header do %>
@@ -16,10 +22,19 @@
       </button>
     </div>
   
-  <!-- BOARD CONTAINER: Horizontal Scroll -->
-  <div class="flex gap-4 b-full overflow-x-auto pb-4 items-start">
+  <!-- 1. Attach controller and URL value -->
+  <div class="flex gap-4 b-full overflow-x-auto pb-4 items-start"
+       data-controller="kanban-list"
+       data-kanban-list-url-value="<%= move_list_path(':id') %>">
     
-    <%= render @board.lists %>
+    <% @board.lists.each do |list| %>
+      <%= render list %>
+    <% end %>
+
+    <!-- Add List Placeholder -->
+    <div class="flex-item-no-shrink w-80 p-3 rounded-lg border border-dashed border-main text-center text-subtle opacity-50">
+      + Add Another List
+    </div>
 
   </div>
 </div>

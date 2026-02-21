@@ -16,6 +16,12 @@
         <%= button_to "Continue", @device, method: :delete, data: { turbo: false }, class: "btn btn--negative" %>
       </div>
     <% end %>
+
+    <%= link_to new_card_path(referenceable_type: 'Device', referenceable_id: @device.id), 
+          class: "btn btn--subtle btn--sm flex items-center gap-1", 
+          data: { turbo_frame: "modal" } do %>
+      <span class="icon">📋</span> Log Maintenance Task
+    <% end %>
   </div>
 <% end %>
 
