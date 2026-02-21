@@ -1,0 +1,43 @@
+<% 
+  # Priority Color Logic (Border left)
+  border_color = case card.priority
+                 when "high" then "border-l-4 border-red-500"
+                 when "medium" then "border-l-4 border-yellow-400"
+                 else "border-l-4 border-blue-400"
+                 end
+%>
+
+<div id="<%= dom_id card %>" data-id="<%= card.id %>" class="card p-3 shadow-sm hover:shadow-md transition-shadow cursor-grab bg-white <%= border_color %>">
+  
+  <!-- Title -->
+  <div class="font-medium text-sm mbe-1 text-primary">
+    <%= card.title %>
+  </div>
+
+  <!-- Linked Asset (The IPAM Integration) -->
+  <% if card.referenceable %>
+    <div class="text-xs text-subtle mbe-2 flex items-center gap-1 p-1 bg-surface rounded-md border border-main">
+      <% if card.referenceable.is_a?(Device) %>
+        <span class="icon icon--monitor"></span>
+        <%= link_to card.referenceable.name, device_path(card.referenceable), class: "hover:underline", data: { turbo_frame: "_top" } %>
+      <% elsif card.referenceable.is_a?(IpAddress) %>
+        <span class="icon icon--globe"></span>
+        <%= link_to card.referenceable.address, ip_address_path(card.referenceable), class: "hover:underline", data: { turbo_frame: "_top" } %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Footer: Assignees & ID -->
+  <div class="flex justify-between items-end mbs-2">
+    <div class="flex overflow-hidden">
+      <% card.users.each do |user| %>
+        <!-- Simple Avatar Placeholder -->
+        <div class="bg-blue-500 rounded-full flex items-center justify-center text-xs font-semibold text-gray-50 p-2" style="block-size: 1rem; inline-size: 1rem;" title="<%= user.username %>">
+          <%= user.username[0].upcase %>
+        </div>
+      <% end %>
+    </div>
+    
+    <span class="text-xs text-subtle">#<%= card.id %></span>
+  </div>
+</div>

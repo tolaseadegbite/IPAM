@@ -14,6 +14,9 @@ class Device < ApplicationRecord
   # When a device is deleted/retired, the IP is automatically freed (set to null)
   has_one :ip_address, dependent: :nullify
 
+  # Enable linking tasks to devices
+  has_many :cards, as: :referenceable, dependent: :nullify
+
   # Delegations for convenience (e.g., calling @device.branch_name)
   delegate :branch, to: :department
   delegate :name, to: :department, prefix: true

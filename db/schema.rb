@@ -10,9 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_18_145051) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_21_094536) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "assignments", force: :cascade do |t|
+    t.bigint "card_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["card_id"], name: "index_assignments_on_card_id"
+    t.index ["user_id"], name: "index_assignments_on_user_id"
+  end
+
+  create_table "boards", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
 
   create_table "branches", force: :cascade do |t|
     t.string "contact_phone"
@@ -21,6 +37,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_18_145051) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_branches_on_name", unique: true
+  end
+
+  create_table "cards", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.bigint "list_id", null: false
+    t.integer "position", null: false
+    t.integer "priority", default: 0, null: false
+    t.bigint "referenceable_id"
+    t.string "referenceable_type"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["list_id", "position"], name: "index_cards_on_list_id_and_position"
+    t.index ["list_id"], name: "index_cards_on_list_id"
+    t.index ["referenceable_type", "referenceable_id"], name: "index_cards_on_referenceable"
   end
 
   create_table "departments", force: :cascade do |t|
@@ -85,6 +116,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_18_145051) do
     t.index ["subnet_id"], name: "index_ip_addresses_on_subnet_id"
   end
 
+  create_table "lists", force: :cascade do |t|
+    t.bigint "board_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "position", null: false
+    t.datetime "updated_at", null: false
+    t.index ["board_id", "position"], name: "index_lists_on_board_id_and_position"
+    t.index ["board_id"], name: "index_lists_on_board_id"
+  end
+
   create_table "network_events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "device_id"
@@ -146,6 +187,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_18_145051) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
+  add_foreign_key "assignments", "cards"
+  add_foreign_key "assignments", "users"
+  add_foreign_key "cards", "lists"
   add_foreign_key "departments", "branches"
   add_foreign_key "devices", "departments"
   add_foreign_key "devices", "employees"
@@ -153,6 +197,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_18_145051) do
   add_foreign_key "events", "users"
   add_foreign_key "ip_addresses", "devices"
   add_foreign_key "ip_addresses", "subnets"
+  add_foreign_key "lists", "boards"
   add_foreign_key "network_events", "devices"
   add_foreign_key "sessions", "users"
 end

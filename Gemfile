@@ -88,3 +88,5 @@ gem "net-ping", "~> 2.0"
 gem "pg_reports"
 
 gem "marginalia"
+
+gem "acts_as_list"

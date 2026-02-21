@@ -1,0 +1,27 @@
+<div id="<%= dom_id list %>" class="flex-item-no-shrink w-80 flex flex-col max-b-full bg-main border rounded-lg shadow-sm">
+  
+  <!-- List Header -->
+  <div class="p-3 font-bold text-sm border-be border-main flex gap justify-between items-center bg-shade rounded-lg">
+    <span><%= list.name %></span>
+    <span class="text-xs text-reversed font-mono bg-black pi-2 pb-1 rounded-full">
+      <%= list.cards.size %>
+    </span>
+  </div>
+
+  <!-- Cards Container (The Sortable Zone) -->
+  <div class="p-2 gap-2 flex flex-col overflow-y-auto" 
+       style="min-block-size: 50px;"
+       data-controller="kanban"
+       data-kanban-url-value="<%= move_card_path(':id') %>"
+       data-list-id="<%= list.id %>">
+    <%= render list.cards %>
+  </div>
+
+  <!-- Footer (Add Card) -->
+  <div class="p-2 border-bs border-main">
+    <button class="btn btn--primary text-xs border-0">
+      <span class="icon icon--plus">+</span> Add Task
+    </button>
+  </div>
+
+</div>

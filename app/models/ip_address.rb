@@ -12,6 +12,9 @@ class IpAddress < ApplicationRecord
   belongs_to :subnet
   belongs_to :device, optional: true
 
+  # Enable linking tasks to IPs (e.g., "Investigate Rogue IP")
+  has_many :cards, as: :referenceable, dependent: :nullify
+
   # Enums
   enum :status, { available: 0, active: 1, reserved: 2, blacklisted: 3 }
   enum :reachability_status, { unknown: 0, up: 1, down: 2 }, prefix: true
