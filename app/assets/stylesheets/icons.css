@@ -60,6 +60,8 @@ img.icon {
 .icon--copy { --svg: url("copy.svg"); }
 .icon--download { --svg: url("download.svg"); }
 .icon--share { --svg: url("share.svg"); }
+.icon--kanban { --svg: url("kanban.svg"); }
+.icon--trash-2 { --svg: url("trash-2.svg"); }
 .icon--bell { --svg: url("bell.svg"); }
 .icon--laptop { --svg: url("laptop.svg"); }
 .icon--camera { --svg: url("camera.svg"); }

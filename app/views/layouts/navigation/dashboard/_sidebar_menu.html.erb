@@ -11,13 +11,28 @@
       <div class="sidebar-menu__group-label">MAIN</div>
       <div class="sidebar-menu__items">
         <nav class="">
-          <%# Dashboard usually doesn't have a resource controller, so current_page? is fine here %>
           <%= link_to dashboard_path, class: "flex gap-4 btn sidebar-menu__button mbe-1",
                       aria: (current_page?(dashboard_path) ? { current: "page" } : {}) do %>
             <span class="icon icon--chart-pie" aria-hidden="true"></span>
             Dashboard
           <% end %>
 
+          <%# NEW: Kanban Boards / Operations %>
+          <%= link_to boards_path, 
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
+                      aria: active_for("boards") do %>
+            <span class="icon icon--kanban" aria-hidden="true"></span>
+            Operations
+          <% end %>
+        </nav>
+      </div>
+    </div>
+
+    <%# --- ORGANIZATION GROUP (Moved from Main) --- %>
+    <div class="sidebar-menu__group">
+      <div class="sidebar-menu__group-label">ORGANIZATION</div>
+      <div class="sidebar-menu__items">
+        <nav class="">
           <%= link_to branches_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: active_for("branches") do %>
@@ -54,7 +69,6 @@
             Subnets
           <% end %>
 
-          <%# NOTE: We add extra logic here to NOT highlight this if we are looking at Rogue Devices (which shares the controller) %>
           <%= link_to ip_addresses_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: (controller_name == "ip_addresses" && params[:q].blank? ? { current: "page" } : {}) do %>
@@ -77,7 +91,6 @@
       <div class="sidebar-menu__group-label">SECURITY</div>
       <div class="sidebar-menu__items">
         <nav class="">
-          <%# Keep current_page? here because these rely on specific query params %>
           <%= link_to ip_addresses_path(q: { rogue_only: true }), 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: (current_page?(ip_addresses_path(q: { rogue_only: true })) ? { current: "page" } : {}) do %>
@@ -100,7 +113,6 @@
       <div class="sidebar-menu__group-label">USER MANAGEMENT & Audit</div>
       <div class="sidebar-menu__items">
         <nav class="">
-          <%# Assuming this controller is named 'admin_users' or just 'users' (adjust string as needed) %>
           <%= link_to admin_users_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: active_for("users") do %>
@@ -108,7 +120,6 @@
             Users
           <% end %>
 
-          <%# PaperTrail usually uses 'versions' controller %>
           <%= link_to versions_path, 
                       class: "flex gap-4 btn sidebar-menu__button mbe-1", 
                       aria: active_for("versions") do %>

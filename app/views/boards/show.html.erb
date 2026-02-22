@@ -10,31 +10,26 @@
   Boards / <%= @board.name %>
 <% end %>
 
-<div class="p-4 b-full i-full overflow-hidden">
+<div class="p-4 min-b-screen-80 i-full">
 
     <div class="flex justify-between items-center">
       <div>
         <h1 class="text-3xl font-bold"><%= @board.name %></h1>
         <div class="text-sm text-subtle"><%= @board.description %></div>
       </div>
-      <button class="btn bg-orange-500 hover:bg-orange-600 btn--icon text-xs border-0 text-gray-50">
-        <span class="icon icon--plus">+</span>
-      </button>
+      <%= link_to new_board_list_path(@board), 
+            class: "btn bg-orange-500 hover:bg-orange-600 btn--icon text-xs border-0 text-gray-50",
+            data: { turbo_frame: "modal" } do %>
+            <span class="icon icon--plus">+</span>
+      <% end %>
     </div>
   
   <!-- 1. Attach controller and URL value -->
-  <div class="flex gap-4 b-full overflow-x-auto pb-4 items-start"
+  <div id="lists-container" class="flex gap-4 b-full overflow-x-auto pb-4 items-start"
        data-controller="kanban-list"
        data-kanban-list-url-value="<%= move_list_path(':id') %>">
     
-    <% @board.lists.each do |list| %>
-      <%= render list %>
-    <% end %>
-
-    <!-- Add List Placeholder -->
-    <div class="flex-item-no-shrink w-80 p-3 rounded-lg border border-dashed border-main text-center text-subtle opacity-50">
-      + Add Another List
-    </div>
+    <%= render @board.lists %>
 
   </div>
 </div>

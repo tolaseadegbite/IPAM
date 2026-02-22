@@ -41,15 +41,15 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :boards, only: [ :index, :show ]
-
-  resources :cards do
-    member do
-      patch :move
+  resources :boards do
+    resources :lists, shallow: true do
+      member do
+        patch :move
+      end
     end
   end
 
-  resources :lists, only: [] do
+  resources :cards do
     member do
       patch :move
     end
