@@ -134,6 +134,11 @@
     </div>
 
     <div class="col-span-1">
+      <%= form.label :location, "Physical Location (For biometric machines)", class: "block font-medium mbe-1" %>
+      <%= form.text_field :location, class: "input", placeholder: "e.g., Server Room Rack 2 or Main Gate" %>
+    </div>
+
+    <div class="col-span-1">
       <%= form.label :notes, "Notes", class: "block font-medium mbe-1" %>
       <%= form.text_area :notes, placeholder: "Notes...", class: "input" %>
     </div>

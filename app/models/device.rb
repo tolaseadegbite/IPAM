@@ -35,7 +35,7 @@ class Device < ApplicationRecord
   validate :ip_released_if_retired
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[ name mac_address device_type critical status created_at updated_at ]
+    %w[ name mac_address device_type critical status location created_at updated_at ]
   end
 
   def self.ransackable_associations(auth_object = nil)

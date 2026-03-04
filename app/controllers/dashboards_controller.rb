@@ -52,7 +52,7 @@ class DashboardsController < ApplicationController
       # A nice palette for categorical data
       backgroundColor: [ "#6366f1", "#8b5cf6", "#ec4899", "#14b8a6", "#f59e0b", "#64748b" ],
       borderWidth: 0,
-      borderRadius: 4,
+      borderRadius: 3,
       barThickness: 20
     } ]
   }
