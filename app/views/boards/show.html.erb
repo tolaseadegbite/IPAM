@@ -7,29 +7,33 @@
 <% content_for :title, @board.name %>
 
 <% content_for :page_header do %>
-  Boards / <%= @board.name %>
+  <%= @board.name %>
 <% end %>
 
-<div class="p-4 min-b-screen-80 i-full">
+<div class="p-4 i-full" style="min-height:50vh;">
 
-    <div class="flex justify-between items-center">
-      <div>
-        <h1 class="text-3xl font-bold"><%= @board.name %></h1>
-        <div class="text-sm text-subtle"><%= @board.description %></div>
-      </div>
-      <%= link_to new_board_list_path(@board), 
-            class: "btn bg-orange-500 hover:bg-orange-600 btn--icon text-xs border-0 text-gray-50",
-            data: { turbo_frame: "modal" } do %>
-            <span class="icon icon--plus">+</span>
-      <% end %>
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold"><%= @board.name %></h1>
+      <div class="text-sm text-subtle mb-4"><%= simple_format(@board.description) %></div>
     </div>
+    <%= link_to new_board_list_path(@board), 
+          class: "btn bg-orange-500 hover:bg-orange-600 btn--icon text-xs border-0 text-gray-50",
+          data: { turbo_frame: "modal" } do %>
+          <span class="icon icon--plus">+</span>
+    <% end %>
+  </div>
+
+  <!-- SEARCH BAR -->
+  <%= render "search_form", board: @board, search: @search %>
   
   <!-- 1. Attach controller and URL value -->
   <div id="lists-container" class="flex gap-4 b-full overflow-x-auto pb-4 items-start"
        data-controller="kanban-list"
        data-kanban-list-url-value="<%= move_list_path(':id') %>">
     
-    <%= render @board.lists %>
-
+    <% @lists.each do |list| %>
+      <%= render partial: "lists/list", locals: { list: list, cards: filtered_cards[list.id] || [] } %>
+    <% end %>
   </div>
 </div>

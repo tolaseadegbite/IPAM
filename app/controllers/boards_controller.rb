@@ -2,12 +2,26 @@ class BoardsController < ApplicationController
   before_action :set_board, only: %i[ show edit update destroy ]
 
   def index
-    @boards = Board.includes(lists: :cards).order(created_at: :desc)
+    @boards = Board.includes(lists: :cards).order(created_at: :asc)
     @board = Board.new # For the modal/form initialization
   end
 
   def show
-    @board = Board.includes(lists: { cards: [ :referenceable, :users ] }).find(params[:id])
+    @board = Board.find(params[:id])
+
+    # 1. Initialize Ransack on the cards belonging to this board
+    @search = @board.cards.ransack(params[:q])
+
+    # 2. Get filtered cards and group them by their list_id in memory
+    # We search title, description, linked device name, and linked IP address string
+    @filtered_cards = @search.result
+                             .includes(:users, :referenceable)
+                             .order(position: :asc)
+                             .group_by(&:list_id)
+
+    @lists = @board.lists.order(position: :asc)
+
+    render :show, locals: { board: @board, search: @search, filtered_cards: @filtered_cards }
   end
 
   def new
@@ -45,7 +59,7 @@ class BoardsController < ApplicationController
         format.turbo_stream do
           render turbo_stream: [
             turbo_stream.replace(helpers.dom_id(@board), partial: "boards/board", locals: { board: @board }),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Board updated successfully." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Board updated successfully." })
           ]
         end
       end

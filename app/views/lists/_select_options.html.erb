@@ -1,0 +1,6 @@
+<%= turbo_frame_tag "list_options_frame" do %>
+  <%= select_tag "card[list_id]", 
+        options_from_collection_for_select(lists, :id, :name), 
+        prompt: "Select Status/Column", 
+        class: "input cursor-pointer" %>
+<% end %>

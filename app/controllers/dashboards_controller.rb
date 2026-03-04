@@ -30,15 +30,32 @@ class DashboardsController < ApplicationController
     used_count = IpAddress.where(status: [ :active, :reserved ]).count
     @utilization_percent = @total_ips > 0 ? (used_count.to_f / @total_ips * 100).to_i : 0
 
-    # 2. Charts
-    @reachability_chart = {
-      labels: [ "Online", "Offline" ],
-      datasets: [ {
-        data: [ @online_count, @total_ips - @online_count ],
-        backgroundColor: [ "#22c55e", "#f3f4f6" ],
-        borderWidth: 0
-      } ]
-    }
+  # 2. Charts
+  # @reachability_chart = {
+  #   labels: [ "Online", "Offline" ],
+  #   datasets: [ {
+  #     data: [ @online_count, @total_ips - @online_count ],
+  #     backgroundColor: [ "#22c55e", "#f3f4f6" ],
+  #     borderWidth: 0
+  #   } ]
+  # }
+
+  # Device Type Breakdown
+  # Groups by device_type (e.g., "server", "printer") and counts them
+  device_stats = Device.group(:device_type).count.transform_keys { |k| k.to_s.humanize }
+
+  @device_type_chart = {
+    labels: device_stats.keys,
+    datasets: [ {
+      label: "Devices",
+      data: device_stats.values,
+      # A nice palette for categorical data
+      backgroundColor: [ "#6366f1", "#8b5cf6", "#ec4899", "#14b8a6", "#f59e0b", "#64748b" ],
+      borderWidth: 0,
+      borderRadius: 4,
+      barThickness: 20
+    } ]
+  }
 
     allocation_stats = IpAddress.group(:status).count
     @allocation_chart = {
@@ -74,15 +91,24 @@ class DashboardsController < ApplicationController
 
     # 5. Duration (NEW)
     @last_duration = Rails.cache.read("last_scan_duration") || 0
+
+    # --- 6. KANBAN INTEGRATION (NEW) ---
+    # Fetch High Priority cards.
+    # Ideally exclude "Done" lists, but for now we grab all High Priority.
+    @high_priority_tasks = Card.where(priority: :high)
+                               .includes(:list, :users, :referenceable)
+                               .order(created_at: :desc)
+                               .limit(5)
   end
-  
+
   def dashboard_locals(scanning: false)
     {
       online_count: @online_count,
       total_ips: @total_ips,
       rogue_count: @rogue_count,
       utilization_percent: @utilization_percent,
-      reachability_chart: @reachability_chart,
+      # reachability_chart: @reachability_chart,
+      device_type_chart: @device_type_chart,
       allocation_chart: @allocation_chart,
       subnets: @subnets,
       rogue_devices: @rogue_devices,
@@ -91,6 +117,7 @@ class DashboardsController < ApplicationController
       recent_events: @recent_events,
       last_scan: @last_scan,
       duration: @last_duration,
+      high_priority_tasks: @high_priority_tasks,
       scanning: scanning
     }
   end

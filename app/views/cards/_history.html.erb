@@ -1,0 +1,82 @@
+<div class="card bg-main p-0 flex flex-col mbs-4">
+  <!-- Header with Action Button -->
+  <div class="p-4 border-be flex justify-between items-center">
+    <h3 class="font-semibold text-lg">Maintenance History</h3>
+    
+    <!-- Dynamic "Log Task" button using the parent object -->
+    <%= link_to new_card_path(referenceable_type: parent.class.name, referenceable_id: parent.id), 
+          class: "btn btn--sm btn--subtle flex items-center gap-1", 
+          data: { turbo_frame: "modal" } do %>
+      <span class="icon">📋</span> Log Task
+    <% end %>
+  </div>
+
+  <div class="overflow-y-auto" style="max-block-size: 300px;">
+    <% if cards.any? %>
+      <table class="i-full text-sm text-start">
+        <thead class="bg-surface text-xs text-subtle uppercase sticky top-0">
+          <tr>
+            <th class="p-3 font-semibold text-start">Status</th>
+            <th class="p-3 font-semibold text-start">Task</th>
+            <th class="p-3 font-semibold text-start">Priority</th>
+            <th class="p-3 font-semibold text-start">Assigned To</th>
+            <th class="p-3 font-semibold text-end">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% cards.each do |card| %>
+            <tr class="">
+              <!-- Status (Column Name) -->
+              <td class="p-3">
+                <span class="text-xs font-mono font-bold pi-2 pb-1 rounded-md bg-shade text-subtle whitespace-nowrap">
+                  <%= card.list.name %>
+                </span>
+              </td>
+
+              <!-- Title -->
+              <td class="p-3 font-medium text-primary">
+                <%= link_to card.title, edit_card_path(card), class: "hover:text-orange-500", data: { turbo_frame: "modal" } %>
+              </td>
+
+              <!-- Priority Badge -->
+              <td class="p-3">
+                <% 
+                  p_class = case card.priority
+                            when "high" then "text-red-600 bg-red-50"
+                            when "medium" then "text-yellow-600 bg-yellow-50"
+                            else "text-blue-600 bg-blue-50"
+                            end
+                %>
+                <span class="uppercase font-bold pi-2 pb-1 rounded-md <%= p_class %>">
+                  <%= card.priority %>
+                </span>
+              </td>
+
+              <!-- Assignees -->
+              <td class="p-3">
+                <div class="flex  overflow-hidden">
+                  <% if card.users.any? %>
+                    <% card.users.each do |user| %>
+                        <%= user.username.capitalize %>
+                    <% end %>
+                  <% else %>
+                    <span class="text-subtle text-xs italic">Unassigned</span>
+                  <% end %>
+                </div>
+              </td>
+
+              <!-- Date -->
+              <td class="p-3 text-end text-subtle whitespace-nowrap text-xs">
+                <%= time_ago_in_words(card.created_at) %> ago
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="p-8 text-center text-subtle italic">
+        No maintenance history recorded for this asset.
+      </div>
+    <% end %>
+  </div>
+</div>

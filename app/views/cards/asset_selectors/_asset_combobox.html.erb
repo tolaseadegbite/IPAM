@@ -1,0 +1,10 @@
+<%= turbo_frame_tag "asset_options_frame" do %>
+  <div>
+    <%# We use your existing combobox controller here %>
+    <%= select_tag "card[referenceable_id]", 
+          options_for_select(assets), 
+          prompt: prompt, 
+          class: "cursor-pointer",
+          data: { controller: "combobox" } %>
+  </div>
+<% end %>

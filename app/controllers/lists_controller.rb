@@ -60,6 +60,13 @@ class ListsController < ApplicationController
     head :ok
   end
 
+  def select_options
+    # Fetch lists for the board, ordered by their position (Left to Right)
+    @lists = List.where(board_id: params[:board_id]).order(:position)
+
+    render partial: "lists/select_options", locals: { lists: @lists }
+  end
+
   private
 
   def set_board

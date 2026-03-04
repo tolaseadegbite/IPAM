@@ -30,7 +30,14 @@
     is_public_page = !is_dashboard_view && controller_name == 'pages'
   %>
 
-  <body class="<%= 'min-b-screen flex flex-col justify-center items-center p-4' if is_auth_page %> bg-main" data-controller="color-scheme <%= 'player' if is_dashboard_view %>" <% if is_dashboard_view %>data-action="show@window->player#show"<% end %>>
+  <%# 1. Define the variable here %>
+  <% current_scheme = cookies[:color_scheme] || "system" %>
+
+  <%# 2. Now use it in the body tag %>
+  <body class="<%= 'min-b-screen flex flex-col justify-center items-center p-4' if is_auth_page %> bg-main" 
+        data-controller="color-scheme" 
+        data-color-scheme="<%= current_scheme %>" 
+        <% if is_dashboard_view %>data-action="show@window->player#show"<% end %>>
 
     <div id="flash_messages">
       <%= render "shared/flash" %>

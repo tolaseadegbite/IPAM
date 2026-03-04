@@ -29,7 +29,15 @@
        data-controller="kanban"
        data-kanban-url-value="<%= move_card_path(':id') %>"
        data-list-id="<%= list.id %>">
-    <%= render list.cards %>
+    
+    <%# Render the FILTERED cards passed into this partial %>
+    <%= render cards %>
+
+    <% if cards.empty? %>
+      <div class="p-4 text-center text-xs text-subtle italic opacity-50">
+        No matching tasks
+      </div>
+    <% end %>
   </div>
 
   <!-- Footer (Add Card) -->

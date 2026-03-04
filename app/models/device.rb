@@ -21,7 +21,7 @@ class Device < ApplicationRecord
   delegate :branch, to: :department
   delegate :name, to: :department, prefix: true
 
-  enum :device_type, { desktop: 0, all_in_one: 1, laptop: 2, printer: 3, server: 4, tablet: 5 }
+  enum :device_type, { desktop: 0, all_in_one: 1, laptop: 2, printer: 3, server: 4, tablet: 5, biometrics: 6 }
   enum :status, { active: 0, in_storage: 1, in_repair: 2, retired: 3, lost: 4 }
 
   # validates :serial_number, uniqueness: { case_sensitive: false }
@@ -39,7 +39,7 @@ class Device < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    [ "department", "employee", "ip_address" ]
+    %w[department employee ip_address cards]
   end
 
   private

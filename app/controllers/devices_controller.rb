@@ -8,6 +8,8 @@ class DevicesController < ApplicationController
   end
 
   def show
+    # Fetch history efficiently
+    @cards = @device.cards.includes(:list, :users).order(created_at: :desc)
   end
 
   def new

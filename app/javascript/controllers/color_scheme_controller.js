@@ -6,18 +6,23 @@ export default class extends Controller {
   }
 
   setLight() {
-    this.element.dataset.colorScheme = "light"
-    localStorage.setItem("color_scheme", "light")
+    this.setColorScheme("light")
   }
 
   setDark() {
-    this.element.dataset.colorScheme = "dark"
-    localStorage.setItem("color_scheme", "dark")
+    this.setColorScheme("dark")
   }
 
   setSystem() {
-    this.element.dataset.colorScheme = "system"
-    localStorage.setItem("color_scheme", "system")
+    this.setColorScheme("system")
+  }
+
+  setColorScheme(scheme) {
+    this.element.dataset.colorScheme = scheme
+    localStorage.setItem("color_scheme", scheme)
+    
+    // NEW: Set a cookie so the server knows the preference
+    document.cookie = `color_scheme=${scheme}; path=/; max-age=31536000`
   }
 
   get #colorScheme() {

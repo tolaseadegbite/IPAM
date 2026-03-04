@@ -22,7 +22,7 @@
     </div>
     
     <p class="text-sm text-subtle mbe-4">
-      <%= board.description.presence || "No description provided." %>
+      <%= board.description.presence.truncate(300) || "No description provided." %>
     </p>
   </div>
 

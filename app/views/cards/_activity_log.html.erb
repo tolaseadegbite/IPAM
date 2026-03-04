@@ -1,0 +1,71 @@
+<div class="mbs-6 border-bs border-main pbs-6">
+  <h3 class="font-semibold text-lg mbe-4">Task History</h3>
+  
+  <div class="flex flex-col gap-4 max-b-full overflow-y-auto" style="max-block-size: 300px;">
+    <% versions.each do |version| %>
+      <% 
+         # 1. User Resolution
+         user = User.find_by(id: version.whodunnit)
+         username = user ? user.username.capitalize : "System"
+         action = version.event # "create", "update", or "destroy"
+         
+         # 2. Filter Noise
+         ignored_fields = %w[id position referenceable_type referenceable_id created_at updated_at]
+         
+         filtered_changes = (version.changeset || {}).reject do |field, values|
+           # Reject if it's an internal field OR if the value didn't actually change (e.g. low -> low)
+           ignored_fields.include?(field) || values[0].to_s == values[1].to_s
+         end
+      %>
+
+      <div class="border-is-2 border-main pis-4">
+        
+        <!-- Header -->
+        <div class="text-sm text-primary mbe-1">
+          <span class="font-bold"><%= username %></span>
+          
+          <% if action == "create" %>
+            created this task.
+          <% elsif action == "destroy" %>
+            deleted this task.
+          <% elsif filtered_changes.any? %>
+            updated this task:
+          <% else %>
+            modified this task.
+          <% end %>
+        </div>
+
+        <!-- Changeset Details -->
+        <% if action == "update" && filtered_changes.any? %>
+          <ul class="text-xs text-subtle list-disc mbe-1">
+            <% filtered_changes.each do |field, values| %>
+              <% old_val, new_val = values %>
+              
+              <li>
+                <% if field == "list_id" %>
+                  Moved to <b><%= List.find_by(id: new_val)&.name || "Unknown" %></b> column
+                <% elsif old_val.blank? %>
+                  Set <span class="font-mono bg-shade pi-1 rounded-md"><%= field.humanize %></span> to <b><%= truncate(new_val.to_s, length: 40) %></b>
+                <% else %>
+                  Changed <span class="font-mono bg-shade pi-1 rounded-md"><%= field.humanize %></span> 
+                  from <i><%= truncate(old_val.to_s, length: 30) %></i> 
+                  to <b><%= truncate(new_val.to_s, length: 30) %></b>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <!-- Timestamp -->
+        <div class="text-xs text-subtle font-mono">
+          <%= version.created_at.strftime("%b %d, %H:%M:%S") %> 
+          (<%= time_ago_in_words(version.created_at) %> ago)
+        </div>
+      </div>
+    <% end %>
+
+    <% if versions.empty? %>
+      <div class="text-sm text-subtle italic">No history available yet.</div>
+    <% end %>
+  </div>
+</div>

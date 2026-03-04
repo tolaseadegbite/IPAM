@@ -101,12 +101,27 @@ class NetworkReconService
     utilization_percent = total_ips > 0 ? (used_count.to_f / total_ips * 100).to_i : 0
 
     # 2. Charts
-    reachability_chart = {
-      labels: [ "Online", "Offline" ],
+    # reachability_chart = {
+    #   labels: [ "Online", "Offline" ],
+    #   datasets: [ {
+    #     data: [ online_count, total_ips - online_count ],
+    #     backgroundColor: [ "#22c55e", "#f3f4f6" ],
+    #     borderWidth: 0
+    #   } ]
+    # }
+
+    # Device Type Calculation
+    device_stats = Device.group(:device_type).count.transform_keys { |k| k.to_s.humanize }
+
+    device_type_chart = {
+      labels: device_stats.keys,
       datasets: [ {
-        data: [ online_count, total_ips - online_count ],
-        backgroundColor: [ "#22c55e", "#f3f4f6" ],
-        borderWidth: 0
+        label: "Devices",
+        data: device_stats.values,
+        backgroundColor: [ "#6366f1", "#8b5cf6", "#ec4899", "#14b8a6", "#f59e0b", "#64748b" ],
+        borderWidth: 0,
+        borderRadius: 4,
+        barThickness: 20
       } ]
     }
 
@@ -170,7 +185,13 @@ class NetworkReconService
     last_scan = Time.current
     Rails.cache.write("last_network_scan_completed_at", last_scan)
 
-    # 4. Broadcast (Add 'duration' to locals)
+    # 4 --- Kanban Data (NEW) ---
+    high_priority_tasks = Card.where(priority: :high)
+                              .includes(:list, :users, :referenceable)
+                              .order(created_at: :desc)
+                              .limit(5)
+
+    # 5. Broadcast
     Turbo::StreamsChannel.broadcast_replace_to(
       "monitoring",
       target: "dashboard_metrics",
@@ -180,7 +201,8 @@ class NetworkReconService
         total_ips: total_ips,
         rogue_count: rogue_count,
         utilization_percent: utilization_percent,
-        reachability_chart: reachability_chart,
+        # reachability_chart: reachability_chart,
+        device_type_chart: device_type_chart,
         allocation_chart: allocation_chart,
         subnets: subnets,
         rogue_devices: rogue_devices,
@@ -188,7 +210,8 @@ class NetworkReconService
         critical_devices: critical_devices,
         recent_events: recent_events,
         last_scan: last_scan,
-        duration: duration,   # <--- PASS THE DURATION HERE
+        duration: duration,
+        high_priority_tasks: high_priority_tasks,
         scanning: false
       }
     )

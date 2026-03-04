@@ -103,32 +103,32 @@
     <h3 class="font-semibold text-lg mbe-4">Network Composition</h3>
     
     <div class="grid grid-cols-1 grid-cols-2@sm gap-8">
-      <!-- Reachability Chart -->
+      
+      <!-- 1. Device Type Breakdown -->
       <div class="flex flex-col items-center">
-        <h4 class="text-xs text-subtle uppercase font-bold mbe-2">Reachability Status</h4>
+        <h4 class="text-xs text-subtle uppercase font-bold mbe-2">Device Inventory</h4>
         <div class="relative i-full" style="block-size: 250px;">
           <%= tag.canvas role: "img", data: { 
               controller: "chart", 
-              chart_type_value: "doughnut", 
-              chart_options_value: { maintainAspectRatio: false, cutout: "80%", plugins: { legend: { display: false } } }.to_json,
-              chart_data_value: reachability_chart.to_json 
+              chart_type_value: "bar", 
+              chart_options_value: { 
+                indexAxis: 'y', 
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false } },
+                scales: {
+                  x: { grid: { display: false }, ticks: { display: false } },
+                  y: { grid: { display: false } }
+                }
+              }.to_json,
+              chart_data_value: device_type_chart.to_json 
           } %>
-          <div class="absolute inset-0 flex flex-col items-center justify-center" style="top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;">
-            <div class="text-3xl font-bold"><%= online_count %></div>
-            <div class="text-xs text-subtle uppercase">Online</div>
-          </div>
         </div>
-        <div class="flex gap-4 mbs-4">
-          <div class="flex items-center gap-2 text-xs">
-            <span class="rounded-full" style="width: 8px; height: 8px; background-color: #22c55e;"></span> Online
-          </div>
-          <div class="flex items-center gap-2 text-xs">
-            <span class="rounded-full" style="width: 8px; height: 8px; background-color: #f3f4f6;"></span> Offline
-          </div>
+        <div class="text-xs text-subtle text-center mbs-2">
+          Classified assets on network
         </div>
       </div>
 
-      <!-- Allocation Chart -->
+      <!-- 2. IP Allocation Chart -->
       <div class="flex flex-col items-center">
         <h4 class="text-xs text-subtle uppercase font-bold mbe-2">IP Allocation</h4>
         <div class="relative i-full" style="block-size: 250px;">
@@ -154,6 +154,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -191,10 +192,55 @@
 
     <!-- RIGHT: Action Lists -->
     <div class="flex flex-col gap-4">
+      
+      <!-- NEW: High Priority Tasks -->
+      <div class="card bg-main">
+        <div class="p-3 border-be border-main bg-main flex justify-between items-center">
+          <h3 class="font-semibold text-base text-red-600">High Priority Tasks</h3>
+          <%= link_to "Go to Boards", boards_path, class: "text-xs text-link" %>
+        </div>
+        <div class="p-0">
+          <% if high_priority_tasks.any? %>
+            <table class="i-full text-sm">
+              <tbody>
+                <% high_priority_tasks.each do |card| %>
+                  <tr class="border-be border-main last:border-0 hover:bg-surface">
+                    <td class="p-3">
+                      <div class="font-bold text-primary flex items-center gap-2">
+                        <%= link_to card.title, edit_card_path(card), data: { turbo_frame: "modal" }, class: "hover:text-orange-500" %>
+                      </div>
+                      <div class="text-xs text-subtle mt-1">
+                        <% if card.referenceable %>
+                           <span class="font-mono bg-shade px-1 rounded"><%= card.referenceable.try(:name) || card.referenceable.try(:address) %></span>
+                        <% end %>
+                        <span class="mis-1"><%= card.list.name %></span>
+                      </div>
+                    </td>
+                    <td class="p-3 text-end">
+                      <div class="flex -space-x-2 justify-end overflow-hidden">
+                        <% if card.users.any? %>
+                          <% card.users.each do |user| %>
+                            <%= user.username.capitalize %>
+                          <% end %>
+                        <% else %>
+                          <span class="text-xs text-subtle italic">--</span>
+                        <% end %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <div class="p-4 text-center text-xs text-subtle italic">No high priority tasks. Good job!</div>
+          <% end %>
+        </div>
+      </div>
+
       <!-- Rogue List -->
       <div class="card bg-white">
         <div class="p-3 border-be border-main flex justify-between items-center">
-          <h3 class="font-semibold text-base text-red-500">Rogue Devices</h3>
+          <h3 class="font-semibold text-base text-red-600">Rogue Devices</h3>
           <%= link_to "View All", ip_addresses_path(q: { rogue_only: true }), class: "text-xs hover:text-orange-500" %>
         </div>
         <div class="p-0">
@@ -206,7 +252,7 @@
                     <td class="p-3 font-bold"><%= link_to ip.address, ip, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %></td>
                     <td class="p-3 text-subtle text-xs"><%= link_to ip.subnet.name, ip.subnet, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %></td>
                     <td class="p-3 text-end">
-                      <%= link_to "Register", edit_ip_address_path(ip), class: "btn hover:bg-orange-500", data: { turbo_frame: "modal" } %>
+                      <%= link_to "Register", edit_ip_address_path(ip), class: "btn text-xs hover:bg-orange-500", data: { turbo_frame: "modal" } %>
                     </td>
                   </tr>
                 <% end %>

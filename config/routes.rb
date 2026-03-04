@@ -41,6 +41,13 @@ Rails.application.routes.draw do
     end
   end
 
+  # Standalone routes for Lists to handle generic queries
+  resources :lists, only: [] do
+    collection do
+      get :select_options # Generates: select_options_lists_path
+    end
+  end
+
   resources :boards do
     resources :lists, shallow: true do
       member do
@@ -50,6 +57,9 @@ Rails.application.routes.draw do
   end
 
   resources :cards do
+    collection do
+      get :select_assets # /cards/select_assets?asset_type=Device
+    end
     member do
       patch :move
     end

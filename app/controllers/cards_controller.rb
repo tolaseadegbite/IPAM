@@ -15,6 +15,8 @@ class CardsController < ApplicationController
   end
 
   def edit
+    # Fetch the history logs, most recent first
+    @versions = @card.versions.order(created_at: :desc)
   end
 
   def create
@@ -91,6 +93,29 @@ class CardsController < ApplicationController
     )
     # The Board broadcasts_refreshes (Morphing) handles the remote sync
     head :ok
+  end
+
+  def select_assets
+    @asset_type = params[:asset_type]
+
+    case @asset_type
+    when "Device"
+      # Eager load department and branch for the smart label
+      @assets = Device.includes(department: :branch).active.order(:name).map do |d|
+        [ "#{d.name} (#{d.department.branch.name} - #{d.department.name})", d.id ]
+      end
+      render partial: "cards/asset_selectors/asset_combobox", locals: { assets: @assets, prompt: "Search by Hostname..." }
+
+    when "IpAddress"
+      # Eager load subnet for the smart label
+      @assets = IpAddress.includes(:subnet).order(:address).map do |ip|
+        [ "#{ip.address} (#{ip.subnet.name})", ip.id ]
+      end
+      render partial: "cards/asset_selectors/asset_combobox", locals: { assets: @assets, prompt: "Search by IP Address..." }
+
+    else
+      render turbo_stream: turbo_stream.update("asset_options_frame", "")
+    end
   end
 
   private

@@ -8,6 +8,8 @@ class IpAddressesController < ApplicationController
   end
 
   def show
+    # Fetch history efficiently
+    @cards = @ip_address.cards.includes(:list, :users).order(created_at: :desc)
   end
 
   def edit

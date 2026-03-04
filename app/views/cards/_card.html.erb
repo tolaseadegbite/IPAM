@@ -32,8 +32,12 @@
     <div class="flex overflow-hidden">
       <% card.users.each do |user| %>
         <!-- Simple Avatar Placeholder -->
-        <div class="bg-blue-500 rounded-full flex items-center justify-center text-xs font-semibold text-gray-50 p-2" style="block-size: 1rem; inline-size: 1rem;" title="<%= user.username %>">
-          <%= user.username[0].upcase %>
+        <!--<div class="bg-blue-500 rounded-full flex items-center justify-center text-xs font-semibold text-gray-50 p-2" style="block-size: 1rem; inline-size: 1rem;" title="<%= user.username %>">
+          <%#= user.username[0].upcase %>
+        </div> -->
+        <div class="avatar-group">
+          <span class="avatar border-2 border-orange-700" style="block-size: var(--size-7); inline-size: var(--size-7)"><%= image_tag "avatar.jpg", alt: "CN" %></span>
+          <span class="avatar border-2 border-orange-700" style="block-size: var(--size-7); inline-size: var(--size-7)"><%= image_tag "avatar.jpg", alt: "CN" %></span>
         </div>
       <% end %>
     </div>

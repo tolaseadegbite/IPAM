@@ -1,59 +1,111 @@
 <%= form_with(model: card, html: { contents: true }) do |form| %>
   <%= render "shared/error_messages", object: card %>
 
+  <!-- Title -->
   <div class="mbe-4">
     <%= form.label :title, "Task Title", class: "block font-medium mbe-1" %>
-    <%= form.text_field :title, class: "input ", placeholder: "e.g. Replace faulty switch" %>
+    <%= form.text_field :title, class: "input", placeholder: "e.g. Replace faulty switch" %>
   </div>
 
+  <!-- Description -->
   <div class="mbe-4">
     <%= form.label :description, "Description", class: "block font-medium mbe-1" %>
-    <%= form.text_area :description, class: "input  h-24" %>
+    <%= form.text_area :description, class: "input", placeholder: "Details about the issue..." %>
   </div>
 
-  <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-4">
+  <!-- DEPENDENT DROPDOWN: Board -> List -->
+  <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-4"
+       data-controller="dependent-select"
+       data-dependent-select-url-value="<%= select_options_lists_path %>"
+       data-dependent-select-param-value="board_id"
+       data-dependent-select-frame-id-value="list_options_frame">
+
+    <div class="col-span-1">
+      <label class="block font-medium mbe-1">Board</label>
+      <% 
+         current_list = List.find_by(id: card.list_id)
+         selected_board_id = current_list&.board_id || Board.first&.id
+      %>
+      
+      <%= select_tag "board_id", 
+            options_from_collection_for_select(Board.order(:name), :id, :name, selected_board_id), 
+            prompt: "Select Board",
+            class: "input cursor-pointer",
+            data: { 
+              dependent_select_target: "select", 
+              action: "change->dependent-select#load" 
+            } %>
+    </div>
+
     <div class="col-span-1">
       <%= form.label :list_id, "Status (Column)", class: "block font-medium mbe-1" %>
-      <%= form.collection_select :list_id, List.all, :id, :name, {}, { class: "input  cursor-pointer" } %>
+      <%= turbo_frame_tag "list_options_frame" do %>
+        <% lists = selected_board_id ? List.where(board_id: selected_board_id).order(:position) : [] %>
+        <%= form.select :list_id, 
+              options_from_collection_for_select(lists, :id, :name, card.list_id),
+              { prompt: "Select Board First" }, 
+              { class: "input cursor-pointer" } %>
+      <% end %>
     </div>
+  </div>
 
+  <!-- Priority & Assignees -->
+  <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-4">
     <div class="col-span-1">
       <%= form.label :priority, "Priority", class: "block font-medium mbe-1" %>
-      <%= form.select :priority, Card.priorities.keys.map { |k| [k.humanize, k] }, {}, { class: "input  cursor-pointer" } %>
+      <%= form.select :priority, Card.priorities.keys.map { |k| [k.humanize, k] }, {}, { class: "input cursor-pointer" } %>
+    </div>
+    
+    <div class="col-span-1">
+      <%= form.label :user_ids, "Assign To", class: "block font-medium mbe-1" %>
+      <%= form.collection_select :user_ids, User.all, :id, :username, 
+            { include_blank: "Unassigned" }, 
+            { multiple: true, class: "cursor-pointer", size: 1, data: { controller: "combobox" } } %>
     </div>
   </div>
 
-  <!-- Assignees (Multiple Select) -->
-  <div class="mbe-4">
-    <%= form.label :user_ids, "Assign To", class: "block font-medium mbe-1" %>
-    <%= form.collection_select :user_ids, User.all, :id, :username, 
-          { include_blank: "Unassigned" }, 
-          { multiple: true, class: "cursor-pointer", size: 3, data: { controller: "combobox" } } %>
-  </div>
-
-  <!-- Linked Asset Section -->
+  <!-- Linked Asset Section (Refactored for Smart Combobox) -->
   <div class="mbe-6 p-3 bg-shade border border-main rounded-md">
-    <label class="block font-bold text-xs uppercase text-subtle mbe-2">Linked Asset</label>
+    <label class="block font-bold text-xs uppercase text-subtle mbe-2">Linked Asset (Context)</label>
     
     <% if card.referenceable %>
-      <!-- 1. Display mode (if already linked) -->
+      <!-- 1. Display mode (Locked) -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="text-lg"><%= card.referenceable_type == 'Device' ? '💻' : '🌐' %></span>
           <span class="font-medium text-sm"><%= card.referenceable.respond_to?(:name) ? card.referenceable.name : card.referenceable.address %></span>
         </div>
-        
-        <!-- Keep the data in the form hidden fields -->
         <%= form.hidden_field :referenceable_type %>
         <%= form.hidden_field :referenceable_id %>
-        
-        <span class="bg-primary text-white px-2 py-0.5 rounded-full uppercase">Locked</span>
+        <span class="bg-black text-reversed pi-2 pb-1 rounded-full uppercase font-bold text-xs">Locked</span>
       </div>
     <% else %>
-      <!-- 2. Select mode (if creating a generic task) -->
-      <div class="flex flex-col gap-2">
-        <%= form.select :referenceable_type, [["Device", "Device"], ["IP Address", "IpAddress"]], { include_blank: "Select Type..." }, { class: "input text-xs" } %>
-        <%= form.collection_select :referenceable_id, Device.order(:name), :id, :name, { include_blank: "Select Device..." }, { class: "input text-xs" } %>
+      <!-- 2. Select mode (Smart Search) -->
+      <div class="grid grid-cols-1 grid-cols-2@md gap-2"
+           data-controller="dependent-select"
+           data-dependent-select-url-value="<%= select_assets_cards_path %>"
+           data-dependent-select-param-value="asset_type"
+           data-dependent-select-frame-id-value="asset_options_frame">
+           
+        <div>
+          <%= form.select :referenceable_type, [["Device", "Device"], ["IP Address", "IpAddress"]], 
+                { include_blank: "Select Type..." }, 
+                { class: "input text-xs cursor-pointer", 
+                  data: { 
+                    dependent_select_target: "select", 
+                    action: "change->dependent-select#load" 
+                  } 
+                } %>
+        </div>
+
+        <div>
+          <%= turbo_frame_tag "asset_options_frame" do %>
+            <%# Initial empty state %>
+            <div class="input bg-surface opacity-50 cursor-not-allowed">
+              Select type to search...
+            </div>
+          <% end %>
+        </div>
       </div>
     <% end %>
   </div>
@@ -61,13 +113,12 @@
   <!-- Actions -->
   <div class="flex justify-between items-center">
     <div class="flex gap-3 items-center">
-      <%= form.submit "Save Task", class: "btn bg-orange-400 text-white font-semibold rounded-md px-4 py-2" %>
-      <!-- Close modal button / back link -->
+      <%= form.submit "Save Task", class: "btn bg-orange-400 text-white font-semibold rounded pi-4 pb-2" %>
       <%= link_to "Cancel", "#", class: "text-subtle", data: { action: "click->modal#close" } %>
     </div>
     
     <% if card.persisted? %>
-      <%= link_to "Delete", card, method: :delete, class: "text-red-500 text-sm hover:underline", data: { turbo_confirm: "Are you sure?" } %>
+      <%= link_to "Delete", card_path(card), data: { turbo_method: :delete, turbo_confirm: "Are you sure? This cannot be undone." }, class: "text-red-500 text-sm hover:underline" %>
     <% end %>
   </div>
 <% end %>

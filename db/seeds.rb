@@ -240,56 +240,56 @@
 
 # ... previous seeds ...
 
-puts "   📋 Creating Kanban Board..."
+# puts "   📋 Creating Kanban Board..."
 
-# 1. Create the Main IT Board
-it_board = Board.find_or_create_by!(name: "IT Operations") do |b|
-  b.description = "Main workflow for network tasks and repairs"
-end
+# # 1. Create the Main IT Board
+# it_board = Board.find_or_create_by!(name: "IT Operations") do |b|
+#   b.description = "Main workflow for network tasks and repairs"
+# end
 
-# 2. Create Standard Columns (Lists)
-# acts_as_list will handle the position integers automatically
-lists = [ "To Do", "In Progress", "Waiting on Parts", "Done" ].map do |name|
-  List.find_or_create_by!(name: name, board: it_board)
-end
+# # 2. Create Standard Columns (Lists)
+# # acts_as_list will handle the position integers automatically
+# lists = [ "To Do", "In Progress", "Waiting on Parts", "Done" ].map do |name|
+#   List.find_or_create_by!(name: name, board: it_board)
+# end
 
-todo_list = lists.first
-progress_list = lists.second
+# todo_list = lists.first
+# progress_list = lists.second
 
-# 3. Create Sample Cards
-puts "   📝 Creating Sample Tasks..."
+# # 3. Create Sample Cards
+# puts "   📝 Creating Sample Tasks..."
 
-admin_user = User.find_by(username: "tolase")
-device = Device.first
-ip = IpAddress.where(status: :active).first
+# admin_user = User.find_by(username: "tolase")
+# device = Device.first
+# ip = IpAddress.where(status: :active).first
 
-# Task 1: Linked to a Device
-c1 = Card.create!(
-  title: "Upgrade RAM for Finance",
-  description: "User reporting slowness. Needs 16GB upgrade.",
-  priority: :medium,
-  list: todo_list,
-  referenceable: device # Link to the Lenovo laptop
-)
-Assignment.create!(card: c1, user: admin_user)
+# # Task 1: Linked to a Device
+# c1 = Card.create!(
+#   title: "Upgrade RAM for Finance",
+#   description: "User reporting slowness. Needs 16GB upgrade.",
+#   priority: :medium,
+#   list: todo_list,
+#   referenceable: device # Link to the Lenovo laptop
+# )
+# Assignment.create!(card: c1, user: admin_user)
 
-# Task 2: Linked to an IP (Rogue investigation)
-c2 = Card.create!(
-  title: "Investigate Rogue IP .200",
-  description: "Security scan detected unknown device.",
-  priority: :high,
-  list: progress_list,
-  referenceable: ip
-)
-Assignment.create!(card: c2, user: admin_user)
+# # Task 2: Linked to an IP (Rogue investigation)
+# c2 = Card.create!(
+#   title: "Investigate Rogue IP .200",
+#   description: "Security scan detected unknown device.",
+#   priority: :high,
+#   list: progress_list,
+#   referenceable: ip
+# )
+# Assignment.create!(card: c2, user: admin_user)
 
-# Task 3: Generic Task
-# Fix: No variable assignment needed here since we don't use it later
-Card.create!(
-  title: "Weekly Backup Check",
-  description: "Verify tape backups are offsite.",
-  priority: :low,
-  list: todo_list
-)
+# # Task 3: Generic Task
+# # Fix: No variable assignment needed here since we don't use it later
+# Card.create!(
+#   title: "Weekly Backup Check",
+#   description: "Verify tape backups are offsite.",
+#   priority: :low,
+#   list: todo_list
+# )
 
-puts "✅ Kanban Setup Complete!"
+# puts "✅ Kanban Setup Complete!"

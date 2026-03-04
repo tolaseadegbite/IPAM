@@ -48,7 +48,7 @@ class IpAddress < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w[device subnet]
+    %w[device subnet cards]
   end
 
   def self.ransackable_scopes(auth_object = nil)
