@@ -71,25 +71,14 @@ class IpAddress < ApplicationRecord
   end
 
   def enforce_status_consistency
-    # 1. RELEASE IP (Intentional Status Change)
-    # If you explicitly change status to 'available' or 'blacklisted',
-    # we assume you want to kick the device off immediately.
-    # Since this runs before_validation, the device becomes nil, and the validation passes.
-    if (available? || blacklisted?) && status_changed?
-      self.device = nil
-    end
-
-    # 2. ASSIGN IP (Intentional Device Change)
-    # If you select a device, we assume you want the IP to be 'active'.
-    # We check device_id_changed? so we don't accidentally flip existing 'reserved' IPs.
-    if device_id.present? && device_id_changed? && available?
-      self.status = :active
-    end
-
-    # 3. ORPHAN CHECK (Cleanup)
-    # If for any reason there is no device (and it's active), make it available.
+    # 1. If we unassign a device, make sure the IP is not marked 'active' anymore
     if device_id.nil? && active?
       self.status = :available
+    end
+
+    # 2. If we assign a device, make sure the status is not 'available'
+    if device_id.present? && available?
+      self.status = :active
     end
   end
 end

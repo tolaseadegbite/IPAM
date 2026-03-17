@@ -7,8 +7,27 @@
     <div class="font-mono"><%#= device.serial_number.presence || "Nil" %></div>
     <div class="text-xs text-subtle"><span class="font-semibold">Tag:</span> <%#= device.asset_tag.presence || "Nil" %></div>
   </td>-->
-  <td class="p-3 font-mono text-sm text-sky-500">
-    <%= device.ip_address&.address.presence || "Nil" %>
+  
+  <!-- IP Addresses Column -->
+  <td class="p-3">
+    <% if device.ip_addresses.any? %>
+      <div class="flex flex-col gap-1">
+        <% device.ip_addresses.each do |ip| %>
+          <div class="font-mono flex gap-1 items-center text-sm">
+            <%= link_to ip.address, ip, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+            
+            <%# Optional: Show a tiny green/red dot next to each IP in the table %>
+            <% if ip.reachability_status_up? %>
+              <span class="inline-block rounded-full bg-green-500 mis-1" style="width: 6px; height: 6px;" title="Online"></span>
+            <% else %>
+              <span class="inline-block rounded-full bg-red-500 mis-1" style="width: 6px; height: 6px;" title="Offline"></span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <span class="text-xs text-subtle italic">Unassigned</span>
+    <% end %>
   </td>
   <td class="p-3 font-mono text-sm text-green-500">
     <%= device&.mac_address.presence || "Nil" %>

@@ -231,24 +231,30 @@ class NetworkReconService
       known_device = device_records_map[host_data[:mac]]
 
       if known_device
-        # Drift Detection
+        # Scenario A: Drift Detected
         if ip_record.device_id != known_device.id
-          # Log the Alert for the Dashboard
-          Rails.logger.info "[NetworkRecon] Drift detected: '#{known_device.name}' -> #{host_data[:ip]}"
+          Rails.logger.info "DRIFT DETECTED: '#{known_device.name}' moved to #{host_data[:ip]}"
+
           NetworkEvent.create!(
             kind: :drift,
             ip_address: host_data[:ip],
             device: known_device,
-            message: "Device '#{known_device.name}' moved to #{host_data[:ip]}"
+            message: "Device '#{known_device.name}' claimed #{host_data[:ip]}"
           )
 
-          # Clear old associations
-          IpAddress.where(device_id: known_device.id).update_all(device_id: nil, status: :available)
+          # --- THE FIX: SUBNET-AWARE DRIFT ---
+          # Only evict the device from old IPs that are in the EXACT SAME SUBNET.
+          # This allows it to keep its Local IP while claiming an Internet IP.
+          old_ips = IpAddress.where(device_id: known_device.id, subnet_id: ip_record.subnet_id)
+          
+          old_ips.where(status: :active).update_all(device_id: nil, status: :available)
+          old_ips.update_all(device_id: nil)
+          # -----------------------------------
 
           updates[:device_id] = known_device.id
         end
 
-        # Auto-activate IP
+        # Scenario B: Status Consistency
         if ip_record.available?
           updates[:status] = :active
         end

@@ -1,0 +1,40 @@
+<div class="nested-form-wrapper flex items-end gap-2 mbe-4 p-3 bg-white border border-main rounded-md">
+  
+  <%# These hidden fields are required by the nested-form gem to track the record %>
+  <%= f.hidden_field :id %> 
+  <%= f.hidden_field :_destroy, data: { nested_form_target: 'destroy' } %>
+
+  <!-- Subnet Select (Trigger) -->
+  <div class="flex-1"
+       data-controller="dependent-select"
+       data-dependent-select-url-value="<%= select_options_ip_addresses_path(field_name: f.field_name(:id), frame_id: "ip_options_#{id}") %>"
+       data-dependent-select-param-value="subnet_id"
+       data-dependent-select-frame-id-value="ip_options_<%= id %>">
+
+    <label class="block font-medium text-xs text-subtle mbe-1">Subnet</label>
+    <%= select_tag "subnet_filter_#{id}",
+          options_from_collection_for_select(Subnet.order(:name), :id, :name, selected_subnet),
+          prompt: "Select Subnet",
+          class: "input text-sm i-full cursor-pointer",
+          data: { action: "change->dependent-select#load", dependent_select_target: "select" } %>
+  </div>
+
+  <!-- IP Select (Target Frame) -->
+  <div class="flex-1">
+    <label class="block font-medium text-xs text-subtle mbe-1">IP Address</label>
+    <%= turbo_frame_tag "ip_options_#{id}" do %>
+      <% 
+         ips = selected_subnet ? IpAddress.where(subnet_id: selected_subnet).free.or(IpAddress.where(id: selected_ip)).order(:address) : []
+      %>
+      <%# USE f.collection_select instead of select_tag to bind to the nested attribute correctly %>
+      <%= f.collection_select :id, ips, :id, :address,
+            { prompt: "Select Subnet First" },
+            { class: "input text-sm i-full cursor-pointer" } %>
+    <% end %>
+  </div>
+
+  <!-- Remove Button -->
+  <button type="button" data-action="nested-form#remove" class="btn btn--subtle text-negative pi-3 cursor-pointer">
+    <span class="icon icon--trash-2"></span>
+  </button>
+</div>

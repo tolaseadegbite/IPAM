@@ -306,8 +306,14 @@
       <div class="pbs-4 grid grid-cols-1 grid-cols-2 gap-2">
         <% critical_devices.each do |device| %>
           <% 
-             ip = device.ip_address 
-             is_online = ip&.reachability_status_up?
+             # 1. Get all assigned IPs
+             all_ips = device.ip_addresses 
+             
+             # 2. Is it online? (True if AT LEAST ONE of its IPs is 'up')
+             is_online = all_ips.any? { |ip| ip.reachability_status_up? }
+             
+             # 3. Get the first IP for the display link
+             display_ip = all_ips.first 
              
              card_classes = is_online ? "" : "border-red-500"
           %>
@@ -318,10 +324,14 @@
               </div>
               
               <div class="text-xs text-subtle font-mono">
-                <% if ip %>
-                  <%= link_to ip.address, ip, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+                <% if display_ip %>
+                  <%= link_to display_ip.address, display_ip, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+                  
+                  <%# Optional: Show a tiny indicator if it has multiple IPs %>
+                  <% if all_ips.size > 1 %>
+                    <span class="text-[10px] text-subtle ml-1">(+<%= all_ips.size - 1 %>)</span>
+                  <% end %>
                 <% else %>
-                  <!-- Using your class text-red-500 -->
                   <span class="text-red-500 font-bold">No IP Assigned</span>
                 <% end %>
               </div>
@@ -330,8 +340,7 @@
             <% if is_online %>
               <span class="rounded-full bg-green-500" style="width: 8px; height: 8px;" title="Online"></span>
             <% else %>
-              <!-- Red Pulse for both Down IPs and Missing IPs -->
-              <span class="rounded-full bg-red-500 animate-pulse" style="width: 8px; height: 8px;" title="CRITICAL ALERT"></span>
+              <span class="rounded-full bg-red-500 animate-pulse" style="width: 8px; height: 8px;" title="CRITICAL OFFLINE"></span>
             <% end %>
           </div>
         <% end %>

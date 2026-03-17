@@ -144,49 +144,15 @@
     </div>
   </div>
     
-  <!-- SECTION: IP Assignment (Dependent Select) -->
-  <div class="col-span-full card" 
-     data-controller="dependent-select" 
-     data-dependent-select-url-value="<%= select_options_ip_addresses_path %>"
-     data-dependent-select-param-value="subnet_id">
-       
-    <label class="block font-bold mbe-2">IP Address Assignment</label>
+  <!-- SECTION: Network Interfaces -->
+  <h4 class="font-bold border rounded-lg p-4 pb-3 mbe-4">Network Interfaces</h4>
+
+  <div id="interfaces-container" class="flex flex-col gap-4">
+    <%# 1. Primary Interface %>
+    <%= render "devices/ip_interface_block", device: device, id: "primary" %>
     
-    <div class="grid grid-cols-2 gap-4">
-      <!-- 5. Subnet Filter -->
-      <div>
-        <label class="text-sm text-subtle">Filter by Subnet</label>
-        <% current_subnet_id = device.ip_address&.subnet_id %>
-        <%= select_tag "subnet_filter", 
-              options_from_collection_for_select(Subnet.all, :id, :name, current_subnet_id), 
-              prompt: "Select Network...", 
-              class: "input cursor-pointer",
-              data: { 
-                dependent_select_target: "select", 
-                action: "change->dependent-select#load" 
-              } %>
-      </div>
-      
-      <!-- 6. IP Select -->
-      <div>
-        <label class="text-sm text-subtle">Available IP</label>
-        <%= turbo_frame_tag "ip_address_options_frame", data: { dependent_select_target: "frame" } do %>
-          <% 
-             current_subnet_id = device.ip_address&.subnet_id || params[:subnet_id]
-             
-             ips = if current_subnet_id
-                     base_query = IpAddress.where(subnet_id: current_subnet_id)
-                     base_query.free.or(base_query.where(id: device.ip_address&.id)).order(:address)
-                   else
-                     []
-                   end
-          %>
-          <%= form.collection_select :ip_address_id, ips, :id, :address, 
-            { include_blank: "Do not assign IP", selected: device.ip_address&.id }, 
-            { class: "input cursor-pointer" } %>
-        <% end %>
-      </div>
-    </div>
+    <%# 2. Secondary Interface %>
+    <%= render "devices/ip_interface_block", device: device, id: "secondary" %>
   </div>
 
   <!-- Actions -->

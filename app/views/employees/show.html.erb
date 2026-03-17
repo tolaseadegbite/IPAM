@@ -56,11 +56,13 @@
               <div class="flex items-center justify-between">
                 <div>
                   <div class="font-bold text-lg"><%= link_to device.name, device, class: "hover:text-orange-600" %></div>
-                  <div class="text-sm text-subtle"><%= device.device_type.humanize %> &bull; <%#= device.serial_number %></div>
+                  <div class="text-sm text-subtle"><%= device.device_type.humanize %> <%#= device.serial_number %></div>
                 </div>
                 <div class="text-right">
-                  <% if device.ip_address %>
-                    <div class="font-mono text-sky-500 font-bold"><%= device.ip_address.address %></div>
+                  <% if device.ip_addresses %>
+                    <% device.ip_addresses.each do |ip_address| %>
+                      <div class="font-mono text-sky-500 font-bold"><%= ip_address.address %></div>
+                    <% end %>
                   <% else %>
                     <div class="text-xs text-subtle italic">No IP</div>
                   <% end %>

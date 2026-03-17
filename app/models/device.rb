@@ -12,7 +12,10 @@ class Device < ApplicationRecord
   belongs_to :employee, optional: true # Optional: New laptops might be in storage (no owner)
 
   # When a device is deleted/retired, the IP is automatically freed (set to null)
-  has_one :ip_address, dependent: :nullify
+  # has_many :ip_address, dependent: :nullify
+  has_many :ip_addresses, dependent: :nullify
+
+  accepts_nested_attributes_for :ip_addresses, allow_destroy: false, reject_if: :all_blank
 
   # Enable linking tasks to devices
   has_many :cards, as: :referenceable, dependent: :nullify
@@ -21,7 +24,7 @@ class Device < ApplicationRecord
   delegate :branch, to: :department
   delegate :name, to: :department, prefix: true
 
-  enum :device_type, { desktop: 0, all_in_one: 1, laptop: 2, printer: 3, server: 4, tablet: 5, biometrics: 6 }
+  enum :device_type, { desktop: 0, all_in_one: 1, laptop: 2, printer: 3, server: 4, tablet: 5, biometrics_machine: 6 }
   enum :status, { active: 0, in_storage: 1, in_repair: 2, retired: 3, lost: 4 }
 
   # validates :serial_number, uniqueness: { case_sensitive: false }
@@ -39,13 +42,13 @@ class Device < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w[department employee ip_address cards]
+    %w[department employee ip_addresses cards]
   end
 
   private
 
   def ip_released_if_retired
-    if retired? && ip_address.present?
+    if retired? && ip_addresses.present?
       errors.add(:status, "cannot be Retired while holding an IP Address. Release the IP first.")
     end
   end

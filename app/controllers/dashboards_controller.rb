@@ -82,7 +82,7 @@ class DashboardsController < ApplicationController
 
     @rogue_devices = IpAddress.reachability_status_up.where(device_id: nil).includes(:subnet).order(last_seen_at: :desc).limit(5)
     @ghost_assets = IpAddress.active.where(reachability_status: :down).where("last_seen_at < ?", 30.days.ago).includes(:device, :subnet).limit(5)
-    @critical_devices = Device.where(critical: true).includes(:ip_address).limit(10)
+    @critical_devices = Device.where(critical: true).includes(:ip_addresses).limit(10)
     @recent_events = NetworkEvent.includes(:device).order(created_at: :desc).limit(10)
 
     # 4. Timestamp (NEW)

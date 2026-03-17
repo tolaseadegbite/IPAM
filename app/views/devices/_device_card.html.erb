@@ -7,55 +7,61 @@
       <span class="text-sm text-subtle uppercase font-semibold"><%= device.device_type&.humanize.presence || "Nil" %></span>
     </div>
 
-    <div>
-      <% status_color = case device.status 
-        when 'active' then 'bg-green-100 text-green-800'
-        when 'on_leave' then 'bg-yellow-100 text-yellow-800'
-        when 'terminated' then 'bg-red-100 text-red-800'
-        end %>
+    <div class="flex flex-col items-end gap-1">
+      <% 
+        # Note: Updated these statuses to match your Device model enum 
+        # (active, in_storage, in_repair, retired, lost)
+        status_color = case device.status 
+          when 'active' then 'bg-green-100 text-green-800'
+          when 'in_storage', 'in_repair' then 'bg-yellow-100 text-yellow-800'
+          when 'retired', 'lost' then 'bg-red-100 text-red-800'
+          else 'bg-shade text-subtle'
+          end 
+      %>
 
-      <span class="<%= status_color %> font-medium pi-2 pb-1 rounded-md text-sm"><%= device.status.presence || "Nil" %></span>
+      <span class="<%= status_color %> font-medium pi-2 pb-1 rounded-md text-xs"><%= device.status&.humanize || "Nil" %></span>
 
       <% if device.critical? %>
-        <span class="font-medium pi-2 pb-1 rounded-md text-sm bg-blue-100 text-blue-800">Critical device</span>
+        <span class="font-medium pi-2 pb-1 rounded-md text-xs bg-blue-100 text-blue-800">Critical</span>
       <% end %>
     </div>
   </div>
 
-  <!--<%# --- Details: Serial & Tag --- %>
-  <div class="grid grid-cols-2 gap-2 text-sm">
-    <div>
-      <span class="text-sm text-subtle block">Serial</span>
-      <span><%#= device.serial_number.presence || "Nil" %></span>
-    </div>
-    <div class="text-end">
-      <span class="text-sm text-subtle block">Asset Tag</span>
-      <span><%#= device.asset_tag.presence || "Nil" %></span>
-    </div>
-  </div>-->
+  <%# --- IP Address (UPDATED TO HANDLE MULTIPLE IPs) --- %>
+  <div class="p-2 bg-shade rounded-md border flex items-start gap-2">
+    <span class="icon icon--globe text-subtle mbs-1"></span>
+    <div class="flex flex-col gap-1">
+      <% if device.ip_addresses.any? %>
+        <% device.ip_addresses.each do |ip| %>
+          <div class="font-mono flex gap-1 items-center text-sm">
+            <span><%= link_to ip.address, ip, class: "text-sky-500 hover:text-sky-400", data: { turbo_frame: "_top" } %></span>
 
-  <%# --- IP Address --- %>
-  <div class="p-2 bg-shade rounded-md border flex items-center gap-2">
-    <span class="icon icon--globe text-subtle"></span>
-    <% if device.ip_address %>
-      <span class="text-sky-500"><%= device.ip_address.address %></span>
-    <% else %>
-      <span class="text-subtle italic">Nil</span>
-    <% end %>
+            <%# Optional: Show a tiny green/red dot next to each IP in the table %>
+            <% if ip.reachability_status_up? %>
+              <span class="inline-block rounded-full bg-green-500 mis-1" style="width: 6px; height: 6px;" title="Online"></span>
+            <% else %>
+              <span class="inline-block rounded-full bg-red-500 mis-1" style="width: 6px; height: 6px;" title="Offline"></span>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <span class="text-subtle italic">Nil</span>
+      <% end %>
+    </div>
   </div>
 
   <%# --- Mac Address --- %>
   <div class="p-2 bg-shade rounded-md border flex items-center gap-2">
     <span class="icon icon--monitor text-subtle"></span>
     <% if device.mac_address %>
-      <span class="text-green-500"><%= device.mac_address %></span>
+      <span class="text-green-500 font-mono"><%= device.mac_address %></span>
     <% else %>
       <span class="text-subtle italic">Nil</span>
     <% end %>
   </div>
 
   <%# --- Owner & Dept Info --- %>
-  <div class="flex items-center gap-3 border-t pt-3 mt-1">
+  <div class="flex items-center gap-3 border-t pbs-3 mbs-1">
     <div class="flex items-center justify-center rounded-full bg-shade shrink-0 border" style="block-size: 2rem; inline-size: 2rem;">
       <span class="font-semibold text-sm">
         <%= device.employee&.first_name&.first || "?" %>
@@ -63,7 +69,7 @@
     </div>
     <div class="flex flex-col text-sm">
       <span class="font-semibold"><%= device.employee&.full_name.presence || "Owner: Nil" %></span>
-      <span class="text-sm text-subtle">
+      <span class="text-xs text-subtle">
         <% if device.department %>
           <%= device.department.branch.name %> (<%= device.department.name %>)
         <% else %>
@@ -73,12 +79,15 @@
     </div>
   </div>
 
-  <div class="flex items-center justify-end text-xs gap-4">
+  <%# --- Actions --- %>
+  <div class="flex items-center justify-end text-xs gap-4 mbs-2">
     <%= link_to "Edit", edit_device_path(device), class: "text-subtle hover:text-orange-500", data: { turbo_frame: "modal" } %>
-    <% delete_trigger = button_tag "Delete", type: "button", class: "text-subtle hover:text-orange-500", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+    
+    <% delete_trigger = button_tag "Delete", type: "button", class: "text-subtle hover:text-orange-500 border-0 bg-transparent cursor-pointer", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+    
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{device.name}'?" do %>
       <p class="text-sm text-subtle mbe-4">This will permanently delete this device. This action cannot be undone.</p>
-      <div class="flex items-center justify-end gap">
+      <div class="flex items-center justify-end gap-2">
         <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
         <%= button_to "Continue", device, method: :delete, class: "btn btn--negative" %>
       </div>

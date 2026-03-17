@@ -18,7 +18,7 @@ class ListsController < ApplicationController
         format.turbo_stream do
           render turbo_stream: [
             # Append the new list to the board container
-            turbo_stream.append("lists-container", partial: "lists/list", locals: { list: @list }),
+            turbo_stream.append("lists-container", partial: "lists/list", locals: { list: @list, cards: [] }),
             turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Column created." })
           ]
         end
