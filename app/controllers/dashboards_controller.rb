@@ -95,10 +95,17 @@ class DashboardsController < ApplicationController
     # --- 6. KANBAN INTEGRATION (NEW) ---
     # Fetch High Priority cards.
     # Ideally exclude "Done" lists, but for now we grab all High Priority.
-    @high_priority_tasks = Card.where(priority: :high)
-                               .includes(:list, :users, :referenceable)
-                               .order(created_at: :desc)
-                               .limit(5)
+    # @high_priority_tasks = Card.where(priority: :high)
+    #                            .includes(:list, :users, :referenceable)
+    #                            .order(created_at: :desc)
+    #                            .limit(5)
+
+    @high_priority_tasks = Card.joins(:list)
+                           .where(priority: :high)
+                           .where("lists.name ILIKE ? OR lists.name ILIKE ?", "%to do%", "%todo%")
+                           .preload(:list, :users, :referenceable)
+                           .order(created_at: :desc)
+                           .limit(5)
   end
 
   def dashboard_locals(scanning: false)

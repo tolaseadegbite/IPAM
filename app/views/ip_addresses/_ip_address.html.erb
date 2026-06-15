@@ -14,8 +14,8 @@
         <div class="text-xs text-subtle italic flex items-center gap-2 h-10">
           <span class="rounded-full bg-green-500 animate-pulse" style="width: 0.6rem; height: 0.6rem;"></span>
         </div>
-      <% elsif ip_address.last_seen_at %>
-        <span class="text-subtle text-sm text-end" title="Last seen <%= time_ago_in_words(ip_address.last_seen_at) %> ago">
+      <% elsif ip_address.reachability_status_down? && ip_address.last_seen_at %>
+        <span class="text-subtle text-sm text-end" title="<%= ip_address.last_seen_at.strftime("%b %d, %Y %H:%M") %>">
           <%= time_ago_in_words(ip_address.last_seen_at, include_seconds: false) %>
         </span>
       <% else %>

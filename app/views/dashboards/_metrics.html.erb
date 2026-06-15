@@ -7,7 +7,7 @@
       <p class="text-sm text-subtle">
         Last Scan: 
         <!-- STIMULUS TIMEAGO CONTROLLER -->
-        <span class="font-mono text-primary"
+        <span class="text-primary"
               data-controller="timeago"
               data-timeago-date-value="<%= last_scan.iso8601 %>">
           <%= time_ago_in_words(last_scan) %> ago
@@ -211,7 +211,7 @@
                       </div>
                       <div class="text-xs text-subtle mt-1">
                         <% if card.referenceable %>
-                           <span class="font-mono bg-shade px-1 rounded"><%= card.referenceable.try(:name) || card.referenceable.try(:address) %></span>
+                           <span class="bg-shade px-1 rounded"><%= card.referenceable.try(:name) || card.referenceable.try(:address) %></span>
                         <% end %>
                         <span class="mis-1"><%= card.list.name %></span>
                       </div>
@@ -223,7 +223,7 @@
                             <%= user.username.capitalize %>
                           <% end %>
                         <% else %>
-                          <span class="text-xs text-subtle italic">--</span>
+                          <span class="text-xs text-subtle italic">No assigned personnel</span>
                         <% end %>
                       </div>
                     </td>

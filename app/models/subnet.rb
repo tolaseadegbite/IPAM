@@ -1,5 +1,5 @@
 class Subnet < ApplicationRecord
-  has_paper_trail ignore: [:updated_at, :created_at]
+  has_paper_trail ignore: [ :updated_at, :created_at ]
 
   has_many :ip_addresses, dependent: :destroy
 
@@ -109,6 +109,7 @@ class Subnet < ApplicationRecord
         address: ip_str,
         subnet_id: id,
         status: initial_status,
+        reachability_status: 0,
         notes: initial_note,
         created_at: now,
         updated_at: now

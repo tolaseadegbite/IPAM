@@ -3,13 +3,11 @@
 one:
   first_name: MyString
   last_name: MyString
-  email: MyString
   department: one
   status: 1
 
 two:
   first_name: MyString
   last_name: MyString
-  email: MyString
   department: two
   status: 1

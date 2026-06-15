@@ -1,0 +1,7 @@
+# Rails generated files
+IPAM/tmp/
+IPAM/log/
+IPAM/vendor/
+
+# Don't index the Rails git repo itself (optional – usually auto‑ignored)
+IPAM/.git/

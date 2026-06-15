@@ -28,7 +28,7 @@
       <div>
         <label class="block text-sm text-subtle uppercase font-bold mbe-1">Last Seen</label>
         <div class="text-sm font-mono">
-          <% if @ip_address.last_seen_at %>
+          <% if @ip_address.last_seen_at && !@ip_address.reachability_status_unknown? %>
             <%= @ip_address.last_seen_at.strftime("%b %d, %H:%M:%S") %>
             <span class="text-xs">(<%= time_ago_in_words(@ip_address.last_seen_at) %> ago)</span>
           <% else %>

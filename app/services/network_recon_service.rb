@@ -1,12 +1,10 @@
 class NetworkReconService
   # Entry point for scanning a specific subnet.
-  # This performs "Phase A" of the broadcast (individual IP updates).
   def self.scan_subnet(subnet_cidr)
     new.scan_subnet(subnet_cidr)
   end
 
   # Entry point for the "Evening Summary".
-  # This performs "Phase B" (charts, totals, unlocking the UI).
   def self.broadcast_global_stats
     new.broadcast_dashboard_stats
   end
@@ -16,47 +14,37 @@ class NetworkReconService
     Rails.logger.info "[NetworkRecon] Starting scan for #{subnet_cidr}..."
 
     # 1. Execute Nmap (System Call)
-    # ----------------------------------------------------------------
     windows_path_raw = "/mnt/c/Program Files (x86)/Nmap/nmap.exe"
     nmap_bin = File.exist?(windows_path_raw) ? "'#{windows_path_raw}'" : "sudo nmap"
 
-    # -sn: Ping Scan (disable port scan)
-    # -PR: ARP Ping (fastest for local LAN)
-    # -n:  No DNS resolution (speed optimization)
-
-    # old command
-    # command = "#{nmap_bin} -sn -PR -n #{subnet_cidr}"
-
-    # new command (Fast & Aggressive):
     command = "#{nmap_bin} -sn -PR -n -T4 --min-parallelism 100 --max-rtt-timeout 250ms #{subnet_cidr}"
-
     output = `#{command}`
 
     # 2. Parse Results
-    # ----------------------------------------------------------------
     active_hosts = parse_nmap_output(output)
 
-    # Pre-fetch existing records to minimize N+1 queries during the loop
+    # Pre-fetch existing records
     found_ips = active_hosts.map { |h| h[:ip] }
     ip_records_map = IpAddress.where(address: found_ips).index_by { |r| r.address.to_s }
 
     found_macs = active_hosts.map { |h| h[:mac] }.compact
     device_records_map = Device.where(mac_address: found_macs).index_by(&:mac_address)
 
-    # 3. Process Updates (Transactional)
-    # ----------------------------------------------------------------
+    records_to_broadcast = []
+    offline_records_to_broadcast =[]
+
+    # 3. Process Updates (Transactional - FAST SQL ONLY)
     ActiveRecord::Base.transaction do
       # A. Update Online Hosts
       active_hosts.each do |host_data|
         ip_record = ip_records_map[host_data[:ip]]
-        next unless ip_record # Skip if IP isn't in our IPAM database
+        next unless ip_record
 
-        # This triggers the "Phase A" broadcast (Green Dot pop-up)
-        process_host_update(ip_record, host_data, device_records_map)
+        updated_record = process_host_update(ip_record, host_data, device_records_map)
+        records_to_broadcast << updated_record if updated_record
       end
 
       # B. Update Offline Hosts
-      # Identify IPs in this subnet that were previously 'up' but were NOT found in this scan
       offline_ips = IpAddress.where("address <<= ?", subnet_cidr)
                              .where.not(address: found_ips)
                              .where(reachability_status: :up)
@@ -66,29 +54,35 @@ class NetworkReconService
       if offline_ids.any?
         IpAddress.where(id: offline_ids).update_all(reachability_status: :down)
 
-        # Broadcast individual "Down" states immediately
-        IpAddress.includes(:device, :subnet).where(id: offline_ids).each do |offline_ip|
-          Turbo::StreamsChannel.broadcast_replace_to(
-            "monitoring",
-            target: offline_ip,
-            partial: "ip_addresses/ip_address",
-            locals: { ip_address: offline_ip }
-          )
-        end
+        offline_records_to_broadcast = IpAddress.includes(:device, :subnet).where(id: offline_ids).to_a
         Rails.logger.info "[NetworkRecon] Marked #{offline_ids.count} hosts as OFFLINE in #{subnet_cidr}."
       end
     end
+    # --- TRANSACTION CLOSES HERE. LOCK IS RELEASED. ---
 
-    # NOTE: We do NOT broadcast global stats here anymore.
-    # We wait for the Job to finish all subnets.
+    # 4. BULK HTML BROADCAST (One single SolidCable Database Write)
+    # ----------------------------------------------------------------
+    all_records = records_to_broadcast + offline_records_to_broadcast
+
+    if all_records.any?
+      # We use ApplicationController to render an inline template containing ALL turbo streams.
+      streams_payload = ApplicationController.render(
+        inline: "<% records.each do |ip| %><%= turbo_stream.replace ip, partial: 'ip_addresses/ip_address', locals: { ip_address: ip } %><% end %>",
+        locals: { records: all_records }
+      )
+
+      # Send the massive combined payload as a single WebSocket message
+      Turbo::StreamsChannel.broadcast_stream_to(
+        "monitoring",
+        content: streams_payload
+      )
+    end
 
     end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     duration = (end_time - start_time).round(2)
     Rails.logger.info "[NetworkRecon] Subnet scan completed in #{duration}s."
   end
 
-  # This method aggregates the final data and pushes the "Dashboard Refresh".
-  # It is now public so the Job can call it at the very end.
   def broadcast_dashboard_stats
     Rails.logger.info "[NetworkRecon] Broadcasting Global Dashboard Stats..."
 
@@ -101,16 +95,6 @@ class NetworkReconService
     utilization_percent = total_ips > 0 ? (used_count.to_f / total_ips * 100).to_i : 0
 
     # 2. Charts
-    # reachability_chart = {
-    #   labels: [ "Online", "Offline" ],
-    #   datasets: [ {
-    #     data: [ online_count, total_ips - online_count ],
-    #     backgroundColor: [ "#22c55e", "#f3f4f6" ],
-    #     borderWidth: 0
-    #   } ]
-    # }
-
-    # Device Type Calculation
     device_stats = Device.group(:device_type).count.transform_keys { |k| k.to_s.humanize }
 
     device_type_chart = {
@@ -161,7 +145,7 @@ class NetworkReconService
                              .limit(5)
 
     critical_devices = Device.where(critical: true)
-                              .includes(:ip_address)
+                              .includes(:ip_addresses)
                               .limit(10)
 
     recent_events = NetworkEvent.includes(:device)
@@ -169,23 +153,19 @@ class NetworkReconService
                                 .limit(10)
 
     # 4. Timestamp & Cache
-    # --- NEW TIMING LOGIC ---
-    # 1. Calculate Duration (Now - Start Time)
     start_time = Rails.cache.read("scan_batch_start_time")
     duration = if start_time
-                 (Time.current - start_time).round(2) # Returns seconds (e.g., 2.45)
+                 (Time.current - start_time).round(2)
     else
                  0
     end
 
-    # 2. Save duration to cache so it persists on Page Refresh (GET request)
     Rails.cache.write("last_scan_duration", duration)
 
-    # 3. Timestamp & Cache (Existing)
     last_scan = Time.current
     Rails.cache.write("last_network_scan_completed_at", last_scan)
 
-    # 4 --- Kanban Data (NEW) ---
+    # --- Kanban Data ---
     high_priority_tasks = Card.where(priority: :high)
                               .includes(:list, :users, :referenceable)
                               .order(created_at: :desc)
@@ -201,7 +181,6 @@ class NetworkReconService
         total_ips: total_ips,
         rogue_count: rogue_count,
         utilization_percent: utilization_percent,
-        # reachability_chart: reachability_chart,
         device_type_chart: device_type_chart,
         allocation_chart: allocation_chart,
         subnets: subnets,
@@ -220,20 +199,18 @@ class NetworkReconService
   private
 
   def process_host_update(ip_record, host_data, device_records_map)
-    # 1. Prepare the attributes
     updates = {
       last_seen_at: Time.current,
       reachability_status: :up
     }
 
-    # Device association logic
     if host_data[:mac].present?
       known_device = device_records_map[host_data[:mac]]
 
       if known_device
-        # Scenario A: Drift Detected
+        # Scenario A: Drift Detected (Known device moved to this IP)
         if ip_record.device_id != known_device.id
-          Rails.logger.info "DRIFT DETECTED: '#{known_device.name}' moved to #{host_data[:ip]}"
+          Rails.logger.info "[NetworkRecon] Drift detected: '#{known_device.name}' -> #{host_data[:ip]}"
 
           NetworkEvent.create!(
             kind: :drift,
@@ -242,11 +219,9 @@ class NetworkReconService
             message: "Device '#{known_device.name}' claimed #{host_data[:ip]}"
           )
 
-          # --- THE FIX: SUBNET-AWARE DRIFT ---
-          # Only evict the device from old IPs that are in the EXACT SAME SUBNET.
-          # This allows it to keep its Local IP while claiming an Internet IP.
+          # --- SUBNET-AWARE DRIFT ---
           old_ips = IpAddress.where(device_id: known_device.id, subnet_id: ip_record.subnet_id)
-          
+
           old_ips.where(status: :active).update_all(device_id: nil, status: :available)
           old_ips.update_all(device_id: nil)
           # -----------------------------------
@@ -255,36 +230,55 @@ class NetworkReconService
         end
 
         # Scenario B: Status Consistency
-        if ip_record.available?
+        if ip_record.available? || updates[:device_id]
           updates[:status] = :active
         end
+
+      else
+        # --- MISSING FIX: SCENARIO C (The Rogue Squatter) ---
+        # The MAC address answering the ping is UNKNOWN to our database.
+        # If this IP address is currently assigned to a known device in our DB,
+        # we must evict the known device because it has been physically replaced.
+
+        if ip_record.device_id.present?
+          current_device = ip_record.device
+
+          # Verify the known device's MAC is truly different from the squatter
+          if current_device && current_device.mac_address != host_data[:mac]
+            Rails.logger.warn "[NetworkRecon] SECURITY ALERT: Unknown MAC #{host_data[:mac]} took over IP #{host_data[:ip]} from #{current_device.name}"
+
+            NetworkEvent.create!(
+              kind: :security,
+              ip_address: host_data[:ip],
+              device: current_device, # Link to the victim device for the audit trail
+              message: "Unknown MAC (#{host_data[:mac]}) seized IP currently assigned to this device."
+            )
+
+            # Evict the old device.
+            # This turns the IP into a true "Rogue" (Up + Nil) on the dashboard.
+            updates[:device_id] = nil
+            updates[:status] = :available
+          end
+        end
+        # ----------------------------------------------------
       end
     end
 
-    # 2. Apply updates and Trigger PaperTrail
-    # We wrap this in a block to attribute these changes to the Scanner.
+    # Apply updates and Trigger PaperTrail
     PaperTrail.request(whodunnit: "Network Scanner") do
       ip_record.assign_attributes(updates)
 
-      # We check 'changed?' to avoid database calls if nothing happened.
-      # Because we configured 'ignore: [:last_seen_at]' in the model,
-      # PaperTrail will automatically SKIP creating a version if ONLY time changed.
       if ip_record.changed?
         ip_record.save!
       end
     end
 
-    # 3. Broadcast to Dashboard (SolidCable)
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "monitoring",
-      target: ip_record,
-      partial: "ip_addresses/ip_address",
-      locals: { ip_address: ip_record }
-    )
+    # Return the record so it can be pushed into the broadcast array outside the lock
+    ip_record
   end
 
   def parse_nmap_output(output)
-    hosts = []
+    hosts =[]
     reports = output.split("Nmap scan report for ")
 
     reports.each do |report|

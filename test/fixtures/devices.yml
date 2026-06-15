@@ -3,21 +3,17 @@
 one:
   department: one
   employee: one
-  name: MyString
-  # serial_number: MyString
-  # asset_tag: MyString
+  name: Device One
   device_type: 1
-  model_number: MyString
+  mac_address: "00:11:22:33:44:01"
   status: 1
   notes: MyText
 
 two:
   department: two
   employee: two
-  name: MyString
-  # serial_number: MyString
-  # asset_tag: MyString
+  name: Device Two
   device_type: 1
-  model_number: MyString
+  mac_address: "00:11:22:33:44:02"
   status: 1
   notes: MyText

@@ -1,19 +1,11 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   list: one
-  title: MyString
-  description: MyText
+  title: Task One
   position: 1
   priority: 1
-  referenceable: one
-  referenceable_type: Referenceable
 
 two:
   list: two
-  title: MyString
-  description: MyText
+  title: Task Two
   position: 1
   priority: 1
-  referenceable: two
-  referenceable_type: Referenceable

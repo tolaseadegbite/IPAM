@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_04_141858) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_111304) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -43,6 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_04_141858) do
     t.datetime "created_at", null: false
     t.text "description"
     t.bigint "list_id", null: false
+    t.text "notes"
     t.integer "position", null: false
     t.integer "priority", default: 0, null: false
     t.bigint "referenceable_id"
@@ -108,7 +109,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_04_141858) do
     t.bigint "device_id"
     t.datetime "last_seen_at"
     t.text "notes"
-    t.integer "reachability_status", default: 0
+    t.integer "reachability_status", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.bigint "subnet_id", null: false
     t.datetime "updated_at", null: false
