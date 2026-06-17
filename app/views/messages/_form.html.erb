@@ -1,4 +1,4 @@
-<%= form_with(model: message, url: [@chat, message], id: "new_message", class: "flex gap-2 items-end") do |form| %>
+<%= form_with(model: message, url: [@chat, message], id: "new_message", class: "flex gap-2 items-center") do |form| %>
   <div class="flex-1">
       <%= form.text_area :content, placeholder: "Message...", autofocus: true, class: "input" %>
   </div>

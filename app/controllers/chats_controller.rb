@@ -3,7 +3,7 @@ class ChatsController < ApplicationController
   before_action :set_chat_with_agent, only: [ :show ]
 
   def index
-    records = Chat.includes(:messages).order(updated_at: :desc)
+    records = Chat.includes(:messages, :user).order(updated_at: :desc)
     @pagy, @chats = pagy(records, limit: 20)
   end
 

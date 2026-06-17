@@ -4,6 +4,20 @@
   padding: 10px 14px;
 }
 
+#messages {
+  align-items: flex-start;
+}
+
+@media (max-width: 640px) {
+  .message {
+    max-width: 88%;
+  }
+
+  #new_message .input {
+    font-size: 16px;
+  }
+}
+
 .message__header {
   font-size: 0.75em;
   opacity: 0.8;
@@ -23,7 +37,7 @@
 .message--assistant {
   margin-right: auto;
   background-color: var(--color-positive, #28a745);
-  color: var(--color-text-reversed, #ffffff);
+  color: #ffffff;
   border-radius: 16px 16px 16px 4px;
 
   .message__footer {
@@ -47,7 +61,7 @@
     :is(pre, code) {
       background-color: rgba(0, 0, 0, 0.25);
       border: 1px solid rgba(255, 255, 255, 0.2);
-      color: var(--color-text-reversed, #ffffff);
+      color: #ffffff;
     }
 
     table {
@@ -61,7 +75,7 @@
 }
 
 .message--user {
-  margin-left: auto;
+  align-self: flex-end;
   background-color: var(--color-primary, #007bff);
   color: var(--color-text-reversed, #ffffff);
   border-radius: 16px 16px 4px 16px;

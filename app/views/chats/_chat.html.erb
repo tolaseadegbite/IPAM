@@ -3,10 +3,11 @@
     <div class="text-sm font-semibold text-primary">
       <%= chat.messages.reject { |m| %w[system tool].include?(m.role) }.first&.content&.truncate(80) || "New conversation" %>
     </div>
-    <div class="flex gap-3 text-xs text-subtle">
-      <span><%= chat.model&.label || "Default model" %></span>
-      <span><%= pluralize(chat.messages.size, "message") %></span>
-      <span><%= time_ago_in_words(chat.updated_at) %> ago</span>
+    <div class="flex flex-wrap gap-2 text-xs text-subtle items-center">
+      <span class="inline-flex items-center gap-1"><%= chat.user.username.presence || chat.user.email.truncate(24) %></span>
+      <span class="inline-flex items-center gap-1"><%= chat.model&.label || "Default model" %></span>
+      <span class="inline-flex items-center gap-1"><%= pluralize(chat.messages.size, "message") %></span>
+      <span class="inline-flex items-center gap-1"><%= time_ago_in_words(chat.updated_at) %> ago</span>
     </div>
   <% end %>
 </div>
