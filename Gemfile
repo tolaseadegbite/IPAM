@@ -90,3 +90,7 @@ gem "pg_reports"
 gem "marginalia"
 
 gem "acts_as_list"
+
+gem "ruby_llm"
+
+gem "redcarpet"

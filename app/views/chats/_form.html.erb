@@ -1,0 +1,18 @@
+<%= form_with(model: chat, url: chats_path) do |form| %>
+  <div class="flex flex-col gap-4">
+    <div>
+      <%= form.label :model, "Select AI model:", class: "text-sm font-medium mbe-1" %>
+        <%= form.select :model,
+            options_for_select(@chat_models.map { |model| [model.label, model.id] }.unshift([default_model_display_name, nil]), @selected_model), {}, { class: "input cursor-pointer" } %>
+    </div>
+
+    <div>
+      <%= form.label :prompt, "Your question:", class: "text-sm font-medium mbe-1" %>
+        <%= form.text_area :prompt, placeholder: "What would you like to discuss?", autofocus: true, class: "input" %>
+    </div>
+
+    <div>
+      <%= form.submit "Start new chat", class: "btn btn--primary" %>
+    </div>
+  </div>
+<% end %>

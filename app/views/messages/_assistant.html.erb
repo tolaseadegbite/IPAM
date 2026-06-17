@@ -1,0 +1,8 @@
+<% assistant ||= local_assigns[:message] %>
+<div id="message_<%= assistant.id %>" class="text-primary message message--assistant">
+  <div class="message__header">NAT</div>
+  <div id="message_<%= assistant.id %>_content" class="message__content prose"><%= render_markdown(assistant.content) %></div>
+  <div class="message__footer">
+    <%= assistant.created_at&.strftime("%I:%M %p") %>
+  </div>
+</div>

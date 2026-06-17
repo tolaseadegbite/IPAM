@@ -1,0 +1,40 @@
+<% content_for :title, "NAT Assistant" %>
+
+<% content_for :page_header do %>
+  <h4 class="font-semibold">
+    NAT Assistant
+    <span class="text-subtle text-sm font-normal">(<%= @pagy.count %>)</span>
+  </h4>
+<% end %>
+
+<div class="p-4 i-full">
+  <div class="flex justify-end mbe-2">
+    <%= link_to new_chat_path, class: "btn btn--primary text-sm" do %>
+      + New Chat
+    <% end %>
+  </div>
+
+  <div id="chats" class="flex flex-col gap-2">
+    <% if @chats.any? %>
+      <%= render @chats %>
+    <% else %>
+      <div class="card text-center p-8">
+        <p class="text-subtle">No conversations yet.</p>
+        <p class="mbs-2">
+          <%= link_to "Start a new chat", new_chat_path, class: "btn btn--primary text-sm" %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @pagy.next %>
+    <div id="infinite_scroll_sentinel"
+         data-controller="infinite-scroll"
+         data-infinite-scroll-next-page-value="<%= @pagy.next %>"
+         data-infinite-scroll-last-page-value="<%= @pagy.last %>">
+      <div class="text-center p-4 text-sm text-subtle">
+        <span class="animate-pulse">Loading more chats...</span>
+      </div>
+    </div>
+  <% end %>
+</div>

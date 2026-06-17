@@ -1,0 +1,11 @@
+<% content_for :title, "New chat" %>
+
+<% content_for :page_header do %>
+  <h4 class="font-semibold">New Chat</h4>
+<% end %>
+
+<div class="p-4 i-full">
+  <div class="card p-6 max-w-lg">
+    <%= render "form", chat: @chat %>
+  </div>
+</div>

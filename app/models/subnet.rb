@@ -117,6 +117,7 @@ class Subnet < ApplicationRecord
     end
 
     IpAddress.insert_all(ip_data)
+    Subnet.reset_counters(id, :ip_addresses)
   rescue => e
     Rails.logger.error("IP Population Failed for Subnet #{id}: #{e.message}")
   end

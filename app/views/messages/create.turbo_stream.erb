@@ -1,0 +1,11 @@
+<% if defined?(@chat) && @chat.present? && @user_message %>
+  <%= turbo_stream.append "messages", @user_message %>
+  <%= turbo_stream.append "messages" do %>
+    <%= render "messages/assistant_skeleton", skeleton_id: "message_skeleton_#{@chat.id}" %>
+  <% end %>
+  <%= turbo_stream.replace "new_message" do %>
+    <%= render "messages/form",
+      chat: @chat,
+      message: @chat.messages.build %>
+  <% end %>
+<% end %>

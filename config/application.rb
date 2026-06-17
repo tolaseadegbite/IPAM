@@ -13,6 +13,8 @@ module Ipam
 
     config.mission_control.jobs.base_controller_class = "MissionControlController"
     config.eager_load_paths << Rails.root.join("app/services")
+    config.eager_load_paths << Rails.root.join("app/tools")
+    config.eager_load_paths << Rails.root.join("app/agents")
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.

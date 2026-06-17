@@ -1,0 +1,8 @@
+<% user ||= local_assigns[:message] %>
+<div id="message_<%= user.id %>" class="message message--user">
+  <div class="message__header">You</div>
+  <div id="message_<%= user.id %>_content" class="message__content"><%= user.content %></div>
+  <div class="message__footer">
+    <%= user.created_at&.strftime("%I:%M %p") %>
+  </div>
+</div>

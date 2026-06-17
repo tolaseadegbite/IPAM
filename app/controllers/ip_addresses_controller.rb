@@ -2,7 +2,7 @@ class IpAddressesController < ApplicationController
   before_action :set_ip_address, only: %i[ show edit update ]
 
   def index
-    records = IpAddress.includes(:subnet, :device).order(:address)
+    records = IpAddress.includes(:subnet, device: :employee).order(:address)
     @search = records.ransack(params[:q])
     @pagy, @ip_addresses = pagy(@search.result)
   end
@@ -41,7 +41,7 @@ class IpAddressesController < ApplicationController
 
   private
     def set_ip_address
-      @ip_address = IpAddress.find(params[:id])
+      @ip_address = IpAddress.includes(:subnet, :device).find(params[:id])
     end
 
     def ip_address_params

@@ -1,5 +1,5 @@
 class EmployeesController < ApplicationController
-  before_action :set_employee, only: %i[ show edit update destroy ]
+  before_action :set_employee, only: %i[ edit update destroy ]
 
   def index
     records = Employee.includes(department: :branch).order(:first_name, :last_name)
@@ -8,6 +8,7 @@ class EmployeesController < ApplicationController
   end
 
   def show
+    @employee = Employee.includes(:department, devices: :ip_addresses).find(params[:id])
   end
 
   def new

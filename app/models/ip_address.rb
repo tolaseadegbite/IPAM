@@ -9,7 +9,7 @@ class IpAddress < ApplicationRecord
   before_validation :enforce_status_consistency
 
   # Associations
-  belongs_to :subnet
+  belongs_to :subnet, counter_cache: true
   belongs_to :device, optional: true
 
   # Enable linking tasks to IPs (e.g., "Investigate Rogue IP")

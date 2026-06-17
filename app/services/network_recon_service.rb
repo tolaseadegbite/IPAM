@@ -1,4 +1,5 @@
 class NetworkReconService
+  include BroadcastSafely
   # Entry point for scanning a specific subnet.
   def self.scan_subnet(subnet_cidr)
     new.scan_subnet(subnet_cidr)
@@ -72,10 +73,12 @@ class NetworkReconService
       )
 
       # Send the massive combined payload as a single WebSocket message
-      Turbo::StreamsChannel.broadcast_stream_to(
-        "monitoring",
-        content: streams_payload
-      )
+      broadcast_safely do
+        Turbo::StreamsChannel.broadcast_stream_to(
+          "monitoring",
+          content: streams_payload
+        )
+      end
     end
 
     end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
@@ -172,28 +175,30 @@ class NetworkReconService
                               .limit(5)
 
     # 5. Broadcast
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "monitoring",
-      target: "dashboard_metrics",
-      partial: "dashboards/metrics",
-      locals: {
-        online_count: online_count,
-        total_ips: total_ips,
-        rogue_count: rogue_count,
-        utilization_percent: utilization_percent,
-        device_type_chart: device_type_chart,
-        allocation_chart: allocation_chart,
-        subnets: subnets,
-        rogue_devices: rogue_devices,
-        ghost_assets: ghost_assets,
-        critical_devices: critical_devices,
-        recent_events: recent_events,
-        last_scan: last_scan,
-        duration: duration,
-        high_priority_tasks: high_priority_tasks,
-        scanning: false
-      }
-    )
+    broadcast_safely do
+      Turbo::StreamsChannel.broadcast_replace_to(
+        "monitoring",
+        target: "dashboard_metrics",
+        partial: "dashboards/metrics",
+        locals: {
+          online_count: online_count,
+          total_ips: total_ips,
+          rogue_count: rogue_count,
+          utilization_percent: utilization_percent,
+          device_type_chart: device_type_chart,
+          allocation_chart: allocation_chart,
+          subnets: subnets,
+          rogue_devices: rogue_devices,
+          ghost_assets: ghost_assets,
+          critical_devices: critical_devices,
+          recent_events: recent_events,
+          last_scan: last_scan,
+          duration: duration,
+          high_priority_tasks: high_priority_tasks,
+          scanning: false
+        }
+      )
+    end
   end
 
   private

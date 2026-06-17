@@ -1,0 +1,34 @@
+<%= turbo_stream_from "chat_#{@chat.id}" %>
+
+<% content_for :title, "NAT Assistant" %>
+
+<% content_for :page_header do %>
+  <div class="flex items-center justify-between i-full">
+    <div class="flex items-center gap-3">
+      <h4 class="font-semibold">NAT Assistant</h4>
+      <span class="text-sm text-subtle">Using <strong><%= @chat.model&.label || default_model_display_name %></strong></span>
+    </div>
+    <%= link_to chats_path, class: "btn btn--secondary text-xs" do %>
+      &larr; History
+    <% end %>
+  </div>
+<% end %>
+
+<div class="p-4 i-full flex flex-col" style="height: calc(100vh - 4rem);">
+
+  <div id="messages" data-controller="autoscroll" class="flex flex-col gap-2 flex-1 overflow-y-auto p-4 border rounded-lg bg-elevated mbe-4">
+    <% @chat.messages.where.not(id: nil).each do |message| %>
+      <%= render message %>
+    <% end %>
+    <% if @chat.messages.exists?(role: :user) %>
+      <% last_assistant = @chat.messages.where(role: :assistant).order(:id).last %>
+      <% if last_assistant.nil? || last_assistant.content.blank? %>
+        <%= render "messages/assistant_skeleton", skeleton_id: "message_skeleton_#{@chat.id}" %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="mbs-auto">
+    <%= render "messages/form", chat: @chat, message: @message %>
+  </div>
+</div>

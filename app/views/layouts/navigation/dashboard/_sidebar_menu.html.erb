@@ -108,6 +108,21 @@
       </div>
     </div>
 
+    <%# --- AI ASSISTANT --- %>
+    <div class="sidebar-menu__group">
+      <div class="sidebar-menu__group-label">AI ASSISTANT</div>
+      <div class="sidebar-menu__items">
+        <nav class="">
+          <%= link_to chats_path,
+                      class: "flex gap-4 btn sidebar-menu__button mbe-1",
+                      aria: active_for("chats") do %>
+            <span class="icon icon--message-square-text" aria-hidden="true"></span>
+            NAT Assistant
+          <% end %>
+        </nav>
+      </div>
+    </div>
+
     <%# --- USER MANAGEMENT --- %>
     <div class="sidebar-menu__group">
       <div class="sidebar-menu__group-label">USER MANAGEMENT & Audit</div>

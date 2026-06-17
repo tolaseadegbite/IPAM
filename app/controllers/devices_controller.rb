@@ -2,7 +2,7 @@ class DevicesController < ApplicationController
   before_action :set_device, only: %i[ show edit update destroy ]
 
   def index
-    records = Device.includes(:department, :employee, :ip_addresses).order(:name)
+    records = Device.includes(:employee, :ip_addresses, department: :branch).order(:name)
     @search = records.ransack(params[:q])
     @pagy, @devices = pagy(@search.result)
   end
@@ -37,7 +37,7 @@ class DevicesController < ApplicationController
       respond_to do |format|
         format.html { redirect_to devices_path, notice: "Device registered." }
         format.turbo_stream do
-          render turbo_stream:[
+          render turbo_stream: [
             turbo_stream.prepend("devices-table", partial: "devices/device", locals: { device: @device }),
             turbo_stream.prepend("devices-cards", partial: "devices/device_card", locals: { device: @device }),
             turbo_stream.prepend(helpers.dom_id(@device.department, :devices), partial: "departments/device_show_card", locals: { device: @device }),
@@ -55,21 +55,21 @@ class DevicesController < ApplicationController
   def update
     # 1. Clean the incoming array (removes the "" blank string) and convert to integers
     new_ip_ids = Array(device_params[:ip_address_ids]).reject(&:blank?).map(&:to_i)
-    
+
     # 2. Get the current IDs before the update happens
     current_ip_ids = @device.ip_address_ids
-    
+
     # 3. Figure out the differences
     ips_to_release = current_ip_ids - new_ip_ids
     ips_to_activate = new_ip_ids - current_ip_ids
 
     if @device.update(device_params)
-      
+
       # 4. Manually enforce the status changes using SQL for speed and reliability
       if ips_to_release.any?
         IpAddress.where(id: ips_to_release).update_all(status: :available)
       end
-      
+
       if ips_to_activate.any?
         IpAddress.where(id: ips_to_activate).update_all(status: :active)
       end
@@ -77,7 +77,7 @@ class DevicesController < ApplicationController
       respond_to do |format|
         format.html { redirect_to devices_path, notice: "Device updated successfully." }
         format.turbo_stream do
-          render turbo_stream:[
+          render turbo_stream: [
             turbo_stream.replace(helpers.dom_id(@device, :table_row), partial: "devices/device", locals: { device: @device }),
             turbo_stream.replace(helpers.dom_id(@device, :card), partial: "devices/device_card", locals: { device: @device }),
             turbo_stream.update("name_and_serial", partial: "devices/name_and_serial"),
@@ -130,7 +130,7 @@ class DevicesController < ApplicationController
 
   def device_params
     params.require(:device).permit(
-      :name, :serial_number, :asset_tag, :device_type, 
+      :name, :serial_number, :asset_tag, :device_type,
       :status, :mac_address, :critical, :location, :notes,
       :department_id, :employee_id, ip_address_ids: []
     )

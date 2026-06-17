@@ -1,0 +1,20 @@
+<%= turbo_stream.append "chats" do %>
+  <%= render @chats %>
+<% end %>
+
+<% if @pagy.next %>
+  <%= turbo_stream.replace "infinite_scroll_sentinel" do %>
+    <%= tag.div id: "infinite_scroll_sentinel",
+                data: {
+                  controller: "infinite-scroll",
+                  infinite_scroll_next_page_value: @pagy.next,
+                  infinite_scroll_last_page_value: @pagy.last
+                } do %>
+      <div class="text-center p-4 text-sm text-subtle">
+        <span class="animate-pulse">Loading more chats...</span>
+      </div>
+    <% end %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove "infinite_scroll_sentinel" %>
+<% end %>

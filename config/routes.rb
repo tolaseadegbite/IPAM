@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  resources :chats do
+    resources :messages, only: [ :create ]
+  end
+  resources :models, only: [ :index, :show ] do
+    collection do
+      post :refresh
+    end
+  end
   get "versions/index"
   mount MissionControl::Jobs::Engine, at: "/jobs"
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
