@@ -1,0 +1,127 @@
+.message {
+  max-width: 75%;
+  margin-bottom: var(--size-2, 8px);
+  padding: 10px 14px;
+}
+
+.message__header {
+  font-size: 0.75em;
+  opacity: 0.8;
+  margin-bottom: var(--size-1, 4px);
+}
+
+.message__content {
+  line-height: 1.5;
+}
+
+.message__footer {
+  font-size: 0.75em;
+  opacity: 0.7;
+  margin-top: var(--size-1, 4px);
+}
+
+.message--assistant {
+  margin-right: auto;
+  background-color: var(--color-positive, #28a745);
+  color: var(--color-text-reversed, #ffffff);
+  border-radius: 16px 16px 16px 4px;
+
+  .message__footer {
+    text-align: left;
+  }
+
+  /* Style prose elements inside assistant messages to look nice on green bubble */
+  .prose {
+    color: inherit;
+    font-size: inherit;
+
+    h1, h2, h3, h4, h5, h6 {
+      color: inherit;
+    }
+
+    a {
+      color: var(--color-selected-light, #e9ecef);
+      text-decoration: underline;
+    }
+
+    :is(pre, code) {
+      background-color: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--color-text-reversed, #ffffff);
+    }
+
+    table {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    th, td {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+.message--user {
+  margin-left: auto;
+  background-color: var(--color-primary, #007bff);
+  color: var(--color-text-reversed, #ffffff);
+  border-radius: 16px 16px 4px 16px;
+
+  .message__footer {
+    text-align: right;
+  }
+}
+
+.message--system {
+  margin-bottom: var(--size-2, 8px);
+  padding: 8px 12px;
+  border-left: 3px solid var(--color-border-dark, #6b7280);
+  background-color: var(--color-border-light, #f3f4f6);
+  color: var(--color-text, #111827);
+  border-radius: var(--rounded-sm, 6px);
+
+  .message__header--system {
+    font-weight: bold;
+    color: var(--color-text-subtle, #374151);
+    font-size: 0.85em;
+  }
+
+  .message__content--system {
+    white-space: pre-wrap;
+    font-size: 0.85em;
+  }
+}
+
+.message__loading {
+  display: inline;
+  opacity: 0.8;
+}
+
+.message__dots {
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+.message--error {
+  margin-bottom: var(--size-2, 8px);
+  padding: 8px 12px;
+  border-left: 3px solid var(--color-negative, #dc2626);
+  background-color: rgb(from var(--color-negative) r g b / .05);
+  color: var(--color-negative);
+  border-radius: var(--rounded-sm, 6px);
+
+  .message__header--error {
+    font-weight: bold;
+    font-size: 0.85em;
+  }
+
+  .message__content--error {
+    white-space: pre-wrap;
+    margin: 0;
+    font-size: 0.85em;
+    font-family: var(--font-monospace-code, monospace);
+  }
+}
