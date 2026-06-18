@@ -3,12 +3,12 @@ class MessagesController < ApplicationController
 
   def create
     content = params.dig(:message, :content)
-    files = params[:attachments]
+    attachment_ids = params.dig(:message, :attachment_ids)
 
-    if content.present? || files.present?
+    if content.present? || attachment_ids.present?
       @user_message = @chat.messages.create!(role: :user, content: content || "")
 
-      attach_files(@user_message, files) if files.present?
+      @user_message.attachments.attach(attachment_ids) if attachment_ids.present?
 
       ChatResponseJob.perform_later(@chat.id, content || "")
 
@@ -23,11 +23,5 @@ class MessagesController < ApplicationController
 
   def set_chat
     @chat = Chat.find(params[:chat_id])
-  end
-
-  def attach_files(message, files)
-    files.each do |file|
-      message.attachments.attach(file)
-    end
   end
 end

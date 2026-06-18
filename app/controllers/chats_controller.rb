@@ -15,9 +15,9 @@ class ChatsController < ApplicationController
 
   def create
     prompt = params.dig(:chat, :prompt)
-    files = params[:attachments]
+    attachment_ids = params.dig(:message, :attachment_ids)
 
-    if prompt.present? || files.present?
+    if prompt.present? || attachment_ids.present?
       selected_model = params.dig(:chat, :model).presence
       opts = { user: current_user }
       opts[:model] = selected_model if selected_model
@@ -25,9 +25,7 @@ class ChatsController < ApplicationController
 
       message = @chat.messages.create!(role: :user, content: prompt || "")
 
-      if files.present?
-        files.each { |file| message.attachments.attach(file) }
-      end
+      message.attachments.attach(attachment_ids) if attachment_ids.present?
 
       ChatResponseJob.perform_later(@chat.id, prompt || "")
 

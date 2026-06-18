@@ -13,6 +13,15 @@ export default class extends Controller {
   }
 
   connect() {
+    const details = this.element.closest("details")
+    if (details && !details.open) {
+      details.addEventListener("toggle", () => this.#init(), { once: true })
+    } else {
+      this.#init()
+    }
+  }
+
+  #init() {
     this.dropZone = this.#createDropZone()
     this.dropZone.enqueueFile = it => this.#upload(it)
   }

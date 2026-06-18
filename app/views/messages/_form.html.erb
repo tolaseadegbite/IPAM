@@ -1,13 +1,31 @@
-<%= form_with(model: message, url: [@chat, message], id: "new_message", class: "flex gap-2 items-center", multipart: true) do |form| %>
-  <div class="flex-1">
+<%= form_with(model: message, url: [@chat, message], id: "new_message", class: "flex flex-col gap-2") do |form| %>
+  <div>
       <%= form.text_area :content, placeholder: "Message...", autofocus: true, class: "input" %>
   </div>
 
-  <div class="flex gap-1 items-center">
-    <%= label_tag :attachments, class: "btn text-xs cursor-pointer" do %>
-      <%= file_field_tag :attachments, multiple: true, accept: "image/*", class: "hidden" %>
-      Attach
-    <% end %>
+  <div class="accordion">
+    <details name="attachments">
+      <summary class="btn text-xs cursor-pointer i-full text-subtle">
+        Attach photos
+      </summary>
+      <div class="mbs-2">
+        <%= tag.div class: "dropzone", data: {
+          controller: "dropzone",
+          dropzone_param_name_value: "message[attachment_ids][]",
+          dropzone_url_value: rails_direct_uploads_url,
+          dropzone_accepted_files_value: "image/*,.csv,.xls,.xlsx",
+          dropzone_max_files_value: 5,
+          dropzone_max_filesize_value: 10
+        } do %>
+          <div class="dz-default dz-message flex flex-col items-center py-2">
+            <span class="text-sm">Drop photos, CSVs, or Excel files or click to attach</span>
+          </div>
+        <% end %>
+      </div>
+    </details>
+  </div>
+
+  <div>
     <%= form.submit "Send", class: "btn btn--primary" %>
   </div>
 <% end %>

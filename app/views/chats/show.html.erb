@@ -3,15 +3,7 @@
 <% content_for :title, "NAT Assistant" %>
 
 <% content_for :page_header do %>
-  <div class="flex items-center justify-between i-full">
-    <div class="flex items-center gap-3">
-      <h4 class="font-semibold">NAT Assistant</h4>
-      <span class="text-sm text-subtle">Using <strong><%= @chat.model&.label || default_model_display_name %></strong></span>
-    </div>
-    <%= link_to chats_path, class: "btn btn--secondary text-xs" do %>
-      &larr; History
-    <% end %>
-  </div>
+  <h4 class="font-semibold truncate"><%= @chat.messages.order(:id).first&.content&.truncate(60) || "NAT Assistant" %></h4>
 <% end %>
 
 <div class="p-4 i-full flex flex-col" style="height: calc(100dvh - 4rem);">

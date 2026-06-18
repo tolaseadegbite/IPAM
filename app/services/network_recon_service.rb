@@ -240,32 +240,39 @@ class NetworkReconService
         end
 
       else
-        # --- MISSING FIX: SCENARIO C (The Rogue Squatter) ---
-        # The MAC address answering the ping is UNKNOWN to our database.
-        # If this IP address is currently assigned to a known device in our DB,
-        # we must evict the known device because it has been physically replaced.
+        # --- SCENARIO C: Unknown MAC at an assigned IP ---
 
         if ip_record.device_id.present?
           current_device = ip_record.device
 
-          # Verify the known device's MAC is truly different from the squatter
-          if current_device && current_device.mac_address != host_data[:mac]
-            Rails.logger.warn "[NetworkRecon] SECURITY ALERT: Unknown MAC #{host_data[:mac]} took over IP #{host_data[:ip]} from #{current_device.name}"
+          if current_device
+            if current_device.mac_address.nil?
+              # Device was created without a MAC (e.g. from a photo import).
+              # Adopt the discovered MAC instead of evicting.
+              current_device.update!(mac_address: host_data[:mac])
 
-            NetworkEvent.create!(
-              kind: :security,
-              ip_address: host_data[:ip],
-              device: current_device, # Link to the victim device for the audit trail
-              message: "Unknown MAC (#{host_data[:mac]}) seized IP currently assigned to this device."
-            )
+              NetworkEvent.create!(
+                kind: :info,
+                ip_address: host_data[:ip],
+                device: current_device,
+                message: "MAC #{host_data[:mac]} adopted for '#{current_device.name}' (#{host_data[:ip]})."
+              )
 
-            # Evict the old device.
-            # This turns the IP into a true "Rogue" (Up + Nil) on the dashboard.
-            updates[:device_id] = nil
-            updates[:status] = :available
+            elsif current_device.mac_address != host_data[:mac]
+              Rails.logger.warn "[NetworkRecon] SECURITY ALERT: Unknown MAC #{host_data[:mac]} took over IP #{host_data[:ip]} from #{current_device.name}"
+
+              NetworkEvent.create!(
+                kind: :security,
+                ip_address: host_data[:ip],
+                device: current_device,
+                message: "Unknown MAC (#{host_data[:mac]}) seized IP currently assigned to this device."
+              )
+
+              updates[:device_id] = nil
+              updates[:status] = :available
+            end
           end
         end
-        # ----------------------------------------------------
       end
     end
 

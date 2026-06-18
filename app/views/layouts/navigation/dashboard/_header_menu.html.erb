@@ -1,10 +1,10 @@
 <div class="flex justify-between items-center gap i-full">
-  <div style="max-width: 40dvw;">
-    <span class="font-semibold"><%= yield(:page_header) || "Dashboard" %></span>
+  <div class="flex-1 min-i-0">
+    <div class="font-semibold truncate"><%= yield(:page_header) || "Dashboard" %></div>
   </div>
 
   <div class="flex items-center gap">
-    <div class="flex-grow flex justify-center">
+    <div class="flex-grow flex justify-center hide@touch">
       <%= form_with url: search_path, method: :get, class: "relative w-full max-w-md", data: { turbo_frame: "main_content" } do |f| %>
         <label class="input input--actor flex items-center gap">
           <span class="icon icon--search" aria-hidden="true"></span>
