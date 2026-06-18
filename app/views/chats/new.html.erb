@@ -5,7 +5,31 @@
 <% end %>
 
 <div class="p-4 i-full">
-  <div class="card p-6 max-w-lg">
-    <%= render "form", chat: @chat %>
+  <div class="grid grid-cols-1 grid-cols-2@md gap-4 items-start">
+    <div class="card p-6">
+      <h5 class="font-semibold mbe-1">NAT Assistant</h5>
+      <p class="text-xs text-subtle mbe-4">Network Administration Tool</p>
+
+      <p class="text-sm font-medium mbe-3">I can help you manage your IPAM system:</p>
+
+      <ul class="space-y-1 text-sm" style="list-style: disc; padding-inline-start: 1.25rem;">
+        <li class="text-subtle">Search IP addresses</li>
+        <li class="text-subtle">Look up subnets by name or VLAN</li>
+        <li class="text-subtle">Find free (unused) IPs in a subnet</li>
+        <li class="text-subtle">Search devices by name or MAC</li>
+        <li class="text-subtle">Look up employees and their devices</li>
+        <li class="text-subtle">Search branches, departments, and locations</li>
+        <li class="text-subtle">View network stats and health</li>
+        <li class="text-subtle">See recent network activity</li>
+        <li class="text-subtle">Get device counts by type</li>
+        <li class="text-subtle">Assign IPs to devices</li>
+        <li class="text-subtle">Create new devices</li>
+        <li class="text-subtle">Identify rogue devices</li>
+      </ul>
+    </div>
+
+    <div class="card p-6">
+      <%= render "form", chat: @chat %>
+    </div>
   </div>
 </div>

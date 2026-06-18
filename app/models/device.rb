@@ -3,7 +3,7 @@ class Device < ApplicationRecord
 
   include PgSearch::Model
 
-  before_save :normalize_mac_address
+  before_validation :normalize_mac_address
 
   # Search by Name, Serial, or Tag.
   multisearchable against: [ :name ]
@@ -29,7 +29,7 @@ class Device < ApplicationRecord
 
   # validates :serial_number, uniqueness: { case_sensitive: false }
   # validates :asset_tag, uniqueness: { case_sensitive: false }
-  validates :mac_address, uniqueness: { case_sensitive: false }
+  validates :mac_address, uniqueness: { case_sensitive: false }, allow_nil: true
   validates :name, presence: true, uniqueness: { case_sensitive: false }
   validates :device_type, presence: true
   validates :status, presence: true
@@ -56,6 +56,7 @@ class Device < ApplicationRecord
   private
 
   def normalize_mac_address
+    self.mac_address = nil if mac_address.blank?
     self.mac_address = mac_address.downcase.gsub("-", ":") if mac_address.present?
   end
 end
