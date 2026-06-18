@@ -1,4 +1,4 @@
-<%= form_with(model: chat, url: chats_path) do |form| %>
+<%= form_with(model: chat, url: chats_path, multipart: true) do |form| %>
   <div class="flex flex-col gap-4">
     <div>
       <%= form.label :model, "Select AI model:", class: "text-sm font-medium mbe-1" %>
@@ -8,10 +8,14 @@
 
     <div>
       <%= form.label :prompt, "Your question:", class: "text-sm font-medium mbe-1" %>
-        <%= form.text_area :prompt, placeholder: "What would you like to discuss?", autofocus: true, class: "input" %>
+        <%= form.text_area :prompt, placeholder: "Type a message or attach photos...", autofocus: true, class: "input" %>
     </div>
 
-    <div>
+    <div class="flex gap-2 items-center">
+      <%= label_tag :attachments, class: "btn text-xs cursor-pointer" do %>
+        <%= file_field_tag :attachments, multiple: true, accept: "image/*", class: "hidden" %>
+        Attach
+      <% end %>
       <%= form.submit "Start new chat", class: "btn btn--primary" %>
     </div>
   </div>

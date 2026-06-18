@@ -15,15 +15,21 @@ class ChatsController < ApplicationController
 
   def create
     prompt = params.dig(:chat, :prompt)
-    if prompt.present?
+    files = params[:attachments]
+
+    if prompt.present? || files.present?
       selected_model = params.dig(:chat, :model).presence
       opts = { user: current_user }
       opts[:model] = selected_model if selected_model
       @chat = NatAgent.create!(**opts)
 
-      @chat.messages.create!(role: :user, content: prompt)
+      message = @chat.messages.create!(role: :user, content: prompt || "")
 
-      ChatResponseJob.perform_later(@chat.id, prompt)
+      if files.present?
+        files.each { |file| message.attachments.attach(file) }
+      end
+
+      ChatResponseJob.perform_later(@chat.id, prompt || "")
 
       redirect_to @chat, notice: "Chat was successfully created."
     end
