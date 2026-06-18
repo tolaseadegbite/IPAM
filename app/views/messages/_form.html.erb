@@ -1,9 +1,13 @@
-<%= form_with(model: message, url: [@chat, message], id: "new_message", class: "flex gap-2 items-center") do |form| %>
+<%= form_with(model: message, url: [@chat, message], id: "new_message", class: "flex gap-2 items-center", multipart: true) do |form| %>
   <div class="flex-1">
       <%= form.text_area :content, placeholder: "Message...", autofocus: true, class: "input" %>
   </div>
 
-  <div>
+  <div class="flex gap-1 items-center">
+    <%= label_tag :attachments, class: "btn text-xs cursor-pointer" do %>
+      <%= file_field_tag :attachments, multiple: true, accept: "image/*", class: "hidden" %>
+      Attach
+    <% end %>
     <%= form.submit "Send", class: "btn btn--primary" %>
   </div>
 <% end %>

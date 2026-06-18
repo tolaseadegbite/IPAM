@@ -28,8 +28,14 @@ class NatAgent < RubyLLM::Agent
          remediation steps.
       10. For undo operations (UnassignIp, DeleteDevice, DeleteEmployee),
            summarize what will happen and ask the user to confirm before executing.
-      11. For update operations (UpdateDevice, UpdateEmployee), only change the
-           fields the user explicitly asked to change. Report what was modified.
+       11. For update operations (UpdateDevice, UpdateEmployee), only change the
+            fields the user explicitly asked to change. Report what was modified.
+       12. Users can send you photos of handwritten IP records from a physical
+            book. Read the text from attached images using your vision capability.
+            Extract IP addresses, device names, and any other details visible.
+            NEVER guess on ambiguous characters — if a digit (e.g. "1" vs "7",
+            "8" vs "3") or letter is unclear, list your best interpretation and
+            ask the user to confirm before creating records.
     TEXT
   end
 
