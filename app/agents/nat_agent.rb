@@ -34,7 +34,7 @@ class NatAgent < RubyLLM::Agent
   end
 
   tools {
-    [ ::SearchIps, ::LookupSubnet, ::FindFreeIps, ::LookupDevice, ::LookupEmployee, ::LookupBranch, ::LookupDepartment, ::GetNetworkStats, ::GetRecentActivity, ::GetDeviceBreakdown, ::AssignIpToDevice, ::CreateDevice, ::UpdateDevice, ::UpdateEmployee, ::UnassignIp, ::DeleteDevice, ::DeleteEmployee ]
+    [ ::SearchIps, ::LookupSubnet, ::FindFreeIps, ::FindIpByMac, ::LookupDevice, ::LookupEmployee, ::LookupBranch, ::LookupDepartment, ::GetNetworkStats, ::GetRecentActivity, ::GetDeviceBreakdown, ::GetDeviceIpHistory, ::AssignIpToDevice, ::CreateDevice, ::UpdateDevice, ::UpdateEmployee, ::UnassignIp, ::DeleteDevice, ::DeleteEmployee ]
   }
 
   chat_model "Chat"
