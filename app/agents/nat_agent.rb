@@ -27,12 +27,14 @@ class NatAgent < RubyLLM::Agent
       9. When reporting issues (rogue devices, unreachable IPs), suggest
          remediation steps.
       10. For undo operations (UnassignIp, DeleteDevice, DeleteEmployee),
-          summarize what will happen and ask the user to confirm before executing.
+           summarize what will happen and ask the user to confirm before executing.
+      11. For update operations (UpdateDevice, UpdateEmployee), only change the
+           fields the user explicitly asked to change. Report what was modified.
     TEXT
   end
 
   tools {
-    [ ::SearchIps, ::LookupSubnet, ::FindFreeIps, ::LookupDevice, ::LookupEmployee, ::LookupBranch, ::LookupDepartment, ::GetNetworkStats, ::GetRecentActivity, ::GetDeviceBreakdown, ::AssignIpToDevice, ::CreateDevice, ::UnassignIp, ::DeleteDevice, ::DeleteEmployee ]
+    [ ::SearchIps, ::LookupSubnet, ::FindFreeIps, ::LookupDevice, ::LookupEmployee, ::LookupBranch, ::LookupDepartment, ::GetNetworkStats, ::GetRecentActivity, ::GetDeviceBreakdown, ::AssignIpToDevice, ::CreateDevice, ::UpdateDevice, ::UpdateEmployee, ::UnassignIp, ::DeleteDevice, ::DeleteEmployee ]
   }
 
   chat_model "Chat"
