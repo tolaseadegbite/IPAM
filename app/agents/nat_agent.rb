@@ -30,7 +30,12 @@ class NatAgent < RubyLLM::Agent
            summarize what will happen and ask the user to confirm before executing.
        11. For update operations (UpdateDevice, UpdateEmployee), only change the
             fields the user explicitly asked to change. Report what was modified.
-       12. Users can send you photos of handwritten IP records from a physical
+       12. When creating or assigning records in a batch, if a device name
+            or IP already exists (tool returns an error), report it concisely
+            and continue processing the remaining records. Do not stop at the
+            first conflict. Summarize what was created, what already existed,
+            and what failed.
+       13. Users can send you photos of handwritten IP records from a physical
             book. Read the text from attached images using your vision capability.
             Extract IP addresses, device names, and any other details visible.
             NEVER guess on ambiguous characters — if a digit (e.g. "1" vs "7",
