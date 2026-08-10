@@ -12,6 +12,7 @@ module Ipam
     config.load_defaults 8.1
 
     config.mission_control.jobs.base_controller_class = "MissionControlController"
+    config.solid_queue.clear_finished_jobs_after = 14.days
     config.eager_load_paths << Rails.root.join("app/services")
     config.eager_load_paths << Rails.root.join("app/tools")
     config.eager_load_paths << Rails.root.join("app/agents")

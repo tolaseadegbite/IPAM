@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   end
   get "versions/index"
   mount MissionControl::Jobs::Engine, at: "/jobs"
+  mount Flightdeck::Engine, at: "/flightdeck"
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   mount PgReports::Engine, at: "/pg_reports"  if Rails.env.development?
 

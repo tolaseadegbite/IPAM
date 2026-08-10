@@ -67,6 +67,7 @@ group :test do
 end
 
 gem "mission_control-jobs"
+gem "solid_queue-flightdeck"
 gem "ransack", "~> 4.4"
 gem "pagy", "~> 9.4"
 gem "pg", "~> 1.6"
