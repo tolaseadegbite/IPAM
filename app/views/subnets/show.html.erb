@@ -1,17 +1,14 @@
 <% content_for :title, @subnet.name %>
 
-<% content_for :page_header do %>
-  <%= @subnet.name %>
-<% end %>
+<% content_for :page_header do %><%= @subnet.name %><% end %>
 
 <% content_for :header_action_buttons do %>
-  <div class="flex items-center gap-2">
-    <%= link_to "Edit", edit_subnet_path(@subnet), class: "btn bg-orange-400 text-white font-semibold rounded-md pi-4 pb-2 show@md", data: { turbo_frame: "modal" } %>
-
-    <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+  <div class="hidden items-center gap-2 md:flex">
+    <%= link_to "Edit", edit_subnet_path(@subnet), class: "btn btn--primary !px-3 !py-1.5 text-sm", data: { turbo_frame: "modal" } %>
+    <% delete_trigger = button_tag "Delete", type: "button", class: "btn !border-red-200 !px-3 !py-1.5 text-sm !text-red-600 hover:!bg-red-50 dark:!border-red-500/30 dark:!text-red-400 dark:hover:!bg-red-500/10", data: { action: "dialog#showModal" } %>
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{@subnet.name}'?" do %>
-      <p class="text-sm text-subtle mbe-4">This will permanently delete this subnet. This action cannot be undone.</p>
-      <div class="flex items-center justify-end gap">
+      <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this subnet. This action cannot be undone.</p>
+      <div class="flex items-center justify-end gap-2">
         <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
         <%= button_to "Continue", @subnet, method: :delete, data: { turbo: false }, class: "btn btn--negative" %>
       </div>
@@ -19,75 +16,70 @@
   </div>
 <% end %>
 
-<div class="absolute hide@md" style="bottom: 10rem; right: 1rem; z-index: 9999">
-  <%= link_to edit_subnet_path(@subnet), class: "btn bg-orange-400 text-white font-semibold rounded-full p-5", data: { turbo_frame: "modal" } do %>
-    <span class="icon icon--square-pen"></span>
-  <% end %>
-</div>
+<%= link_to edit_subnet_path(@subnet), class: "btn btn--primary fixed right-4 bottom-24 z-30 !rounded-full !p-4 shadow-lg md:hidden",
+            data: { turbo_frame: "modal" }, aria: { label: "Edit subnet" } do %>
+  <%= icon("square-pen", "h-5 w-5") %>
+<% end %>
 
-<div class="p-4 i-full overflow-none">
-  <div class="flex items-center justify-between mbe-6">
-    <div class="flex items-center gap-4">
-      <%= link_to :back, class: "btn btn--subtle btn--icon" do %>
-        <span class="icon icon--chevron-left"></span>
-      <% end %>
-      <div>
-        <h1 class="text-3xl font-bold"><%= @subnet.name %></h1>
-        <div class="font-mono text-link"><%= @subnet.network_address %></div>
-      </div>
+<div class="flex w-full flex-col gap-6">
+  <div class="flex items-center gap-3">
+    <%= link_to :back, class: "btn shrink-0 !p-2", aria: { label: "Back" } do %>
+      <%= icon("chevron-left", "h-4 w-4") %>
+    <% end %>
+    <div class="min-w-0">
+      <h1 class="truncate text-2xl font-bold tracking-tight sm:text-3xl"><%= @subnet.name %></h1>
+      <div class="font-mono text-sm text-orange-600 dark:text-orange-400"><%= @subnet.network_address %></div>
     </div>
   </div>
 
-  <%# --- Stats Bar --- %>
-  <% 
-    total = @subnet.ip_addresses.count 
+  <%
+    total = @subnet.ip_addresses.count
     used = @subnet.ip_addresses.where.not(device_id: nil).count
     percent = total > 0 ? ((used.to_f / total) * 100).round : 0
   %>
-  <div class="card p-4 border rounded-md bg-white shadow-sm mbe-6">
-    <div class="flex justify-between items-end mbe-2">
-      <span class="font-bold text-sm uppercase text-subtle">Utilization</span>
-      <span class="font-semibold text-lg"><%= used %> / <%= total %> IPs Used (<%= percent %>%)</span>
+  <div class="card p-4">
+    <div class="mb-2 flex flex-wrap items-end justify-between gap-2">
+      <span class="label-mono !text-xs">Utilization</span>
+      <span class="text-lg font-semibold tabular-nums"><%= used %> / <%= total %> IPs used (<%= percent %>%)</span>
     </div>
-
-    <%# --- CORRECTED PROGRESS COMPONENT --- %>
-    <label class="block i-full">
-      <%= tag.progress value: used, max: total, class: "progress", role: "progressbar" %>
-      <span class="sr-only">Utilization <%= percent %>%</span>
-    </label>
+    <div class="h-2.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700" role="progressbar"
+         aria-valuenow="<%= percent %>" aria-valuemin="0" aria-valuemax="100" aria-label="Subnet utilization">
+      <div class="h-full rounded-full <%= percent > 90 ? "bg-red-500" : percent > 70 ? "bg-amber-400" : "bg-green-500" %>"
+           style="width: <%= percent %>%;"></div>
+    </div>
   </div>
 
-  <%# --- IP Grid --- %>
-  <div class="card p-4 border rounded-md bg-white shadow-sm">
-    <h3 class="font-bold text-lg mbe-4">IP Address Pool</h3>
-    <div class="grid grid-cols-2 grid-cols-4@md grid-cols-6@lg gap-3">
-      <% @subnet.ip_addresses.order(:address).each do |ip| %>
-        <% 
+  <div class="card p-4">
+    <h3 class="mb-4 text-lg font-bold">IP Address Pool</h3>
+    <%= turbo_frame_tag "ip_pool" do %>
+      <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-6">
+        <% @pool_ips.each do |ip| %>
+        <%
           bg_class = if ip.active?
-                       'bg-red-50 border-red-200 text-red-800'
+                       "border-red-200 bg-red-50 text-red-800 hover:shadow-md dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200"
                      elsif ip.reserved?
-                        'bg-yellow-50 border-yellow-200 text-yellow-800'
+                       "border-amber-200 bg-amber-50 text-amber-800 hover:shadow-md dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200"
                      else
-                       'bg-green-50 border-green-200 text-green-800'
+                       "border-green-200 bg-green-50 text-green-800 hover:shadow-md dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-200"
                      end
         %>
-        <%= link_to edit_ip_address_path(ip), class: "p-2 rounded-md border text-center transition hover:shadow-md #{bg_class}", data: { turbo_frame: "modal" } do %>
-          <div class="font-mono font-bold text-sm"><%= ip.address.to_s.split('.').last %></div>
-          <div class="text-xs opacity-75 truncate">
-            <% if ip.device %>
-              <%= ip.device.name %>
-            <% else %>
-              <%= ip.status %>
-            <% end %>
+        <%= link_to edit_ip_address_path(ip), class: "rounded-lg border p-2 text-center transition #{bg_class}", data: { turbo_frame: "modal" } do %>
+          <div class="font-mono text-sm font-bold"><%= ip.address.to_s.split(".").last %></div>
+          <div class="truncate text-xs opacity-75">
+            <%= ip.device ? ip.device.name : ip.status %>
           </div>
         <% end %>
       <% end %>
-    </div>
+      </div>
+      <div class="mt-4">
+        <%= render "shared/pagination", pagy: @pagy %>
+      </div>
+    <% end %>
   </div>
 
-  <div class="mbs-4">
-    <% 
-      subnet_versions = @subnet.versions.order(created_at: :desc).limit(20) 
+  <div>
+    <%
+      subnet_versions = @subnet.versions.order(created_at: :desc).limit(20)
     %>
     <%= render "shared/audit_log", records: subnet_versions, parent: @subnet %>
   </div>

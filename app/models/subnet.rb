@@ -10,6 +10,7 @@ class Subnet < ApplicationRecord
   validate :valid_cidr_format
   validate :gateway_must_be_within_subnet
   validate :network_ranges_must_not_overlap
+  validate :subnet_size_within_limit
 
   after_create :populate_ip_addresses
   after_save :reserve_gateway_ip
@@ -69,6 +70,25 @@ class Subnet < ApplicationRecord
       overlapping_subnet = query.first
       errors.add(:network_address, "overlaps with existing subnet: #{overlapping_subnet.name} (#{overlapping_subnet.network_address})")
     end
+  end
+
+  # Auto-population inserts one row per host address. Refuse ranges that
+  # would flood the database (a /22 holds 1,022 hosts; a /16 holds 65,534).
+  MAX_AUTO_POPULATE_PREFIX = 22
+
+  def subnet_size_within_limit
+    return if network_address.blank?
+    return unless network_address.ipv4?
+
+    prefix = network_address.prefix
+    return if prefix >= MAX_AUTO_POPULATE_PREFIX
+
+    host_count = 2**(32 - prefix) - 2
+    errors.add(:network_address,
+      "is too large to auto-populate (#{host_count} addresses). " \
+      "Use a /#{MAX_AUTO_POPULATE_PREFIX} or smaller, or split the range.")
+  rescue IPAddr::InvalidAddressError, IPAddr::AddressFamilyError
+    nil # valid_cidr_format already reports unparseable input
   end
 
   # 1. Update this method to handle Gateway changes
