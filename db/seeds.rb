@@ -293,3 +293,7 @@
 # )
 
 # puts "✅ Kanban Setup Complete!"
+
+# Demo dataset for previewing the UI (guarded; safe to re-run).
+# Run with: SEED_DEMO=1 bin/rails db:seed
+load Rails.root.join("db/seeds/demo.rb") if ENV["SEED_DEMO"] == "1"
