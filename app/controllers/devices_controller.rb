@@ -94,7 +94,6 @@ class DevicesController < ApplicationController
 
   def destroy
     # Dependent :nullify in model handles IP release
-    @device.destroy
     if @device.destroy
       respond_to do |format|
         format.html { redirect_to devices_path, notice: "Device deleted." }
@@ -130,7 +129,7 @@ class DevicesController < ApplicationController
 
   def device_params
     params.require(:device).permit(
-      :name, :serial_number, :asset_tag, :device_type,
+      :name, :device_type,
       :status, :mac_address, :critical, :location, :notes,
       :department_id, :employee_id, ip_address_ids: []
     )
