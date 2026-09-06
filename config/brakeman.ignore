@@ -1,0 +1,18 @@
+---
+# Brakeman triaged findings. Each entry below was reviewed; new warnings
+# still fail the build. Revisit on a regular cadence.
+:ignore:
+- :fingerprint: e68a094afcc07e37007a4a57599749294d06f31bfa979c34cb3132c29ec437ec
+  :note: pg_reports dashboard basic-auth uses a default password, but the engine is mounted development-only (see routes.rb guard) and never exposed in production.
+- :fingerprint: 469dfba6cbbfad395644e79afe8a29dced3160b50bb24a75e5336d19eb84dcdf
+  :note: Admin::UsersController permits :admin/:verified, but the whole controller sits behind require_admin — only admins can mass-assign those fields.
+- :fingerprint: 7b0c19da00e2cced8032693cb431f425291c8e711a6f67089986a7b644574aed
+  :note: cards_controller constantizes referenceable_type then only calls .find — no arbitrary method dispatch. Accepted risk; follow-up is an explicit %w[Device IpAddress] allowlist.
+- :fingerprint: a993f786f5340d9fc7ac3c4088cdfb550d39452acc3f55bebc5f2116671d12b4
+  :note: versions_controller uses safe_constantize (nil-safe) guarded by `if item_class`. False positive.
+- :fingerprint: 9f5de323956be7f71c8759ec958546128ee88020358e52bdb94ded5ef10904fe
+  :note: nmap target comes from persisted Subnet records (CIDR-validated at creation by authenticated users), not raw request input. Accepted; follow-up is shell-escaping/allowlist hardening.
+- :fingerprint: 49eddc62fc772e252ebafc88492fa494d14138f8cc3e7bfb678f95f9deec600e
+  :note: Weak RegexDoS — pattern built from authenticated-user device names; worst case degrades the attacker's own request. Accepted.
+- :fingerprint: d31a025c3932c81f310d470fba69bcaaa96ef5cc2a7a7552d3413057ef60834c
+  :note: No user-controlled render path exists (explicit render :show); Brakeman misattributes boards_controller ransack/group_by through the template. False positive.
