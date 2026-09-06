@@ -1,56 +1,46 @@
 <% content_for :title, "Network Subnets" %>
 
-<% content_for :page_header do %>
-  <h4 class="font-semibold">Network Subnets (<%= @pagy.count %>)</h4>
-<% end %>
+<% content_for :page_header do %>Network Subnets (<%= @pagy.count %>)<% end %>
 
 <% content_for :header_action_buttons do %>
-    <%= link_to "Add Subnet", new_subnet_path,
-                  class: "btn bg-orange-400 text-white font-semibold rounded-md p-2 show@md",
-                  data: { turbo_frame: "modal" } %>
+  <%= link_to "Add Subnet", new_subnet_path, class: "btn btn--primary hidden !px-3 !py-1.5 text-sm md:inline-flex",
+              data: { turbo_frame: "modal" } %>
 <% end %>
 
-<div class="absolute hide@md" style="bottom: 10rem; right: 1rem; z-index: 9999">
-  <%= link_to new_subnet_path, class: "btn bg-orange-400 text-white font-semibold rounded-full p-5", data: { turbo_frame: "modal" } do %>
-    <span class="icon icon--plus"></span>
-  <% end %>
-</div>
+<%= link_to new_subnet_path, class: "btn btn--primary fixed right-4 bottom-24 z-30 !rounded-full !p-4 shadow-lg md:hidden",
+            data: { turbo_frame: "modal" }, aria: { label: "Add subnet" } do %>
+  <%= icon("plus", "h-5 w-5") %>
+<% end %>
 
-<div class="p-4 i-full">
+<%= turbo_frame_tag :subnets_table do %>
+  <div class="relative hidden overflow-x-auto rounded-xl border border-zinc-200 bg-white md:block dark:border-white/10 dark:bg-zinc-900">
+    <table class="table w-full">
+      <thead class="bg-zinc-50 dark:bg-white/5">
+        <tr>
+          <th class="p-3"><%= sort_link(@search, :name, "Subnet") %></th>
+          <th class="p-3"><%= sort_link(@search, :network_address, "Network / CIDR") %></th>
+          <th class="p-3"><%= sort_link(@search, :gateway, "Gateway") %></th>
+          <th class="p-3"><%= sort_link(@search, :vlan_id, "VLAN") %></th>
+          <th class="p-3 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="subnets-table">
+        <% if @subnets.empty? %>
+          <tr><td colspan="5" class="p-8 text-center text-sm text-zinc-500 dark:text-zinc-400">No subnets found.</td></tr>
+        <% else %>
+          <%= render @subnets %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 
-  <%= turbo_frame_tag :subnets_table do %>
-    
-    <%# --- DESKTOP VIEW: Table (Visible on medium screens and up) --- %>
-    <div class="show@md relative i-full overflow-x-auto border rounded-md">
-      <table class="table i-full text-left">
-        <thead class="bg-shade font-semibold">
-          <tr>
-            <th class="p-3"><%= sort_link(@search, :name, class: "font-semibold") %></th>
-            <th class="p-3"><%= sort_link(@search, :network_address, "Network / CIDR", class: "font-semibold") %></th>
-            <th class="p-3"><%= sort_link(@search, :gateway, class: "font-semibold") %></th>
-            <th class="p-3"><%= sort_link(@search, :vlan_id, "VLAN", class: "font-semibold") %></th>
-            <th class="p-3 text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="subnets-table">
-          <% if @subnets.empty? %>
-            <tr><td colspan="7" class="text-center p-8">No Results.</td></tr>
-          <% else %>
-            <%= render @subnets %>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+  <div id="subnets-cards" class="flex flex-col gap-4 md:hidden">
+    <% if @subnets.empty? %>
+      <%= render "shared/empty_state", object: "subnet" %>
+    <% else %>
+      <%= render partial: "subnets/subnet_card", collection: @subnets, as: :subnet %>
+    <% end %>
+  </div>
 
-    <%# --- MOBILE VIEW: Cards (Hidden on medium screens and up) --- %>
-    <div id="subnets-cards" class="hide@md flex flex-col gap-4">
-      <% if @subnets.empty? %>
-        <p class="text-subtle text-center p-8">No subnets found.</p>
-      <% else %>
-        <%= render partial: "subnets/subnet_card", collection: @subnets, as: :subnet %>
-      <% end %>
-    </div>
-
-    <%= render "shared/pagination", pagy: @pagy %>
-  <% end %>
-</div>
+  <%= render "shared/pagination", pagy: @pagy %>
+<% end %>

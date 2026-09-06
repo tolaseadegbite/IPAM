@@ -2,22 +2,22 @@
 <div id="message_<%= user.id %>" class="message message--user">
   <div class="message__header">You</div>
   <% if user.attachments.attached? %>
-    <div class="flex flex-wrap gap-2 mbs-1 mbe-1">
+    <div class="my-1 flex flex-wrap gap-2">
       <% user.attachments.each do |attachment| %>
         <% if attachment.content_type&.start_with?("image/") %>
           <%= link_to url_for(attachment), target: "_blank", class: "block" do %>
-            <%= image_tag attachment, class: "rounded-lg", style: "max-block-size: 160px; max-inline-size: 100%;" %>
+            <%= image_tag attachment, class: "rounded-lg", style: "max-height: 160px; max-width: 100%;" %>
           <% end %>
         <% else %>
           <%= link_to url_for(attachment), target: "_blank", class: "btn text-xs flex items-center gap-1", download: true do %>
-            <span class="icon icon--download" aria-hidden="true"></span>
+            <%= icon("download", "h-4 w-4") %>
             <%= attachment.filename %>
           <% end %>
         <% end %>
       <% end %>
     </div>
   <% end %>
-  <div id="message_<%= user.id %>_content" class="message__content" style="font-size: 0.85em"><%= user.content %></div>
+  <div id="message_<%= user.id %>_content" class="message__content"><%= user.content %></div>
   <div class="message__footer">
     <%= user.created_at&.strftime("%I:%M %p") %>
   </div>

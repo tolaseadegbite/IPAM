@@ -1,47 +1,37 @@
-<div id="<%= dom_id subnet, :card %>" class="card p-4 flex flex-col gap-3">
-  
-  <%# --- Header: Name & VLAN --- %>
-  <div class="flex items-center justify-between border-be pbe-2">
-    <span class="text-lg font-semibold"><%= link_to subnet.name, subnet, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span>
+<div id="<%= dom_id subnet, :card %>" class="card flex flex-col gap-3 p-4">
+  <div class="flex items-center justify-between gap-2 border-b border-zinc-200 pb-2 dark:border-white/10">
+    <span class="truncate text-lg font-semibold"><%= link_to subnet.name, subnet, class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></span>
     <% if subnet.vlan_id.present? %>
-      <span class="text-sm font-mono bg-shade border border-gray-200 pi-2 pb-1 rounded-md">
+      <span class="shrink-0 rounded-md border border-zinc-200 bg-zinc-100 px-2 py-0.5 font-mono text-xs dark:border-white/10 dark:bg-zinc-800">
         VLAN <%= subnet.vlan_id %>
       </span>
     <% end %>
   </div>
 
-  <%# --- Network Details --- %>
   <div class="grid grid-cols-2 gap-4">
     <div>
-      <span class="block text-sm text-subtle uppercase font-bold mbe-1">Network / CIDR</span>
-      <span class="font-mono text-sm bg-blue-50 text-blue-700 pi-2 pb-1 rounded-md inline-block">
+      <span class="mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">Network / CIDR</span>
+      <span class="inline-block rounded-md bg-sky-100 px-2 py-0.5 font-mono text-sm text-sky-700 dark:bg-sky-500/15 dark:text-sky-300">
         <%= subnet.network_address %>
       </span>
     </div>
-
-    <div class="flex justify-end">
-      <div>
-        <span class="block text-sm text-subtle uppercase font-bold mbe-1 text-end">Gateway</span>
-        <span class="font-mono text-sm">
-          <%= subnet.gateway %>
-        </span>
-      </div>
+    <div class="text-right">
+      <span class="mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">Gateway</span>
+      <span class="font-mono text-sm"><%= subnet.gateway %></span>
     </div>
   </div>
 
-  <%# --- Stats / Count --- %>
-  <div class="flex items-center gap-2 text-sm text-subtle">
-    <span class="icon icon--server"></span>
-    <span><%= subnet.ip_addresses_count %> Total IPs</span>
+  <div class="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+    <%= icon("server", "h-4 w-4") %>
+    <span><%= subnet.ip_addresses_count %> total IPs</span>
   </div>
 
-  <%# --- Actions --- %>
-  <div class="flex items-center justify-end text-xs gap-4">
-    <%= link_to "Edit", edit_subnet_path(subnet), class: "text-subtle hover:text-orange-500", data: { turbo_frame: "modal" } %>
-    <% delete_trigger = button_tag "Delete", type: "button", class: "text-subtle hover:text-orange-500", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+  <div class="flex items-center justify-end gap-4 text-xs">
+    <%= link_to "Edit", edit_subnet_path(subnet), class: "font-medium text-zinc-500 hover:text-orange-500 dark:text-zinc-400", data: { turbo_frame: "modal" } %>
+    <% delete_trigger = button_tag "Delete", type: "button", class: "cursor-pointer font-medium text-zinc-500 hover:text-red-500 dark:text-zinc-400", data: { action: "dialog#showModal" } %>
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{subnet.name}'?" do %>
-      <p class="text-sm text-subtle mbe-4">This will permanently delete this subnet. This action cannot be undone.</p>
-      <div class="flex items-center justify-end gap">
+      <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this subnet. This action cannot be undone.</p>
+      <div class="flex items-center justify-end gap-2">
         <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
         <%= button_to "Continue", subnet, method: :delete, class: "btn btn--negative" %>
       </div>

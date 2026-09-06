@@ -1,12 +1,9 @@
-<%= link_to device, class: "list-row list-row--link flex items-center justify-between bg-surface hover:text-orange-600" do %>
-    <div class="flex flex-col gap-half">
-        <h5 class="text-sm leading-none font-medium"><%= device.name %></h5>
-        <p class="text-sm text-subtle"><%= device.device_type.humanize %></p>
-    </div>
-  
-    <div>
-        <% if device.employee.present? %>
-            <div class="text-xs text-subtle"><%= device.employee&.first_name %></div>
-        <% end %>
-    </div>
+<%= link_to device, class: "card flex items-center justify-between p-3 transition hover:border-orange-300 dark:hover:border-orange-500/40" do %>
+  <div class="flex min-w-0 flex-col gap-0.5">
+    <h5 class="truncate text-sm leading-none font-medium"><%= device.name %></h5>
+    <p class="text-xs text-zinc-500 dark:text-zinc-400"><%= device.device_type.humanize %></p>
+  </div>
+  <% if device.employee.present? %>
+    <div class="shrink-0 text-xs text-zinc-500 dark:text-zinc-400"><%= device.employee&.first_name %></div>
+  <% end %>
 <% end %>

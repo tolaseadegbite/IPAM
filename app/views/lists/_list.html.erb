@@ -1,52 +1,41 @@
-<div id="<%= dom_id list %>" data-list-id="<%= list.id %>" class="kanban-column flex-item-no-shrink w-80 flex flex-col max-b-full bg-main border rounded-lg shadow-sm">
-  
-  <!-- List Header -->
-  <%# Added 'list-handle' for functional dragging and 'cursor-grab' for UX %>
-  <div class="list-handle cursor-grab p-3 font-bold text-sm border-be border-main flex gap justify-between items-center bg-shade rounded-lg">
-    <div class="flex items-center gap-2">
-      <span class="text-subtle select-none" title="Drag to reorder">⋮⋮</span>
-      <%# Clickable name to Edit %>
-      <%= link_to list.name, edit_list_path(list), data: { turbo_frame: "modal" }, class: "hover:text-orange-500" %>
-    </div>
+<div id="<%= dom_id list %>" data-list-id="<%= list.id %>"
+     class="flex max-h-full w-80 shrink-0 flex-col rounded-xl border border-zinc-200 bg-zinc-100 shadow-sm dark:border-white/10 dark:bg-zinc-900">
 
-    <div class="flex items-center gap-2">
-      <span class="text-xs text-reversed bg-black pi-2 pb-1 rounded-full">
+  <div class="list-handle flex cursor-grab items-center justify-between gap-2 rounded-t-xl border-b border-zinc-200 bg-zinc-200/60 p-3 text-sm font-bold dark:border-white/10 dark:bg-white/5">
+    <div class="flex min-w-0 items-center gap-2">
+      <span class="cursor-grab text-zinc-400 select-none" title="Drag to reorder">⋮⋮</span>
+      <%= link_to list.name, edit_list_path(list), data: { turbo_frame: "modal" }, class: "truncate hover:text-orange-500" %>
+    </div>
+    <div class="flex shrink-0 items-center gap-2">
+      <span class="rounded-full bg-zinc-900 px-2 py-0.5 text-xs text-white dark:bg-zinc-100 dark:text-zinc-900">
         <%= list.cards.size %>
       </span>
-
-      <%# Delete Button (Small icon) %>
-      <%= button_to list_path(list), method: :delete, 
-            class: "text-subtle hover:text-red-600 border-0 cursor-pointer",
-            data: { turbo_confirm: "Delete this column and all its tasks?" } do %>
-        <span class="icon icon--trash-2"></span>
+      <%= button_to list_path(list), method: :delete,
+            class: "cursor-pointer border-0 bg-transparent text-zinc-400 hover:text-red-600",
+            data: { turbo_confirm: "Delete this column and all its tasks?" },
+            aria: { label: "Delete column" } do %>
+        <%= icon("trash-2", "h-4 w-4") %>
       <% end %>
     </div>
   </div>
 
-  <!-- Cards Container (The Sortable Zone) -->
-  <div id="<%= dom_id(list, :cards) %>" class="p-2 gap-2 flex flex-col overflow-y-auto" 
-       style="min-block-size: 50px;"
+  <div id="<%= dom_id(list, :cards) %>" class="flex flex-col gap-2 overflow-y-auto p-2"
+       style="min-height: 50px;"
        data-controller="kanban"
-       data-kanban-url-value="<%= move_card_path(':id') %>"
+       data-kanban-url-value="<%= move_card_path(":id") %>"
        data-list-id="<%= list.id %>">
-    
-    <%# Render the FILTERED cards passed into this partial %>
     <%= render cards %>
 
     <% if cards.empty? %>
-      <div class="p-4 text-center text-xs text-subtle italic opacity-50">
+      <div class="p-4 text-center text-xs text-zinc-400 italic opacity-70">
         No matching tasks
       </div>
     <% end %>
   </div>
 
-  <!-- Footer (Add Card) -->
-  <div class="p-2 border-bs border-main">
-    <%= link_to new_card_path(list_id: list.id), 
-          class: "btn btn--primary text-xs border-0", 
-          data: { turbo_frame: "modal" } do %>
-      <span class="icon icon--plus"></span> Add Task
+  <div class="border-t border-zinc-200 p-2 dark:border-white/10">
+    <%= link_to new_card_path(list_id: list.id), class: "btn w-full !border-0 text-xs", data: { turbo_frame: "modal" } do %>
+      <%= icon("plus", "h-4 w-4") %> Add Task
     <% end %>
   </div>
-
 </div>

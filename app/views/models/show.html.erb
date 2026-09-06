@@ -1,17 +1,19 @@
 <% content_for :title, @model.name %>
 
-<h1><%= @model.name %></h1>
+<% content_for :page_header do %><%= @model.name %><% end %>
 
-<p><strong>ID:</strong> <%= @model.model_id %></p>
-<p><strong>Provider:</strong> <%= @model.provider_class&.name || @model.provider %></p>
-<p><strong>Context Window:</strong> <%= number_with_delimiter(@model.context_window) %> tokens</p>
-<p><strong>Max Output:</strong> <%= number_with_delimiter(@model.max_output_tokens) %> tokens</p>
+<div class="card mx-auto w-full max-w-2xl space-y-2 p-4 text-sm sm:p-5">
+  <p><strong>ID:</strong> <span class="font-mono"><%= @model.model_id %></span></p>
+  <p><strong>Provider:</strong> <%= @model.provider_class&.name || @model.provider %></p>
+  <p><strong>Context Window:</strong> <span class="tabular-nums"><%= number_with_delimiter(@model.context_window) %> tokens</span></p>
+  <p><strong>Max Output:</strong> <span class="tabular-nums"><%= number_with_delimiter(@model.max_output_tokens) %> tokens</span></p>
 
-<% if @model.capabilities.any? %>
-  <p><strong>Capabilities:</strong> <%= @model.capabilities.join(", ") %></p>
-<% end %>
+  <% if @model.capabilities.any? %>
+    <p><strong>Capabilities:</strong> <%= @model.capabilities.join(", ") %></p>
+  <% end %>
 
-<p>
-  <%= link_to "Start chat with this model", new_chat_path(model: @model.model_id) %> |
-  <%= link_to "All models", models_path %>
-</p>
+  <p class="pt-2">
+    <%= link_to "Start chat with this model", new_chat_path(model: @model.model_id), class: "font-medium text-orange-600 hover:underline dark:text-orange-400" %> ·
+    <%= link_to "All models", models_path, class: "font-medium hover:underline" %>
+  </p>
+</div>

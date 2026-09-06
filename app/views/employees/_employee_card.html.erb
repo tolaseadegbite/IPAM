@@ -1,40 +1,34 @@
-<div id="<%= dom_id employee, :card %>" class="card flex flex-col gap-3">
-  <%# --- Header: Name & Status --- %>
-  <div class="flex items-start justify-between">
-    <div class="flex flex-col">
-      <span class="font-semibold text-lg"><%= link_to employee.full_name, employee, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span>
-    </div>
-    
-    <% status_color = case employee.status 
-       when 'active' then 'bg-green-100 text-green-800'
-       when 'on_leave' then 'bg-yellow-100 text-yellow-800'
-       when 'terminated' then 'bg-red-100 text-red-800'
-       end %>
-    <span class="<%= status_color %> text-sm font-medium pi-2 rounded-md">
-      <%= employee.status.humanize %>
-    </span>
+<div id="<%= dom_id employee, :card %>" class="card flex flex-col gap-3 p-4">
+  <div class="flex items-start justify-between gap-2">
+    <span class="truncate text-lg font-semibold"><%= link_to employee.full_name, employee, class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></span>
+    <%
+      status_badge = case employee.status
+        when "active" then "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300"
+        when "on_leave" then "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
+        when "terminated" then "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300"
+        else "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+        end
+    %>
+    <span class="<%= status_badge %> shrink-0 rounded-md px-2 py-0.5 text-sm font-medium"><%= employee.status.humanize %></span>
   </div>
 
-  <div>
-    <%# --- Department Info --- %>
-    <div class="flex gap-2 items-center">
-      <span class="block text-sm text-subtle font-semibold">Department:</span>
-      <div class="text-sm"><%= employee.department.name %></div>
+  <div class="space-y-1.5 text-sm">
+    <div class="flex items-center gap-2">
+      <span class="font-semibold text-zinc-500 dark:text-zinc-400">Department:</span>
+      <div class="truncate"><%= employee.department.name %></div>
     </div>
-
-    <div class="flex gap-2 items-center">
-      <span class="block text-sm text-subtle font-semibold">Branch:</span>
-      <div class="text-sm"><%= link_to employee.department.branch.name, branch_path(employee.department.branch), class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
+    <div class="flex items-center gap-2">
+      <span class="font-semibold text-zinc-500 dark:text-zinc-400">Branch:</span>
+      <div class="truncate"><%= link_to employee.department.branch.name, branch_path(employee.department.branch), class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></div>
     </div>
   </div>
 
-  <%# --- Actions --- %>
-  <div class="flex items-center justify-end text-xs gap-4">
-    <%= link_to "Edit", edit_employee_path(employee), class: "text-subtle hover:text-orange-500", data: { turbo_frame: "modal" } %>
-    <% delete_trigger = button_tag "Delete", type: "button", class: "text-subtle hover:text-orange-500", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+  <div class="flex items-center justify-end gap-4 text-xs">
+    <%= link_to "Edit", edit_employee_path(employee), class: "font-medium text-zinc-500 hover:text-orange-500 dark:text-zinc-400", data: { turbo_frame: "modal" } %>
+    <% delete_trigger = button_tag "Delete", type: "button", class: "cursor-pointer font-medium text-zinc-500 hover:text-red-500 dark:text-zinc-400", data: { action: "dialog#showModal" } %>
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{employee.full_name}'?" do %>
-      <p class="text-sm text-subtle mbe-4">This will permanently delete this employee. This action cannot be undone.</p>
-      <div class="flex items-center justify-end gap">
+      <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this employee. This action cannot be undone.</p>
+      <div class="flex items-center justify-end gap-2">
         <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
         <%= button_to "Continue", employee, method: :delete, class: "btn btn--negative" %>
       </div>

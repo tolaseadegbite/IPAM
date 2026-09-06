@@ -1,29 +1,31 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Account" %>
 
-<p>Signed as <%= Current.user.email %></p>
+<% content_for :page_header do %>Account<% end %>
 
-<h2>Login and verification</h2>
+<div class="grid w-full grid-cols-1 gap-4 md:max-w-2xl">
+  <div class="card p-4 sm:p-5">
+    <p class="text-sm text-zinc-500 dark:text-zinc-400">Signed in as</p>
+    <p class="text-lg font-semibold"><%= Current.user.email %></p>
+  </div>
 
-<div>
-  <%= link_to "Change password", edit_password_path %>
+  <div class="card p-4 sm:p-5">
+    <h2 class="mb-3 text-base font-bold">Login &amp; verification</h2>
+    <div class="flex flex-col gap-2 text-sm">
+      <%= link_to "Change password", edit_password_path, class: "font-medium text-orange-600 hover:underline dark:text-orange-400" %>
+      <%= link_to "Change email address", edit_identity_email_path, class: "font-medium text-orange-600 hover:underline dark:text-orange-400" %>
+    </div>
+  </div>
+
+  <div class="card p-4 sm:p-5">
+    <h2 class="mb-3 text-base font-bold">Access history</h2>
+    <div class="flex flex-col gap-2 text-sm">
+      <%= link_to "Devices & sessions", sessions_path, class: "font-medium hover:underline" %>
+      <%= link_to "Activity log", authentications_events_path, class: "font-medium hover:underline" %>
+    </div>
+  </div>
+
+  <div class="card flex flex-row flex-wrap items-center gap-3 p-4 sm:p-5">
+    <%= button_to "Sign in as last user", user_masquerade_path(User.last), class: "btn !px-3 !py-1.5 text-sm" %>
+    <%= button_to "Log out", Current.session, method: :delete, class: "btn btn--negative !px-3 !py-1.5 text-sm" %>
+  </div>
 </div>
-
-<div>
-  <%= link_to "Change email address", edit_identity_email_path %>
-</div>
-
-<%= button_to "Signin as last user", user_masquerade_path(User.last) %>
-
-<h2>Access history</h2>
-
-<div>
-  <%= link_to "Devices & Sessions", sessions_path %>
-</div>
-
-<div>
-  <%= link_to "Activity Log", authentications_events_path %>
-</div>
-
-<br>
-
-<%= button_to "Log out", Current.session, method: :delete %>

@@ -1,14 +1,14 @@
 <%= form_with(model: ip_address, html: { contents: true }) do |form| %>
   <%= render "shared/error_messages", object: ip_address %>
 
-  <div class="mbe-4">
-    <%= form.label :status, class: "block font-medium mbe-1" %>
+  <div class="mb-4">
+    <%= form.label :status, class: "mb-1 block font-medium" %>
     <%= form.select :status, IpAddress.statuses.keys.map { |k| [k.humanize, k] }, {}, { class: "input cursor-pointer" } %>
   </div>
 
   <!-- SECTION: Device Selection (Drill-down) -->
-  <div class="mbe-4 p-4 border rounded-lg bg-shade">
-    <label class="block font-bold mbe-3 text-sm text-subtle uppercase">Assign Device</label>
+  <div class="mb-4 rounded-lg border border-zinc-200 bg-zinc-100 p-4 dark:border-white/10 dark:bg-white/5">
+    <label class="mb-3 block text-sm font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Assign Device</label>
     
     <!-- 1. OUTER CONTROLLER: Branch -> Department -->
     <div class="grid grid-cols-1 gap-4"
@@ -20,7 +20,7 @@
 
       <!-- Branch Filter -->
       <div>
-        <label class="block font-medium text-xs text-subtle mbe-1">1. Filter by Branch</label>
+        <label class="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">1. Filter by Branch</label>
         <% 
            selected_device = ip_address.device 
            selected_branch_id = selected_device&.department&.branch_id
@@ -42,8 +42,8 @@
            data-dependent-select-frame-id-value="device_options_frame">
            
         <!-- Department Filter (Does not save to DB) -->
-        <div class="mbe-4">
-          <label class="block font-medium text-xs text-subtle mbe-1">2. Filter by Department</label>
+        <div class="mb-4">
+          <label class="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">2. Filter by Department</label>
           <%= turbo_frame_tag "department_options_frame" do %>
             <% 
                departments = if selected_branch_id
@@ -65,7 +65,7 @@
         
         <!-- 3. TARGET: Device Select (Saves to DB) -->
         <div>
-          <%= form.label :device_id, "3. Connected Device", class: "block font-medium text-xs text-subtle mbe-1" %>
+          <%= form.label :device_id, "3. Connected Device", class: "mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400" %>
           <%= turbo_frame_tag "device_options_frame" do %>
             <% 
                # Initial Load Logic
@@ -86,13 +86,13 @@
   </div>
   <!-- END SECTION -->
 
-  <div class="mbe-4">
-    <%= form.label :notes, class: "block font-medium mbe-1" %>
+  <div class="mb-4">
+    <%= form.label :notes, class: "mb-1 block font-medium" %>
     <%= form.text_area :notes, class: "input h-24" %>
   </div>
 
   <div class="flex items-center gap-3">
-    <%= form.submit "Update IP", class: "btn bg-orange-400 text-white font-semibold px-4 py-2" %>
-    <%= link_to "Cancel", ip_addresses_path, class: "text-subtle", data: { turbo_frame: "modal" } %>
+    <%= form.submit "Update IP", class: "btn btn--primary" %>
+    <%= link_to "Cancel", ip_addresses_path, class: "text-sm text-zinc-500 hover:underline dark:text-zinc-400", data: { turbo_frame: "modal" } %>
   </div>
 <% end %>

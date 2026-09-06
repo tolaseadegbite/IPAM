@@ -7,13 +7,22 @@ RubyLLM.configure do |config|
 end
 
 Rails.application.config.after_initialize do
-  unless Model.exists?(model_id: "gemini-3.1-flash-lite", provider: "gemini")
-    Model.create!(
-      model_id: "gemini-3.1-flash-lite",
-      provider: "gemini",
-      name: "Gemini 3.1 Flash Lite",
-      context_window: 1_048_576,
-      capabilities: [ "function_calling", "structured_output", "reasoning", "vision" ]
-    )
+  # NOTE: Guarded so Rails can boot (db:create, db:prepare, assets, etc.)
+  # when the database or models table does not exist yet.
+  begin
+    if ActiveRecord::Base.connection.table_exists?("models")
+      unless Model.exists?(model_id: "gemini-3.1-flash-lite", provider: "gemini")
+        Model.create!(
+          model_id: "gemini-3.1-flash-lite",
+          provider: "gemini",
+          name: "Gemini 3.1 Flash Lite",
+          context_window: 1_048_576,
+          capabilities: [ "function_calling", "structured_output", "reasoning", "vision" ]
+        )
+      end
+    end
+  rescue ActiveRecord::NoDatabaseError
+    # Database not created yet (e.g. fresh clone before bin/setup) — skip seeding.
+    nil
   end
 end

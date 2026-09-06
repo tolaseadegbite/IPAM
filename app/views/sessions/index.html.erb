@@ -1,34 +1,28 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Sessions" %>
 
-<h1>Devices & Sessions</h1>
+<% content_for :page_header do %>Devices &amp; Sessions<% end %>
 
-<div id="sessions">
-  <% @sessions.each do |session| %>
-    <div id="<%= dom_id session %>">
-      <p>
-        <strong>User Agent:</strong>
-        <%= session.user_agent %>
-      </p>
+<div class="flex w-full flex-col gap-4">
+  <div id="sessions" class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <% @sessions.each do |session| %>
+      <div id="<%= dom_id session %>" class="card flex flex-col gap-2 p-4">
+        <div class="flex min-w-0 items-start justify-between gap-3">
+          <div class="min-w-0 text-sm">
+            <p class="truncate font-mono"><%= session.user_agent %></p>
+            <p class="mt-1 font-mono text-xs text-zinc-500 dark:text-zinc-400"><%= session.ip_address %></p>
+            <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Since <%= session.created_at.strftime("%b %d, %Y %H:%M") %></p>
+          </div>
+          <%= button_to "Log out", session, method: :delete, class: "btn shrink-0 !px-3 !py-1.5 text-sm" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
 
-      <p>
-        <strong>Ip Address:</strong>
-        <%= session.ip_address %>
-      </p>
-
-      <p>
-        <strong>Created at:</strong>
-        <%= session.created_at %>
-      </p>
-
-    </div>
-    <p>
-      <%= button_to "Log out", session, method: :delete %>
-    </p>
+  <% if @sessions.empty? %>
+    <%= render "shared/empty_state", object: "session" %>
   <% end %>
-</div>
 
-<br>
-
-<div>
-  <%= link_to "Back", root_path %>
+  <div>
+    <%= link_to "Back", root_path, class: "btn" %>
+  </div>
 </div>

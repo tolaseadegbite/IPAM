@@ -72,7 +72,7 @@ gem "ransack", "~> 4.4"
 gem "pagy", "~> 9.4"
 gem "pg", "~> 1.6"
 
-gem "css-zero", "~> 3.2", github: "lazaronixon/css-zero"
+gem "tailwindcss-rails", "~> 4.0"
 
 gem "authentication-zero", "~> 4.0"
 # Use Pwned to check if a password has been found in any of the huge data breaches [https://github.com/philnash/pwned]

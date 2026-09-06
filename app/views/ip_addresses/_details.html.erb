@@ -1,63 +1,56 @@
-<div class="card rounded-md bg-main">
-  <div class="flex items-start justify-between mbe-6 border-be pbe-4">
-    <div>
-        <div class="flex items-center gap-3">
-          <h1 class="text-4xl font-mono font-bold text-primary"><%= @ip_address.address %></h1>
-          
-          <!-- Online/Offline Pill -->
-          <% if @ip_address.reachability_status_up? %>
-            <span class="flex items-center gap-1 bg-green-100 text-green-700 pi-2 pb-1 rounded-full text-xs font-bold uppercase">
-              <span class="bg-green-500 rounded-full animate-pulse" style="width: 1rem; height: 1rem;"></span> Online
-            </span>
-          <% else %>
-            <span class="bg-gray-100 text-gray-500 pi-2 pb-1 rounded-full text-xs font-bold uppercase">Offline</span>
-          <% end %>
-        </div>
-        <div class="text-sky-500"><%= @ip_address.subnet.name %></div>
+<div class="card p-4 sm:p-5">
+  <div class="mb-6 flex flex-wrap items-start justify-between gap-3 border-b border-zinc-200 pb-4 dark:border-white/10">
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="font-mono text-3xl font-bold break-all sm:text-4xl"><%= @ip_address.address %></h1>
+        <% if @ip_address.reachability_status_up? %>
+          <span class="flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-bold uppercase dark:bg-green-500/15 dark:text-green-300">
+            <span class="h-2 w-2 animate-pulse rounded-full bg-green-500"></span> Online
+          </span>
+        <% else %>
+          <span class="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-bold uppercase dark:bg-zinc-800 dark:text-zinc-300">Offline</span>
+        <% end %>
+      </div>
+      <div class="mt-1 text-sky-600 dark:text-sky-400"><%= @ip_address.subnet.name %></div>
     </div>
-    
-    <div class="text-end">
-      <div class="text-sm font-semibold text-subtle uppercase mbe-2">Administrative Status</div>
-      <% status_class = @ip_address.available? ? "bg-green-100 text-green-800" : (@ip_address.active? ? "bg-blue-100 text-blue-800" : "bg-yellow-100 text-yellow-800") %>
-      <span class="<%= status_class %> pi-3 pb-1 rounded-md text-sm font-bold uppercase"><%= @ip_address.status %></span>
+
+    <div class="text-left sm:text-right">
+      <div class="label-mono mb-2">Admin Status</div>
+      <% status_class = @ip_address.available? ? "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300" : (@ip_address.active? ? "bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300" : "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300") %>
+      <span class="<%= status_class %> rounded-md px-3 py-0.5 text-sm font-bold uppercase"><%= @ip_address.status %></span>
     </div>
   </div>
 
-  <!-- Monitoring Stats -->
-  <div class="grid grid-cols-2 gap-6 mbe-6 card">
-      <div>
-        <label class="block text-sm text-subtle uppercase font-bold mbe-1">Last Seen</label>
-        <div class="text-sm font-mono">
-          <% if @ip_address.last_seen_at && !@ip_address.reachability_status_unknown? %>
-            <%= @ip_address.last_seen_at.strftime("%b %d, %H:%M:%S") %>
-            <span class="text-xs">(<%= time_ago_in_words(@ip_address.last_seen_at) %> ago)</span>
-          <% else %>
-            Never
-          <% end %>
-        </div>
+  <div class="mb-6 grid grid-cols-2 gap-6">
+    <div>
+      <label class="label-mono mb-1 block !text-xs">Last Seen</label>
+      <div class="font-mono text-sm">
+        <% if @ip_address.last_seen_at && !@ip_address.reachability_status_unknown? %>
+          <%= @ip_address.last_seen_at.strftime("%b %d, %H:%M:%S") %>
+          <span class="text-xs text-zinc-500 dark:text-zinc-400">(<%= time_ago_in_words(@ip_address.last_seen_at) %> ago)</span>
+        <% else %>
+          Never
+        <% end %>
       </div>
-      <div>
-        <label class="block text-sm text-subtle uppercase font-bold mbe-1">Ping Status</label>
-        <div class="text-sm font-mono"><%= @ip_address.reachability_status.upcase %></div>
-      </div>
+    </div>
+    <div>
+      <label class="label-mono mb-1 block !text-xs">Ping Status</label>
+      <div class="font-mono text-sm"><%= @ip_address.reachability_status.upcase %></div>
+    </div>
   </div>
 
-  <div class="grid grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
     <div>
-      <label class="block text-xs text-subtle uppercase font-bold mbe-1">Connected Device</label>
+      <label class="label-mono mb-1 block">Connected Device</label>
       <% if @ip_address.device %>
-        <div class="font-bold text-lg"><%= link_to @ip_address.device.name, @ip_address.device, class: "text-green-600 hover:underline" %></div>
-        <div class="text-sm text-subtle"><%#= @ip_address.device.serial_number %></div>
+        <div class="text-lg font-bold"><%= link_to @ip_address.device.name, @ip_address.device, class: "text-green-600 hover:underline dark:text-green-400" %></div>
       <% else %>
-        <span class="italic text-gray-400">None</span>
+        <span class="text-sm text-zinc-400 italic">None</span>
       <% end %>
     </div>
-    
-    <div class="flex justify-end">
-      <div>
-        <label class="block text-xs text-subtle uppercase font-bold mbe-1">Notes</label>
-        <p class="text-sm"><%= @ip_address.notes.presence || "No notes." %></p>
-      </div>
+    <div>
+      <label class="label-mono mb-1 block">Notes</label>
+      <p class="text-sm"><%= @ip_address.notes.presence || "No notes." %></p>
     </div>
   </div>
 </div>

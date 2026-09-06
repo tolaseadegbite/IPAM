@@ -1,11 +1,12 @@
-<%= link_to employee, class: "list-row list-row--link flex items-center justify-between hover:text-orange-600" do %>
-    <h5 class="text-sm leading-none font-medium"><%= employee.full_name %></h5>
-    
-    <% status_color = case employee.status 
-        when 'active' then 'bg-green-100 text-green-800'
-        when 'on_leave' then 'bg-yellow-100 text-yellow-800'
-        when 'terminated' then 'bg-red-100 text-red-800'
-        end %>
-
-    <span class="text-xs <%= status_color %> pi-2 pb-1 border rounded-md"><%= employee.status.humanize %></span>
+<%= link_to employee, class: "card flex items-center justify-between gap-2 p-3 transition hover:border-orange-300 dark:hover:border-orange-500/40" do %>
+  <h5 class="truncate text-sm leading-none font-medium"><%= employee.full_name %></h5>
+  <%
+    status_badge = case employee.status
+      when "active" then "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300"
+      when "on_leave" then "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
+      when "terminated" then "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300"
+      else "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+      end
+  %>
+  <span class="shrink-0 rounded-md border border-zinc-200 px-2 py-0.5 text-xs dark:border-white/10 <%= status_badge %>"><%= employee.status.humanize %></span>
 <% end %>

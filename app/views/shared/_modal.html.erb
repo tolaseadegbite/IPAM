@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "modal" do %>
   <dialog class="dialog" data-controller="modal" data-action="click->modal#clickOutside">
     <button class="btn btn--plain dialog__close" data-action="modal#close">
-      <span class="icon icon--x"></span>
+      <%= icon("x", "h-[18px] w-[18px]") %>
     </button>
     <div class="dialog__content">
       <%= yield %>

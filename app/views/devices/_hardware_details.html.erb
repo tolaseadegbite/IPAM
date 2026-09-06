@@ -1,21 +1,17 @@
-<h3 class="font-bold text-lg mbe-4 border-be pbe-2">Hardware Info</h3>
-      
+<h3 class="mb-4 border-b border-zinc-200 pb-2 text-lg font-bold dark:border-white/10">Hardware Info</h3>
+
 <div class="flex flex-col gap-4">
-    <div>
-        <label class="text-xs text-subtle uppercase font-bold">Type</label>
-        <div class="text-lg"><%= @device.device_type.humanize %></div>
+  <div>
+    <label class="label-mono">Type</label>
+    <div class="text-lg"><%= @device.device_type.humanize %></div>
+  </div>
+  <div>
+    <div class="mt-1">
+      <%= render "devices/status", device: @device %>
     </div>
-    <div>
-        <label class="text-xs text-subtle uppercase font-bold">Asset Tag</label>
-        <div class="font-mono text-lg"><%#= @device.asset_tag.presence || "N/A" %></div>
-    </div>
-    <div>
-        <div class="mt-1">
-            <%= render "devices/status", device: @device %>
-        </div>
-    </div>
-    <div>
-        <label class="text-xs text-subtle uppercase font-bold">Notes</label>
-        <p class="text-sm text-gray-700 bg-gray-50 p-2 rounded-md mt-1"><%= @device.notes.presence || "No notes." %></p>
-    </div>
+  </div>
+  <div>
+    <label class="label-mono">Notes</label>
+    <p class="mt-1 rounded-lg bg-zinc-100 p-2 text-sm dark:bg-white/5"><%= @device.notes.presence || "No notes." %></p>
+  </div>
 </div>

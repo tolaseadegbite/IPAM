@@ -1,114 +1,41 @@
-<%# Theme switcher popover %>
-  <div class="show@md mbs-auto i-full">
-    <div class="mbs-auto flex flex-col gap-2 i-full">
-      <div contents 
-          data-controller="popover" 
-          data-popover-placement-value="right-center" 
-          data-action="click@window->popover#clickOutside">
-        <%= button_tag type: "button", class: "btn sidebar-menu__button display-md", data: { action: "click->popover#toggle", popover_target: "trigger" }, aria: { haspopup: "true" } do %>
-          <span class="icon icon--sun icon--color-scheme-light" aria-hidden="true"></span>
-          <span class="icon icon--moon icon--color-scheme-dark" aria-hidden="true"></span>
-          <span class="sr-only">Theme switcher</span>
-          Theme
-          <span class="icon icon--chevron-right mis-auto" aria-hidden="true"></span>
-        <% end %>
-        <%= tag.div popover: true, id: "dashboard-theme-switcher-popover", class: "popover", style: "--popover-size: 12rem;", data: { popover_target: "content" } do %>
-          <div class="menu" data-controller="menu" data-action="keydown->menu#navigate" role="menu">
-            <button type="button" class="btn menu__item" data-action="popover#hide color-scheme#setLight" data-menu-target="item" role="menuitem">Light</button>
-            <button type="button" class="btn menu__item" data-action="popover#hide color-scheme#setDark" data-menu-target="item" role="menuitem">Dark</button>
-            <button type="button" class="btn menu__item" data-action="popover#hide color-scheme#setSystem" data-menu-target="item" role="menuitem">System</button>
-          </div>
-        <% end %>
-      </div>
+<div class="shrink-0 border-t border-white/10 p-3">
+  <div class="flex flex-col gap-1">
+    <div contents data-controller="popover"
+         data-popover-placement-value="top-start"
+         data-action="click@window->popover#clickOutside">
+      <%= button_tag type: "button", class: "sidebar-link w-full", data: { action: "click->popover#toggle", popover_target: "trigger" }, aria: { haspopup: "true" } do %>
+        <%= icon("sun", "hidden h-[18px] w-[18px] dark:block") %>
+        <%= icon("moon", "h-[18px] w-[18px] dark:hidden") %>
+        <span class="flex-1 text-left">Theme</span>
+        <%= icon("chevron-right", "h-4 w-4 opacity-60") %>
+      <% end %>
+      <%= tag.div popover: true, class: "popover", style: "width: 12rem;", data: { popover_target: "content" } do %>
+        <div class="menu" data-controller="menu" data-action="keydown->menu#navigate" role="menu">
+          <button type="button" class="menu__item" data-action="popover#hide color-scheme#setLight" data-menu-target="item" role="menuitem">Light</button>
+          <button type="button" class="menu__item" data-action="popover#hide color-scheme#setDark" data-menu-target="item" role="menuitem">Dark</button>
+          <button type="button" class="menu__item" data-action="popover#hide color-scheme#setSystem" data-menu-target="item" role="menuitem">System</button>
+        </div>
+      <% end %>
+    </div>
 
-      <%# User Profile Popover %>
-      <div contents 
-          data-controller="popover" 
-          data-popover-placement-value="right-start" 
-          data-action="click@window->popover#clickOutside">
-        <%= button_tag type: "button", class: "btn sidebar-menu__button", data: { action: "click->popover#toggle", popover_target: "trigger" }, aria: { haspopup: "true" } do %>
-          <div class="bg-black rounded-full flex items-center justify-center text-lg font-semibold text-reversed" style="block-size: 2.5rem; inline-size: 2.5rem;">
-            <%= current_user.username.first %>
-          </div>
-          <div class="flex flex-col text-start leading-tight overflow-hidden">
-            
-            <span class="inline-flex items-center gap-2 overflow-ellipsis max-i-full font-semibold">
-              <span><%= current_user.username %></span>
-              
-              <!--<%# if current_user.verified? %>
-                <span class="text-positive" title="Verified Account">
-                  
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="green" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
-                  </svg>
-                  
-                  <span class="sr-only">(Verified)</span>
-                </span>
-              <%# end %>-->
-            </span>
-
-            <span class="overflow-ellipsis max-i-full text-xs"><%= current_user.email %></span>
-          </div>
-          <span class="icon icon--chevron-right mis-auto" aria-hidden="true"></span>
-        <% end %>
-        <%= tag.div popover: true, id: "user-menu-popover", class: "popover overflow-hidden", style: "--popover-size: 15rem;", data: { popover_target: "content" } do %>
-          <div class="menu" data-controller="menu" data-action="keydown->menu#navigate" role="menu">
-            <%= link_to "Settings", "", class: "btn menu__item", data: { menu_target: "item" }, role: "menuitem" %>
-            <%= button_to "Sign out", Current.session, class: "btn menu__item i-full", method: :delete, role: "menuitem" %>
-          </div>
-        <% end %>
-      </div>
-    </div> 
+    <div contents data-controller="popover"
+         data-popover-placement-value="top-start"
+         data-action="click@window->popover#clickOutside">
+      <%= button_tag type: "button", class: "sidebar-link w-full", data: { action: "click->popover#toggle", popover_target: "trigger" }, aria: { haspopup: "true" } do %>
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500 text-base font-bold text-white">
+          <%= current_user.username.first.upcase %>
+        </span>
+        <span class="min-w-0 flex-1 text-left leading-tight">
+          <span class="block truncate font-semibold"><%= current_user.username %></span>
+          <span class="block truncate text-xs font-normal opacity-60"><%= current_user.email %></span>
+        </span>
+      <% end %>
+      <%= tag.div popover: true, class: "popover overflow-hidden", style: "width: 15rem;", data: { popover_target: "content" } do %>
+        <div class="menu" data-controller="menu" data-action="keydown->menu#navigate" role="menu">
+          <%= link_to "My sessions", sessions_path, class: "menu__item", data: { menu_target: "item" }, role: "menuitem" %>
+          <%= button_to "Sign out", Current.session, method: :delete, class: "menu__item w-full text-left text-red-600 dark:text-red-400", role: "menuitem" %>
+        </div>
+      <% end %>
+    </div>
   </div>
-
-  <div class="hide@md mbs-auto flex flex-col gap-2">
-    <details>
-      <summary class="btn sidebar-menu__button">
-        
-        <div class="flex flex-col text-start leading-tight overflow-hidden">
-          <span class="inline-flex items-center gap-2">
-            <span class="icon icon--sun icon--color-scheme-light" aria-hidden="true"></span>
-            <span class="icon icon--moon icon--color-scheme-dark" aria-hidden="true"></span>
-            <span class="sr-only">Theme switcher</span>
-            Theme
-          </span>
-        </div>
-      </summary>
-      <nav class="sidebar-menu__sub">
-        <button type="button" class="btn sidebar-menu__button" data-action="popover#hide color-scheme#setLight">Light</button>
-        <button type="button" class="btn sidebar-menu__button" data-action="popover#hide color-scheme#setDark">Dark</button>
-        <button type="button" class="btn sidebar-menu__button" data-action="popover#hide color-scheme#setSystem">System</button>
-      </nav>
-    </details>
-
-    <details>
-      <summary class="btn sidebar-menu__button">
-        <div class="bg-black rounded-full flex items-center justify-center text-lg font-semibold text-reversed" style="block-size: 2.5rem; inline-size: 2.5rem;">
-          <%= current_user.username.first %>
-        </div>
-        <div class="flex flex-col text-start leading-tight overflow-hidden">
-          
-          <span class="inline-flex items-center gap-2 overflow-ellipsis max-i-full font-semibold">
-            <span><%= current_user.username %></span>
-            
-            <% if current_user.verified? %>
-              <span class="text-positive" title="Verified Account">
-                
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="green" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
-                </svg>
-                
-                <span class="sr-only">(Verified)</span>
-              </span>
-            <% end %>
-          </span>
-
-          <span class="overflow-ellipsis max-i-full text-xs"><%= current_user.email %></span>
-        </div>
-      </summary>
-      <nav class="sidebar-menu__sub">
-        <%= link_to "Settings", "", class: "btn sidebar-menu__button" %>
-        <%= button_to "Sign out", Current.session, class: "btn sidebar-menu__button", method: :delete %>
-      </nav>
-    </details>
-  </div>
+</div>

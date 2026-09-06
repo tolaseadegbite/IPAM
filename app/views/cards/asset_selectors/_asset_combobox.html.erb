@@ -4,7 +4,7 @@
     <%= select_tag "card[referenceable_id]", 
           options_for_select(assets), 
           prompt: prompt, 
-          class: "cursor-pointer",
+          class: "input cursor-pointer text-sm",
           data: { controller: "combobox" } %>
   </div>
 <% end %>

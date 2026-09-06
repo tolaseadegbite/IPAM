@@ -1,18 +1,17 @@
-<div class="card transition">
-  <div class="flex justify-between items-start">
-    <div class="flex items-center gap-3">
-      <div class="flex gap-1 p-2 bg-blue-50 rounded-lg text-blue-600">
-        <span class="icon icon--laptop"></span> <%# Replace with your icon %>
-        <span class="text-xs font-bold uppercase">Device</span>
+<div class="card p-4 transition hover:border-orange-300 dark:hover:border-orange-500/40">
+  <div class="flex items-start justify-between gap-3">
+    <div class="flex min-w-0 items-center gap-3">
+      <div class="flex shrink-0 items-center gap-1.5 rounded-lg bg-sky-100 p-2 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300">
+        <%= icon("monitor", "h-4 w-4") %>
+        <span class="text-[11px] font-bold uppercase">Device</span>
       </div>
-      <div>
-        <h3 class="font-bold text-lg"><%= link_to item.name, item, data: { turbo_frame: "_top" }, class: "text-orange-500 hover:text-orange-600" %></h3>
-        <!--<p class="text-sm text-subtle"><%#= item.serial_number %> &bull; <%#= item.asset_tag %></p>-->
+      <div class="min-w-0">
+        <h3 class="truncate text-lg font-bold"><%= link_to item.name, item, data: { turbo_frame: "_top" }, class: "text-orange-600 hover:underline dark:text-orange-400" %></h3>
       </div>
     </div>
-    <div class="text-end text-sm">
+    <div class="shrink-0 text-right text-sm">
       <div class="font-semibold"><%= link_to item.department&.name, department_path(item.department), class: "hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
-      <div class="text-subtle"><%= link_to item.department&.branch&.name, branch_path(item.branch), class: "hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
+      <div class="text-xs text-zinc-500 dark:text-zinc-400"><%= link_to item.department&.branch&.name, branch_path(item.branch), class: "hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
     </div>
   </div>
 </div>

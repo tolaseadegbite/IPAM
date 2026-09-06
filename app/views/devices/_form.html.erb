@@ -2,30 +2,30 @@
   <%= render "shared/error_messages", object: device %>
 
   <!-- SECTION: Hardware -->
-  <h4 class="font-bold border p-4 rounded-lg mbe-4">Hardware Details</h4>
-  <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-6">
+  <h4 class="rounded-lg border border-zinc-200 p-4 font-bold dark:border-white/10">Hardware Details</h4>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
     <div class="col-span-1">
-      <%= form.label :name, "Hostname", class: "block font-medium mbe-1" %>
+      <%= form.label :name, "Hostname", class: "block font-medium mb-1" %>
       <%= form.text_field :name, autofocus: true, class: "input" %>
     </div>
     <div class="col-span-1">
-      <%= form.label :device_type, class: "block font-medium mbe-1" %>
+      <%= form.label :device_type, class: "block font-medium mb-1" %>
       <%= form.select :device_type, Device.device_types.keys.map { |k| [k.humanize, k] }, {}, { class: "input cursor-pointer" } %>
     </div>
     <div class="col-span-1">
-      <%= form.label :mac_address, "Mac Address", class: "block font-medium mbe-1" %>
+      <%= form.label :mac_address, "Mac Address", class: "block font-medium mb-1" %>
       <%= form.text_field :mac_address, class: "input" %>
     </div>
-    <div class="col-span-1 flex items-center gap mbs-6">
+    <div class="col-span-1 flex items-center gap mt-6">
       <%= label_tag :critical, "Critical device?", class: "text-sm font-medium cursor-pointer" %>
       <%= form.check_box :critical, class: "switch cursor-pointer", role: "switch" %>
     </div>
   </div>
 
   <!-- SECTION: Assignment & Network -->
-  <h4 class="font-bold border rounded-lg p-4 pb-3 mbe-4">Assignment & Network</h4>
+  <h4 class="font-bold border rounded-lg p-4 pb-3 mb-4">Assignment & Network</h4>
   
-  <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-6"
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
        data-controller="dependent-select" 
        data-dependent-select-url-value="<%= select_options_departments_path %>"
        data-dependent-select-param-value="branch_id"
@@ -39,7 +39,7 @@
 
       <!-- 1. Branch Select (Pre-selected & Disabled) -->
       <div class="col-span-1">
-        <label class="block font-medium mbe-1">Branch</label>
+        <label class="block font-medium mb-1">Branch</label>
         <% selected_branch_id = device.department&.branch_id %>
         <%= select_tag "branch_id", 
               options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
@@ -50,7 +50,7 @@
 
       <!-- 2. Department Select (Pre-selected & Disabled) -->
       <div class="col-span-1">
-        <%= form.label :department_id, class: "block font-medium mbe-1" %>
+        <%= form.label :department_id, class: "block font-medium mb-1" %>
         
         <!-- We don't strictly need the Turbo Frame here since it's static, but keeping structure is fine -->
         <%= turbo_frame_tag "department_options_frame" do %>
@@ -74,7 +74,7 @@
       
       <!-- 1. Branch Select -->
       <div class="col-span-1">
-        <label class="block font-medium mbe-1">Branch</label>
+        <label class="block font-medium mb-1">Branch</label>
         <% selected_branch_id = device.department&.branch_id %>
         <%= select_tag "branch_id", 
               options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
@@ -93,7 +93,7 @@
            data-dependent-select-param-value="department_id"
            data-dependent-select-frame-id-value="employee_options_frame">
 
-        <%= form.label :department_id, class: "block font-medium mbe-1" %>
+        <%= form.label :department_id, class: "block font-medium mb-1" %>
         <%= turbo_frame_tag "department_options_frame" do %>
           <% 
               departments = if selected_branch_id
@@ -117,7 +117,7 @@
 
     <!-- 3. Employee Select (Works for both scenarios) -->
     <div class="col-span-1">
-      <%= form.label :employee_id, "Assign Owner", class: "block font-medium mbe-1" %>
+      <%= form.label :employee_id, "Assign Owner", class: "block font-medium mb-1" %>
       <%= turbo_frame_tag "employee_options_frame" do %>
           <% 
             # If department is set (via Controller or via Dependent Select), load employees
@@ -134,18 +134,18 @@
     </div>
 
     <div class="col-span-1">
-      <%= form.label :location, "Physical Location (For biometric machines)", class: "block font-medium mbe-1" %>
+      <%= form.label :location, "Physical Location (For biometric machines)", class: "block font-medium mb-1" %>
       <%= form.text_field :location, class: "input", placeholder: "e.g., Server Room Rack 2 or Main Gate" %>
     </div>
 
     <div class="col-span-1">
-      <%= form.label :notes, "Notes", class: "block font-medium mbe-1" %>
+      <%= form.label :notes, "Notes", class: "block font-medium mb-1" %>
       <%= form.text_area :notes, placeholder: "Notes...", class: "input" %>
     </div>
   </div>
     
   <!-- SECTION: Network Interfaces -->
-  <h4 class="font-bold border rounded-lg p-4 pb-3 mbe-4">Network Interfaces</h4>
+  <h4 class="font-bold border rounded-lg p-4 pb-3 mb-4">Network Interfaces</h4>
 
   <div id="interfaces-container" class="flex flex-col gap-4">
     <%# 1. Primary Interface %>
@@ -156,8 +156,8 @@
   </div>
 
   <!-- Actions -->
-  <div class="flex gap-3 mbs-4 items-center">
-    <%= form.submit "Save Device", class: "btn bg-orange-400 text-white font-semibold pi-4 pb-2" %>
-    <%= link_to "Cancel", devices_path, class: "text-subtle", data: { turbo_frame: "_top" } %>
+  <div class="flex gap-3 mt-4 items-center">
+    <%= form.submit "Save Device", class: "btn btn--primary" %>
+    <%= link_to "Cancel", devices_path, class: "text-sm text-zinc-500 hover:underline dark:text-zinc-400", data: { turbo_frame: "_top" } %>
   </div>
 <% end %>

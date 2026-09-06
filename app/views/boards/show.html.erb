@@ -1,37 +1,26 @@
-<!-- 1. Subscribe to the Board's stream -->
 <%= turbo_stream_from @board %>
-
-<!-- 2. Turn on Turbo 8 Morphing for this page -->
 <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
 
 <% content_for :title, @board.name %>
 
-<% content_for :page_header do %>
-  <%= @board.name %>
+<% content_for :page_header do %><%= @board.name %><% end %>
+
+<% content_for :header_action_buttons do %>
+  <%= link_to new_board_list_path(@board), class: "btn btn--primary !px-3 !py-1.5 text-sm", data: { turbo_frame: "modal" } do %>
+    <%= icon("plus", "h-4 w-4") %> New Column
+  <% end %>
 <% end %>
 
-<div class="p-4 i-full" style="min-height:50vh;">
-
-  <div class="flex justify-between items-center">
-    <div>
-      <h1 class="text-3xl font-bold"><%= @board.name %></h1>
-      <div class="text-sm text-subtle mb-4"><%= simple_format(@board.description) %></div>
-    </div>
-    <%= link_to new_board_list_path(@board), 
-          class: "btn bg-orange-500 hover:bg-orange-600 btn--icon text-xs border-0 text-gray-50",
-          data: { turbo_frame: "modal" } do %>
-          <span class="icon icon--plus">+</span>
-    <% end %>
+<div class="flex min-h-[50dvh] w-full flex-col gap-4">
+  <div>
+    <p class="text-sm text-zinc-500 dark:text-zinc-400"><%= simple_format(@board.description) %></p>
   </div>
 
-  <!-- SEARCH BAR -->
   <%= render "search_form", board: @board, search: @search %>
-  
-  <!-- 1. Attach controller and URL value -->
-  <div id="lists-container" class="flex gap-4 b-full overflow-x-auto pb-4 items-start"
+
+  <div id="lists-container" class="flex h-full items-start gap-4 overflow-x-auto pb-4"
        data-controller="kanban-list"
-       data-kanban-list-url-value="<%= move_list_path(':id') %>">
-    
+       data-kanban-list-url-value="<%= move_list_path(":id") %>">
     <% @lists.each do |list| %>
       <%= render partial: "lists/list", locals: { list: list, cards: filtered_cards[list.id] || [] } %>
     <% end %>

@@ -1,57 +1,47 @@
 <% content_for :title, "Employees" %>
 
-<% content_for :page_header do %>
-  <h4 class="font-semibold">Employees (<%= @pagy.count %>)</h4>
-<% end %>
+<% content_for :page_header do %>Employees (<%= @pagy.count %>)<% end %>
 
 <% content_for :header_action_buttons do %>
-    <%= link_to "Onboard Employee", new_employee_path,
-                  class: "btn bg-orange-400 text-white font-semibold rounded-md p-2 show@md",
-                  data: { turbo_frame: "modal" } %>
+  <%= link_to "Onboard Employee", new_employee_path, class: "btn btn--primary hidden !px-3 !py-1.5 text-sm md:inline-flex",
+              data: { turbo_frame: "modal" } %>
 <% end %>
 
-<div class="absolute hide@md" style="bottom: 10rem; right: 1rem; z-index: 9999">
-  <%= link_to new_employee_path, class: "btn bg-orange-400 text-white font-semibold rounded-full p-5", data: { turbo_frame: "modal" } do %>
-    <span class="icon icon--plus"></span>
-  <% end %>
-</div>
+<%= link_to new_employee_path, class: "btn btn--primary fixed right-4 bottom-24 z-30 !rounded-full !p-4 shadow-lg md:hidden",
+            data: { turbo_frame: "modal" }, aria: { label: "Onboard employee" } do %>
+  <%= icon("plus", "h-5 w-5") %>
+<% end %>
 
-<div class="p-4 i-full">
+<%= render "search_form" %>
 
-  <%= render "search_form" %>
+<%= turbo_frame_tag :employees_table do %>
+  <div class="relative hidden overflow-x-auto rounded-xl border border-zinc-200 bg-white md:block dark:border-white/10 dark:bg-zinc-900">
+    <table class="table w-full">
+      <thead class="bg-zinc-50 dark:bg-white/5">
+        <tr>
+          <th class="p-3"><%= sort_link(@search, :full_name, "Employee") %></th>
+          <th class="p-3"><%= sort_link(@search, :department_name, "Department") %></th>
+          <th class="p-3"><%= sort_link(@search, :status, "Status") %></th>
+          <th class="p-3 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="employees-table">
+        <% if @employees.empty? %>
+          <tr><td colspan="4" class="p-8 text-center text-sm text-zinc-500 dark:text-zinc-400">No employees found.</td></tr>
+        <% else %>
+          <%= render @employees %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 
-  <%= turbo_frame_tag :employees_table do %>
-    
-    <%# --- DESKTOP VIEW: Table (Visible on medium screens and up) --- %>
-    <div class="show@md relative i-full overflow-x-auto border rounded-md">
-      <table class="table i-full text-left">
-        <thead class="bg-shade font-semibold">
-          <tr>
-            <th class="p-3"><%= sort_link(@search, :full_name, class: "font-semibold") %></th>
-            <th class="p-3"><%= sort_link(@search, :department_name, "Department name", class: "font-semibold") %></th>
-            <th class="p-3"><%= sort_link(@search, :status, class: "font-semibold") %></th>
-            <th class="p-3 text-end font-semibold">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="employees-table">
-          <% if @employees.empty? %>
-            <tr><td colspan="7" class="text-center p-8">No Results.</td></tr>
-          <% else %>
-            <%= render @employees %>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+  <div id="employees-cards" class="flex flex-col gap-4 md:hidden">
+    <% if @employees.empty? %>
+      <%= render "shared/empty_state", object: "employee" %>
+    <% else %>
+      <%= render partial: "employees/employee_card", collection: @employees, as: :employee %>
+    <% end %>
+  </div>
 
-    <%# --- MOBILE VIEW: Cards (Hidden on medium screens and up) --- %>
-    <div id="employees-cards" class="hide@md flex flex-col gap-4">
-      <% if @employees.empty? %>
-        <p class="text-subtle text-center p-8">No employees found.</p>
-      <% else %>
-        <%= render partial: "employees/employee_card", collection: @employees, as: :employee %>
-      <% end %>
-    </div>
-
-    <%= render "shared/pagination", pagy: @pagy %>
-  <% end %>
-</div>
+  <%= render "shared/pagination", pagy: @pagy %>
+<% end %>

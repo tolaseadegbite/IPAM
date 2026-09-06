@@ -1,14 +1,13 @@
-<p style="color: red"><%= alert %></p>
+<div class="card mx-auto w-full p-6 sm:p-8" style="max-width: 25rem;">
+  <h1 class="mb-2 text-center text-2xl font-semibold">Forgot your password?</h1>
+  <p class="mb-6 text-center text-sm text-zinc-500 dark:text-zinc-400">Enter your email and we'll send you reset instructions.</p>
 
-<h1>Forgot your password?</h1>
+  <%= form_with(url: identity_password_reset_path, class: "flex flex-col gap-4") do |form| %>
+    <div>
+      <%= form.label :email, class: "mb-1 block text-sm font-semibold" %>
+      <%= form.email_field :email, required: true, autofocus: true, autocomplete: "email", class: "input" %>
+    </div>
 
-<%= form_with(url: identity_password_reset_path) do |form| %>
-  <div>
-    <%= form.label :email, style: "display: block" %>
-    <%= form.email_field :email, required: true, autofocus: true %>
-  </div>
-
-  <div>
-    <%= form.submit "Send password reset email" %>
-  </div>
-<% end %>
+    <%= form.submit "Send reset email", class: "btn btn--primary w-full" %>
+  <% end %>
+</div>

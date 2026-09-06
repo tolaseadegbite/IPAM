@@ -1,26 +1,21 @@
 <% content_for :title, "NAT Assistant" %>
 
-<% content_for :page_header do %>
-  <h4 class="font-semibold">
-    NAT Assistant
-    <span class="text-subtle text-sm font-normal">(<%= @pagy.count %>)</span>
-  </h4>
+<% content_for :page_header do %>NAT Assistant <span class="text-sm font-normal text-zinc-500 dark:text-zinc-400">(<%= @pagy.count %>)</span><% end %>
+
+<% content_for :header_action_buttons do %>
+  <%= link_to new_chat_path, class: "btn btn--primary !px-3 !py-1.5 text-sm" do %>
+    + New Chat
+  <% end %>
 <% end %>
 
-<div class="p-4 i-full">
-  <div class="flex justify-end mbe-2">
-    <%= link_to new_chat_path, class: "btn btn--primary text-sm" do %>
-      + New Chat
-    <% end %>
-  </div>
-
+<div class="flex w-full flex-col gap-3">
   <div id="chats" class="flex flex-col gap-2">
     <% if @chats.any? %>
       <%= render @chats %>
     <% else %>
-      <div class="card text-center p-8">
-        <p class="text-subtle">No conversations yet.</p>
-        <p class="mbs-2">
+      <div class="card p-8 text-center">
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">No conversations yet.</p>
+        <p class="mt-2">
           <%= link_to "Start a new chat", new_chat_path, class: "btn btn--primary text-sm" %>
         </p>
       </div>
@@ -32,8 +27,8 @@
          data-controller="infinite-scroll"
          data-infinite-scroll-next-page-value="<%= @pagy.next %>"
          data-infinite-scroll-last-page-value="<%= @pagy.last %>">
-      <div class="text-center p-4 text-sm text-subtle">
-        <span class="animate-pulse">Loading more chats...</span>
+      <div class="p-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
+        <span class="animate-pulse">Loading more chats…</span>
       </div>
     </div>
   <% end %>

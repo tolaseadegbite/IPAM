@@ -1,8 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
+// Toggles the `dark` class on <html> for Tailwind's class-based dark mode.
+// Preference persists in localStorage + cookie (server reads it for first paint).
 export default class extends Controller {
   connect() {
-    this.element.dataset.colorScheme = this.#colorScheme
+    this.apply(this.#colorScheme)
   }
 
   setLight() {
@@ -18,11 +20,17 @@ export default class extends Controller {
   }
 
   setColorScheme(scheme) {
-    this.element.dataset.colorScheme = scheme
     localStorage.setItem("color_scheme", scheme)
-    
-    // NEW: Set a cookie so the server knows the preference
     document.cookie = `color_scheme=${scheme}; path=/; max-age=31536000`
+    this.apply(scheme)
+  }
+
+  apply(scheme) {
+    const dark =
+      scheme === "dark" ||
+      (scheme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)
+    document.documentElement.classList.toggle("dark", dark)
+    this.element.dataset.colorScheme = scheme
   }
 
   get #colorScheme() {

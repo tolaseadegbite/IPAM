@@ -1,73 +1,69 @@
 <tr id="<%= dom_id(device, :table_row) %>">
   <td class="p-3">
-    <div class="font-semibold"><%= link_to (device.name.presence || "Nil"), device, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
-    <div class="text-xs text-subtle"><%= device.device_type&.humanize.presence || "Nil" %></div>
+    <div class="font-semibold"><%= link_to (device.name.presence || "—"), device, class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></div>
+    <div class="text-xs text-zinc-500 dark:text-zinc-400"><%= device.device_type&.humanize.presence || "—" %></div>
   </td>
-  <!--<td class="p-3 text-sm">
-    <div class="font-mono"><%#= device.serial_number.presence || "Nil" %></div>
-    <div class="text-xs text-subtle"><span class="font-semibold">Tag:</span> <%#= device.asset_tag.presence || "Nil" %></div>
-  </td>-->
-  
-  <!-- IP Addresses Column -->
+
   <td class="p-3">
     <% if device.ip_addresses.any? %>
       <div class="flex flex-col gap-1">
         <% device.ip_addresses.each do |ip| %>
-          <div class="font-mono flex gap-1 items-center text-sm">
+          <div class="flex items-center gap-1.5 font-mono text-sm">
             <%= link_to ip.address, ip, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
-            
-            <%# Optional: Show a tiny green/red dot next to each IP in the table %>
-            <% if ip.reachability_status_up? %>
-              <span class="inline-block rounded-full bg-green-500 mis-1" style="width: 6px; height: 6px;" title="Online"></span>
-            <% else %>
-              <span class="inline-block rounded-full bg-red-500 mis-1" style="width: 6px; height: 6px;" title="Offline"></span>
-            <% end %>
+            <span class="h-1.5 w-1.5 rounded-full <%= ip.reachability_status_up? ? "bg-green-500" : "bg-red-500" %>"
+                  title="<%= ip.reachability_status_up? ? "Online" : "Offline" %>"></span>
           </div>
         <% end %>
       </div>
     <% else %>
-      <span class="text-xs text-subtle italic">Unassigned</span>
+      <span class="text-xs text-zinc-400 italic">Unassigned</span>
     <% end %>
   </td>
-  <td class="p-3 font-mono text-sm text-green-500">
-    <%= device&.mac_address.presence || "Nil" %>
+  <td class="p-3 font-mono text-sm text-green-600 dark:text-green-400">
+    <%= device&.mac_address.presence || "—" %>
   </td>
   <td class="p-3 text-sm">
-    <%= link_to device.employee&.full_name.presence || "Owner: Nil", device.employee, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
-    
-    <div class="text-xs text-subtle">
-      <span class="font-semibold">Department:</span> 
+    <%= link_to device.employee&.full_name.presence || "Owner: —", device.employee, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+    <div class="text-xs text-zinc-500 dark:text-zinc-400">
+      <span class="font-semibold">Department:</span>
       <% if device.department %>
         <%= device.department.branch.name %> (<%= device.department.name %>)
       <% else %>
-        Nil
+        —
       <% end %>
     </div>
   </td>
-  <td class="p-4">
-    <% status_color = case device.status 
-       when 'active' then 'bg-green-100 text-green-800'
-       when 'on_leave' then 'bg-yellow-100 text-yellow-800'
-       when 'terminated' then 'bg-red-100 text-red-800'
-       end %>
-
-    <span class="<%= status_color %> font-medium pi-2 pb-1 rounded-md text-sm"><%= device.status.presence || "Nil" %></span>
+  <td class="p-3">
+    <%
+      status_badge = case device.status
+        when "active" then "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300"
+        when "in_storage", "in_repair" then "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
+        when "retired", "lost" then "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300"
+        else "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+        end
+    %>
+    <span class="<%= status_badge %> rounded-md px-2 py-0.5 text-xs font-medium"><%= device.status&.humanize || "—" %></span>
   </td>
-  <td class="p-4">
-    <%= device.critical %>
-  </td>
-  <td class="flex items-center justify-end gap-4">
-    <%= link_to "Edit", edit_device_path(device),
-                class: "text-orange-500 hover:text-orange-600",
-                data: { turbo_frame: "modal" } %>
-
-    <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
-    <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{device.name}'?" do %>
-      <p class="text-sm text-subtle mbe-4">This will permanently delete this device. This action cannot be undone.</p>
-      <div class="flex items-center justify-end gap">
-        <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
-        <%= button_to "Continue", device, method: :delete, class: "btn btn--negative" %>
-      </div>
+  <td class="p-3">
+    <% if device.critical? %>
+      <span class="rounded-md bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800 dark:bg-orange-500/15 dark:text-orange-300">Yes</span>
+    <% else %>
+      <span class="text-xs text-zinc-400">No</span>
     <% end %>
+  </td>
+  <td class="p-3">
+    <div class="flex items-center justify-end gap-3">
+      <%= link_to "Edit", edit_device_path(device),
+                  class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400",
+                  data: { turbo_frame: "modal" } %>
+      <% delete_trigger = button_tag "Delete", type: "button", class: "cursor-pointer text-sm font-medium text-red-600 hover:underline dark:text-red-400", data: { action: "dialog#showModal" } %>
+      <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{device.name}'?" do %>
+        <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this device. This action cannot be undone.</p>
+        <div class="flex items-center justify-end gap-2">
+          <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
+          <%= button_to "Continue", device, method: :delete, class: "btn btn--negative" %>
+        </div>
+      <% end %>
+    </div>
   </td>
 </tr>

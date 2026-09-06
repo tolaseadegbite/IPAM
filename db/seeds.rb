@@ -18,7 +18,7 @@
 # # 2. CREATE ADMIN USER
 # puts "   👤 Creating Admin User..."
 # User.create!(
-#   email: "tolase@ipam.com",
+#   email: "tolase@mainline.com",
 #   username: "tolase",
 #   password: "Correct-Horse-Battery-Staple-123!",
 #   verified: true,
@@ -226,7 +226,7 @@
 
 # puts "✅ Seeding Complete!"
 # puts "------------------------------------------------"
-# puts "Admin Login:    tolase@ipam.com"
+# puts "Admin Login:    tolase@mainline.com"
 # puts "Password:       Correct-Horse-Battery-Staple-123!"
 # puts "------------------------------------------------"
 # puts "Branches:       #{Branch.count}"
