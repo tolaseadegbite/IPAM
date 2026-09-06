@@ -1,150 +1,91 @@
-<div class="sidebar-menu">
-  <%= link_to root_path, class: "flex items-center gap-2 rounded-lg border i-fit pi-2 mbs-2 mis-1" do %>
-    <%= image_tag("logo.png", size: 30) %>
-    <span class="text-2xl font-semibold">AM</span>
+<div class="flex h-16 shrink-0 items-center gap-2 border-b border-white/10 px-4">
+  <%= link_to root_path, class: "flex items-center gap-2.5" do %>
+    <%= image_tag("mainline-mark.svg", size: 32, class: "rounded-lg") %>
+    <span class="text-lg font-bold tracking-tight text-white">Mainline</span>
   <% end %>
+</div>
 
-  <div class="sidebar-menu__content">
-    
-    <%# --- MAIN GROUP --- %>
-    <div class="sidebar-menu__group">
-      <div class="sidebar-menu__group-label">MAIN</div>
-      <div class="sidebar-menu__items">
-        <nav class="">
-          <%= link_to dashboard_path, class: "flex gap-4 btn sidebar-menu__button mbe-1",
-                      aria: (current_page?(dashboard_path) ? { current: "page" } : {}) do %>
-            <span class="icon icon--chart-pie" aria-hidden="true"></span>
-            Dashboard
-          <% end %>
-
-          <%# NEW: Kanban Boards / Operations %>
-          <%= link_to boards_path, 
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: active_for("boards") do %>
-            <span class="icon icon--kanban" aria-hidden="true"></span>
-            Operations
-          <% end %>
-        </nav>
-      </div>
-    </div>
-
-    <%# --- ORGANIZATION GROUP (Moved from Main) --- %>
-    <div class="sidebar-menu__group">
-      <div class="sidebar-menu__group-label">ORGANIZATION</div>
-      <div class="sidebar-menu__items">
-        <nav class="">
-          <%= link_to branches_path, 
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: active_for("branches") do %>
-            <span class="icon icon--building" aria-hidden="true"></span>
-            Branches
-          <% end %>
-          
-          <%= link_to departments_path, 
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: active_for("departments") do %>
-            <span class="icon icon--warehouse" aria-hidden="true"></span>
-            Departments
-          <% end %>
-
-          <%= link_to employees_path, 
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: active_for("employees") do %>
-            <span class="icon icon--users-round" aria-hidden="true"></span>
-            Employees
-          <% end %>
-        </nav>
-      </div>
-    </div>
-
-    <%# --- ASSET MANAGEMENT GROUP --- %>
-    <div class="sidebar-menu__group">
-      <div class="sidebar-menu__group-label">ASSET MANAGEMENT</div>
-      <div class="sidebar-menu__items">
-        <nav class="">
-          <%= link_to subnets_path, 
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: active_for("subnets") do %>
-            <span class="icon icon--network" aria-hidden="true"></span>
-            Subnets
-          <% end %>
-
-          <%= link_to ip_addresses_path, 
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (controller_name == "ip_addresses" && params[:q].blank? ? { current: "page" } : {}) do %>
-            <span class="icon icon--map-pinned" aria-hidden="true"></span>
-            Ip Addresses
-          <% end %>
-
-          <%= link_to devices_path, 
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (controller_name == "devices" && params[:q].blank? ? { current: "page" } : {}) do %>
-            <span class="icon icon--monitor" aria-hidden="true"></span>
-            Devices
-          <% end %>
-        </nav>
-      </div>
-    </div>
-                       
-    <%# --- SECURITY GROUP --- %>
-    <div class="sidebar-menu__group">
-      <div class="sidebar-menu__group-label">SECURITY</div>
-      <div class="sidebar-menu__items">
-        <nav class="">
-          <%= link_to ip_addresses_path(q: { rogue_only: true }), 
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(ip_addresses_path(q: { rogue_only: true })) ? { current: "page" } : {}) do %>
-            <span class="icon icon--triangle-alert" aria-hidden="true"></span>
-            Rogue Devices
-          <% end %>
-
-          <%= link_to devices_path(q: { critical_eq: true }), 
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: (current_page?(devices_path(q: { critical_eq: true })) ? { current: "page" } : {}) do %>
-            <span class="icon icon--monitor-x" aria-hidden="true"></span>
-            Critical Devices
-          <% end %>
-        </nav>
-      </div>
-    </div>
-
-    <%# --- AI ASSISTANT --- %>
-    <div class="sidebar-menu__group">
-      <div class="sidebar-menu__group-label">AI ASSISTANT</div>
-      <div class="sidebar-menu__items">
-        <nav class="">
-          <%= link_to chats_path,
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1",
-                      aria: active_for("chats") do %>
-            <span class="icon icon--message-square-text" aria-hidden="true"></span>
-            NAT Assistant
-          <% end %>
-        </nav>
-      </div>
-    </div>
-
-    <%# --- USER MANAGEMENT --- %>
-    <div class="sidebar-menu__group">
-      <div class="sidebar-menu__group-label">USER MANAGEMENT & Audit</div>
-      <div class="sidebar-menu__items">
-        <nav class="">
-          <%= link_to admin_users_path, 
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: active_for("users") do %>
-            <span class="icon icon--users" aria-hidden="true"></span>
-            Users
-          <% end %>
-
-          <%= link_to versions_path, 
-                      class: "flex gap-4 btn sidebar-menu__button mbe-1", 
-                      aria: active_for("versions") do %>
-            <span class="icon icon--history" aria-hidden="true"></span>
-            History
-          <% end %>
-        </nav>
-      </div>
-    </div>
+<nav class="min-h-0 flex-1 overflow-y-auto px-3 py-3" aria-label="Primary">
+  <div class="sidebar-label">Overview</div>
+  <div class="flex flex-col gap-0.5">
+    <%= link_to dashboard_path, class: "sidebar-link",
+                aria: (current_page?(dashboard_path) ? { current: "page" } : {}) do %>
+      <%= icon("chart-pie", "h-[18px] w-[18px]") %>
+      <span>Dashboard</span>
+    <% end %>
+    <%= link_to boards_path, class: "sidebar-link", aria: active_for("boards") do %>
+      <%= icon("kanban", "h-[18px] w-[18px]") %>
+      <span>Operations</span>
+    <% end %>
   </div>
 
-  <%= render "layouts/navigation/dashboard/sidebar_bottom_menu" %>
-</div>
+  <div class="sidebar-label">Inventory</div>
+  <div class="flex flex-col gap-0.5">
+    <%= link_to subnets_path, class: "sidebar-link", aria: active_for("subnets") do %>
+      <%= icon("network", "h-[18px] w-[18px]") %>
+      <span>Subnets</span>
+    <% end %>
+    <%= link_to ip_addresses_path, class: "sidebar-link",
+                aria: (controller_name == "ip_addresses" && params[:q].blank? ? { current: "page" } : {}) do %>
+      <%= icon("map-pinned", "h-[18px] w-[18px]") %>
+      <span>IP Addresses</span>
+    <% end %>
+    <%= link_to devices_path, class: "sidebar-link",
+                aria: (controller_name == "devices" && params[:q].blank? ? { current: "page" } : {}) do %>
+      <%= icon("monitor", "h-[18px] w-[18px]") %>
+      <span>Devices</span>
+    <% end %>
+  </div>
+
+  <div class="sidebar-label">Organization</div>
+  <div class="flex flex-col gap-0.5">
+    <%= link_to branches_path, class: "sidebar-link", aria: active_for("branches") do %>
+      <%= icon("building", "h-[18px] w-[18px]") %>
+      <span>Branches</span>
+    <% end %>
+    <%= link_to departments_path, class: "sidebar-link", aria: active_for("departments") do %>
+      <%= icon("warehouse", "h-[18px] w-[18px]") %>
+      <span>Departments</span>
+    <% end %>
+    <%= link_to employees_path, class: "sidebar-link", aria: active_for("employees") do %>
+      <%= icon("users-round", "h-[18px] w-[18px]") %>
+      <span>Employees</span>
+    <% end %>
+  </div>
+
+  <div class="sidebar-label">Security</div>
+  <div class="flex flex-col gap-0.5">
+    <%= link_to ip_addresses_path(q: { rogue_only: true }), class: "sidebar-link",
+                aria: (current_page?(ip_addresses_path(q: { rogue_only: true })) ? { current: "page" } : {}) do %>
+      <%= icon("triangle-alert", "h-[18px] w-[18px]") %>
+      <span>Rogue Devices</span>
+    <% end %>
+    <%= link_to devices_path(q: { critical_eq: true }), class: "sidebar-link",
+                aria: (current_page?(devices_path(q: { critical_eq: true })) ? { current: "page" } : {}) do %>
+      <%= icon("monitor-x", "h-[18px] w-[18px]") %>
+      <span>Critical Devices</span>
+    <% end %>
+  </div>
+
+  <div class="sidebar-label">Assist</div>
+  <div class="flex flex-col gap-0.5">
+    <%= link_to chats_path, class: "sidebar-link", aria: active_for("chats") do %>
+      <%= icon("message-square-text", "h-[18px] w-[18px]") %>
+      <span>NAT Assistant</span>
+    <% end %>
+  </div>
+
+  <div class="sidebar-label">System</div>
+  <div class="flex flex-col gap-0.5">
+    <%= link_to admin_users_path, class: "sidebar-link", aria: active_for("users") do %>
+      <%= icon("users", "h-[18px] w-[18px]") %>
+      <span>Users</span>
+    <% end %>
+    <%= link_to versions_path, class: "sidebar-link", aria: active_for("versions") do %>
+      <%= icon("history", "h-[18px] w-[18px]") %>
+      <span>History</span>
+    <% end %>
+  </div>
+</nav>
+
+<%= render "layouts/navigation/dashboard/sidebar_bottom_menu" %>

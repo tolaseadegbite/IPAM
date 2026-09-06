@@ -1,0 +1,20 @@
+<nav class="fixed inset-x-0 bottom-0 z-40 border-t border-zinc-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden dark:border-white/10 dark:bg-zinc-950/95" aria-label="Primary">
+  <div class="grid grid-cols-4">
+    <%= link_to dashboard_path, class: "flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium #{current_page?(dashboard_path) ? "text-orange-500" : "text-zinc-500 dark:text-zinc-400"}" do %>
+      <%= icon("chart-pie", "h-5 w-5") %>
+      <span>Home</span>
+    <% end %>
+    <%= link_to devices_path, class: "flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium #{controller_name == "devices" ? "text-orange-500" : "text-zinc-500 dark:text-zinc-400"}" do %>
+      <%= icon("monitor", "h-5 w-5") %>
+      <span>Devices</span>
+    <% end %>
+    <%= link_to boards_path, class: "flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium #{controller_name == "boards" ? "text-orange-500" : "text-zinc-500 dark:text-zinc-400"}" do %>
+      <%= icon("kanban", "h-5 w-5") %>
+      <span>Ops</span>
+    <% end %>
+    <%= link_to search_path, class: "flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium #{controller_name == "search" ? "text-orange-500" : "text-zinc-500 dark:text-zinc-400"}" do %>
+      <%= icon("search", "h-5 w-5") %>
+      <span>Search</span>
+    <% end %>
+  </div>
+</nav>

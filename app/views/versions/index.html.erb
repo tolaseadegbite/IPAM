@@ -1,24 +1,22 @@
 <% content_for :title, "Audit History" %>
 
 <% content_for :page_header do %>
-  <div class="flex items-center gap-4">
-    <%# Back button logic %>
+  <span class="flex items-center gap-3">
     <% if @item %>
-      <%= link_to polymorphic_path(@item), class: "btn btn--subtle btn--icon" do %>
-        <span class="icon icon--chevron-left"></span>
+      <%= link_to polymorphic_path(@item), class: "btn shrink-0 !p-2", aria: { label: "Back" } do %>
+        <%= icon("chevron-left", "h-4 w-4") %>
       <% end %>
-      <h4 class="font-semibold">History: <%= @item.try(:name) || @item.try(:full_name) || "Item ##{@item.id}" %>  (<%= @pagy.count %>)</h4>
+      <span class="truncate">History: <%= @item.try(:name) || @item.try(:full_name) || "Item ##{@item.id}" %> (<%= @pagy.count %>)</span>
     <% else %>
-      <h4 class="font-semibold">Global Audit Log (<%= @pagy.count %>)</h4>
+      Global Audit Log (<%= @pagy.count %>)
     <% end %>
-  </div>
+  </span>
 <% end %>
 
-<div class="p-4 i-full">
-  <%# Reuse your existing partial logic, but applied to the main page %>
+<div class="flex w-full flex-col gap-4">
   <%= render "shared/audit_log", records: @versions, hide_footer: true %>
-  
-  <div class="p-4 border-t">
+
+  <div class="border-t border-zinc-200 p-4 dark:border-white/10">
     <%= render "shared/pagination", pagy: @pagy %>
   </div>
 </div>

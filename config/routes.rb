@@ -29,9 +29,6 @@ Rails.application.routes.draw do
     resources :events, only: :index
   end
   post "users/:user_id/masquerade", to: "masquerades#create", as: :user_masquerade
-  namespace :sessions do
-    resource :sudo, only: [ :new, :create ]
-  end
 
   namespace :admin do
     resources :users

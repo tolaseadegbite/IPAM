@@ -1,55 +1,45 @@
 <% content_for :title, "Branches" %>
 
-<% content_for :page_header do %>
-  <h4 class="font-semibold">Branches (<%= @pagy.count %>)</h4>
-<% end %>
+<% content_for :page_header do %>Branches (<%= @pagy.count %>)<% end %>
 
 <% content_for :header_action_buttons do %>
-    <%= link_to "New Branch", new_branch_path,
-                  class: "btn bg-orange-400 text-white font-semibold rounded-md p-2 show@md",
-                  data: { turbo_frame: "modal" } %>
+  <%= link_to "New Branch", new_branch_path, class: "btn btn--primary hidden !px-3 !py-1.5 text-sm md:inline-flex",
+              data: { turbo_frame: "modal" } %>
 <% end %>
 
-<div class="absolute hide@md" style="bottom: 10rem; right: 1rem; z-index: 9999">
-  <%= link_to new_branch_path, class: "btn bg-orange-400 text-white font-semibold rounded-full p-5", data: { turbo_frame: "modal" } do %>
-    <span class="icon icon--plus"></span>
-  <% end %>
-</div>
+<%= link_to new_branch_path, class: "btn btn--primary fixed right-4 bottom-24 z-30 !rounded-full !p-4 shadow-lg md:hidden",
+            data: { turbo_frame: "modal" }, aria: { label: "New branch" } do %>
+  <%= icon("plus", "h-5 w-5") %>
+<% end %>
 
-<div class="p-4 i-full">
+<%= turbo_frame_tag :branches_table do %>
+  <div class="relative hidden overflow-x-auto rounded-xl border border-zinc-200 bg-white md:block dark:border-white/10 dark:bg-zinc-900">
+    <table class="table w-full">
+      <thead class="bg-zinc-50 dark:bg-white/5">
+        <tr>
+          <th class="p-3"><%= sort_link(@search, :name, "Branch") %></th>
+          <th class="p-3"><%= sort_link(@search, :location, "Location") %></th>
+          <th class="p-3"><%= sort_link(@search, :contact_phone, "Phone") %></th>
+          <th class="p-3 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="branches-table">
+        <% if @branches.empty? %>
+          <tr><td colspan="4" class="p-8 text-center text-sm text-zinc-500 dark:text-zinc-400">No branches found.</td></tr>
+        <% else %>
+          <%= render @branches %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 
-  <%= turbo_frame_tag :branches_table do %>
-    
-    <%# --- DESKTOP VIEW: Table (Visible on medium screens and up) --- %>
-    <div class="show@md relative i-full overflow-x-auto border rounded-md">
-      <table class="table i-full text-left">
-        <thead class="bg-shade font-semibold">
-          <tr>
-            <th class="p-3"><%= sort_link(@search, :name, class: "font-semibold") %></th>
-            <th class="p-3"><%= sort_link(@search, :location, class: "font-semibold") %></th>
-            <th class="p-3"><%= sort_link(@search, :contact_phone, class: "font-semibold") %></th>
-            <th class="p-3 text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="branches-table">
-          <% if @branches.empty? %>
-            <tr><td colspan="7" class="text-center p-8">No Results.</td></tr>
-          <% else %>
-            <%= render @branches %>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+  <div id="branches-cards" class="flex flex-col gap-4 md:hidden">
+    <% if @branches.empty? %>
+      <%= render "shared/empty_state", object: "branch" %>
+    <% else %>
+      <%= render partial: "branches/branch_card", collection: @branches, as: :branch %>
+    <% end %>
+  </div>
 
-    <%# --- MOBILE VIEW: Cards (Hidden on medium screens and up) --- %>
-    <div id="branches-cards" class="hide@md flex flex-col gap-4">
-      <% if @branches.empty? %>
-        <p class="text-subtle text-center p-8">No branches found.</p>
-      <% else %>
-        <%= render partial: "branches/branch_card", collection: @branches, as: :branch %>
-      <% end %>
-    </div>
-
-    <%= render "shared/pagination", pagy: @pagy %>
-  <% end %>
-</div>
+  <%= render "shared/pagination", pagy: @pagy %>
+<% end %>

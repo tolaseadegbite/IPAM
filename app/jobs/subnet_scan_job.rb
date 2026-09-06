@@ -11,7 +11,7 @@ class SubnetScanJob < ApplicationJob
     # 2. Handle "Batch Completion"
     # We decrement the counter in the Cache. If 0, we are the last job.
     remaining = Rails.cache.decrement("scan_batch_#{batch_id}")
-    
+
     if remaining == 0
       # We are the last one! Finish up.
       NetworkReconService.broadcast_global_stats

@@ -1,31 +1,27 @@
 <% content_for :title, "Network Dashboard" %>
 
-<!-- 1. ADD THE LISTENER -->
 <%= turbo_stream_from "monitoring" %>
 
-<% content_for :page_header do %>
-  <h4 class="font-semibold">Dashboard</h4>
-<% end %>
+<% content_for :page_header do %>Dashboard<% end %>
 
-<div class="p-4 i-full">
-  
-  <!-- METRICS PARTIAL -->
-  <%= render "metrics", 
-    online_count: @online_count, 
-    total_ips: @total_ips, 
-    rogue_count: @rogue_count, 
-    utilization_percent: @utilization_percent, 
-    # reachability_chart: @reachability_chart, 
-    device_type_chart: @device_type_chart,
-    allocation_chart: @allocation_chart,
-    subnets: @subnets,
-    rogue_devices: @rogue_devices,
-    ghost_assets: @ghost_assets,
-    critical_devices: @critical_devices,
-    recent_events: @recent_events,
-    last_scan: @last_scan,
-    high_priority_tasks: @high_priority_tasks,
-    scanning: false 
-  %>
-
-</div>
+<%= render "metrics",
+  online_count: @online_count,
+  total_ips: @total_ips,
+  rogue_count: @rogue_count,
+  utilization_percent: @utilization_percent,
+  device_type_chart: @device_type_chart,
+  allocation_chart: @allocation_chart,
+  subnets: @subnets,
+  top_subnets: @top_subnets,
+  subnets_overflow: @subnets_overflow,
+  events_trend: @events_trend,
+  attention_items: @attention_items,
+  network_status: @network_status,
+  status_reasons: @status_reasons,
+  rogue_devices: @rogue_devices,
+  ghost_assets: @ghost_assets,
+  critical_devices: @critical_devices,
+  recent_events: @recent_events,
+  last_scan: @last_scan,
+  high_priority_tasks: @high_priority_tasks,
+  scanning: false %>

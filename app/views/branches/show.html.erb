@@ -1,19 +1,14 @@
 <% content_for :title, @branch.name %>
 
-<% content_for :page_header do %>
-  <%= @branch.name %>
-<% end %>
+<% content_for :page_header do %><%= @branch.name %><% end %>
 
 <% content_for :header_action_buttons do %>
-  <div class="flex items-center gap-2">
-    <%= link_to "Edit", edit_branch_path(@branch), class: "btn bg-orange-400 text-white font-semibold rounded-md px-4 py-2 show@md", data: { turbo_frame: "modal" } %>
-
-    <%#= button_to "Delete", @branch, class: "btn bg-white border border-red-200 text-red-600 font-semibold rounded px-4 py-2 hover:bg-red-50", method: :delete, form: { data: { turbo_confirm: "Are you sure?", turbo: false } } %>
-
-    <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+  <div class="hidden items-center gap-2 md:flex">
+    <%= link_to "Edit", edit_branch_path(@branch), class: "btn btn--primary !px-3 !py-1.5 text-sm", data: { turbo_frame: "modal" } %>
+    <% delete_trigger = button_tag "Delete", type: "button", class: "btn !border-red-200 !px-3 !py-1.5 text-sm !text-red-600 hover:!bg-red-50 dark:!border-red-500/30 dark:!text-red-400 dark:hover:!bg-red-500/10", data: { action: "dialog#showModal" } %>
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{@branch.name}'?" do %>
-      <p class="text-sm text-subtle mbe-4">This will permanently delete this branch. This action cannot be undone.</p>
-      <div class="flex items-center justify-end gap">
+      <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this branch. This action cannot be undone.</p>
+      <div class="flex items-center justify-end gap-2">
         <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
         <%= button_to "Continue", @branch, method: :delete, data: { turbo: false }, class: "btn btn--negative" %>
       </div>
@@ -21,62 +16,48 @@
   </div>
 <% end %>
 
-<div class="absolute hide@md" style="bottom: 10rem; right: 1rem; z-index: 9999">
-  <%= link_to edit_branch_path(@branch), class: "btn bg-orange-400 text-white font-semibold rounded-full p-5", data: { turbo_frame: "modal" } do %>
-    <span class="icon icon--square-pen"></span>
-  <% end %>
-</div>
+<%= link_to edit_branch_path(@branch), class: "btn btn--primary fixed right-4 bottom-24 z-30 !rounded-full !p-4 shadow-lg md:hidden",
+            data: { turbo_frame: "modal" }, aria: { label: "Edit branch" } do %>
+  <%= icon("square-pen", "h-5 w-5") %>
+<% end %>
 
-<div class="p-4 max-w-5xl mx-auto">
-  <div class="flex items-center justify-between mbe-6">
-    <div class="flex items-center gap-4">
-      <%= link_to :back, class: "btn btn--subtle btn--icon" do %>
-        <span class="icon icon--chevron-left"></span>
-      <% end %>
-      <div id="branch_name">
-        <%= render 'branches/branch_name' %>
-      </div>
-    </div>
+<div class="mx-auto flex w-full max-w-5xl flex-col gap-6">
+  <div class="flex items-center gap-3">
+    <%= link_to :back, class: "btn shrink-0 !p-2", aria: { label: "Back" } do %>
+      <%= icon("chevron-left", "h-4 w-4") %>
+    <% end %>
+    <h1 class="truncate text-2xl font-bold tracking-tight sm:text-3xl"><%= @branch.name %></h1>
   </div>
 
-  <div class="">
-    <%# --- Branch Info --- %>
-    <div id="branch_details" class="col-span-1">
-      <%= render "branches/details" %>
+  <div id="branch_details" class="card p-4 sm:p-5">
+    <%= render "branches/details" %>
+  </div>
+
+  <div>
+    <div class="mb-4 flex items-center justify-between border-b border-zinc-200 pb-2 dark:border-white/10">
+      <h3 class="text-lg font-bold">Departments (<%= @branch.departments.count %>)</h3>
+      <%= link_to "Add Dept", new_department_path(branch_id: @branch.id), class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "modal" } %>
     </div>
 
-    <%# --- Associated Departments --- %>
-    <div class="mbs-6">
-      <div class="flex items-center justify-between mbe-4 border-be pbe-2">
-        <h3 class="font-bold text-lg">Departments (<%= @branch.departments.count %>)</h3>
-        <%= link_to "Add Dept", new_department_path(branch_id: @branch.id), class: "text-sm text-orange-600 hover:underline", data: { turbo_frame: "modal" } %>
-      </div>
-      
-      <% if @branch.departments.any? %>
-        <%= content_tag(:div, id: dom_id(@branch, :departments), class: "grid grid-cols-1 grid-cols-2@md gap-3") do %>
-          <% @departments.each do |department| %>
-            <%= render 'branches/department_show_card', department: department %> 
-          <% end %>
+    <% if @branch.departments.any? %>
+      <%= content_tag(:div, id: dom_id(@branch, :departments), class: "grid grid-cols-1 gap-3 md:grid-cols-2") do %>
+        <% @departments.each do |department| %>
+          <%= render "branches/department_show_card", department: department %>
         <% end %>
-      <% else %>
-        <div id="empty_state">
-          <%= render "shared/empty_state", object: "department" %>
-        </div>
       <% end %>
-    </div>
+    <% else %>
+      <div id="empty_state">
+        <%= render "shared/empty_state", object: "department" %>
+      </div>
+    <% end %>
   </div>
 
-  <%# --- AUDIT LOG SECTION --- %>
-  <div class="mbs-6">
-    <% 
-      # 1. Branch History
-      branch_query = PaperTrail::Version.where(item_type: 'Branch', item_id: @branch.id)
-
-      dept_query = PaperTrail::Version.where(item_type: 'Department', item_id: @branch.department_ids)
-
+  <div>
+    <%
+      branch_query = PaperTrail::Version.where(item_type: "Branch", item_id: @branch.id)
+      dept_query = PaperTrail::Version.where(item_type: "Department", item_id: @branch.department_ids)
       combined_versions = branch_query.or(dept_query).order(created_at: :desc).limit(20)
     %>
-
     <%= render "shared/audit_log", records: combined_versions, parent: @branch %>
   </div>
 </div>

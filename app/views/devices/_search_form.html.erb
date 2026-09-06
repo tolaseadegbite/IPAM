@@ -1,84 +1,64 @@
-<div class=""
-  data-controller="search-filter"
-  data-action="click@window->search-filter#closeOnClickOutside">
-
-  <%# Button to toggle the visibility of the filters %>
-  <button type="button" class="btn btn--subtle mbe-4" data-action="search-filter#toggle">
-    <span class="icon icon--search"></span>
-    <span>Search & Filter</span>
+<div data-controller="search-filter" data-action="click@window->search-filter#closeOnClickOutside">
+  <button type="button" class="btn mb-4" data-action="search-filter#toggle">
+    <%= icon("search", "h-4 w-4") %>
+    <span>Search &amp; Filter</span>
   </button>
 
-  <div class="card mbe-4 hide" data-search-filter-target="filters">
-    <%= search_form_for @search, 
-        data: { 
-          turbo_frame: "devices_table", 
+  <div class="card mb-4 hidden p-4" data-search-filter-target="filters">
+    <%= search_form_for @search,
+        data: {
+          turbo_frame: "devices_table",
           turbo_action: "advance",
-          controller: "debounce" 
+          controller: "debounce"
         } do |f| %>
-      <div class="grid grid-cols-1 grid-cols-2@md grid-cols-3@lg grid-cols-6@xl gap-4 items-end">
-        
-        <%# 1. Keyword Search %>
-        <div class="col-span-1">
-          <%= f.label :name_cont, "Keyword", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.search_field :name_cont, 
-              placeholder: "Search name", 
-              class: "input",
+      <div class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div>
+          <%= f.label :name_cont, "Keyword", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.search_field :name_cont, placeholder: "Search name", class: "input",
               data: { action: "input->debounce#submit" } %>
         </div>
 
-        <%# 2. Branch Filter %>
-        <div class="col-span-1">
-          <%= f.label :department_branch_id_eq, "Branch", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.collection_select :department_branch_id_eq, Branch.order(:name), :id, :name, 
-                { include_blank: "All Branches" }, 
+        <div>
+          <%= f.label :department_branch_id_eq, "Branch", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.collection_select :department_branch_id_eq, Branch.order(:name), :id, :name,
+                { include_blank: "All Branches" },
                 { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
 
-        <%# 3. IP Address Filter (NEW) %>
-        <div class="col-span-1">
-          <%= f.label :ip_address_addresses_string_cont, "IP Address", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.search_field :ip_addresses_address_string_cont, 
-              placeholder: "192.168...", 
-              class: "input",
+        <div>
+          <%= f.label :ip_addresses_address_string_cont, "IP Address", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.search_field :ip_addresses_address_string_cont, placeholder: "192.168…", class: "input",
               data: { action: "input->debounce#submit" } %>
         </div>
 
-        <%# 4. Mac Address Filter (NEW) %>
-        <div class="col-span-1">
-          <%= f.label :mac_address_cont, "Mac Address", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.search_field :mac_address_cont, 
-              placeholder: "52:03.:fz...", 
-              class: "input",
+        <div>
+          <%= f.label :mac_address_cont, "MAC Address", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.search_field :mac_address_cont, placeholder: "AA:BB:CC…", class: "input",
               data: { action: "input->debounce#submit" } %>
         </div>
 
-        <%# 6. Critical Filter %>
-        <div class="col-span-1">
-          <%= f.label :critical_eq, "Critical device?", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          
-          <%= f.select :critical_eq, [['Yes', true], ['No', false]], { include_blank: 'All' }, { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
-        </div>
-
-        <%# 5. Type Filter %>
-        <div class="col-span-1">
-          <%= f.label :device_type_eq, "Type", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.select :device_type_eq, Device.device_types.map { |k, v| [k.humanize, v] }, 
-                { include_blank: "All Types" }, 
+        <div>
+          <%= f.label :critical_eq, "Critical device?", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.select :critical_eq, [["Yes", true], ["No", false]], { include_blank: "All" },
                 { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
 
-        <%# 6. Status Filter %>
-        <div class="col-span-1">
-          <%= f.label :status_eq, "Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.select :status_eq, Device.statuses.map { |k, v| [k.humanize, v] }, 
-                { include_blank: "All Statuses" }, 
+        <div>
+          <%= f.label :device_type_eq, "Type", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.select :device_type_eq, Device.device_types.map { |k, v| [k.humanize, v] },
+                { include_blank: "All Types" },
                 { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
 
-        <%# 7. Actions %>
-        <div class="col-span-1 flex gap-2">
-          <%#= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
-          <%= link_to "Clear", devices_path, class: "btn btn--primary", data: { turbo_frame: "devices_table", action: "click->search-filter#clear" } %>
+        <div>
+          <%= f.label :status_eq, "Status", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.select :status_eq, Device.statuses.map { |k, v| [k.humanize, v] },
+                { include_blank: "All Statuses" },
+                { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
+        </div>
+
+        <div class="flex gap-2">
+          <%= link_to "Clear", devices_path, class: "btn btn--secondary", data: { turbo_frame: "devices_table", action: "click->search-filter#clear" } %>
         </div>
       </div>
     <% end %>

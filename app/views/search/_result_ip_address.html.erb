@@ -1,37 +1,37 @@
-<div class="card transition">
-  <div class="flex justify-between items-center">
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-1 p-2 bg-green-50 rounded-lg text-green-600">
-        <span class="icon icon--globe"></span>
-        <span class="text-xs font-bold uppercase">IP Addr</span>
+<div class="card p-4 transition hover:border-orange-300 dark:hover:border-orange-500/40">
+  <div class="flex items-center justify-between gap-3">
+    <div class="flex min-w-0 items-center gap-3">
+      <div class="flex shrink-0 items-center gap-1.5 rounded-lg bg-green-100 p-2 text-green-700 dark:bg-green-500/15 dark:text-green-300">
+        <%= icon("globe", "h-4 w-4") %>
+        <span class="text-[11px] font-bold uppercase">IP</span>
       </div>
-      <div class="flex gap-4 items-center">
-        <div>
-            <h3 class="font-mono font-bold text-lg">
+      <div class="flex min-w-0 items-center gap-3">
+        <div class="min-w-0">
+          <h3 class="truncate font-mono text-lg font-bold">
             <%= link_to item.address, item, data: { turbo_frame: "_top" } %>
-            </h3>
-            <p class="text-sm text-subtle"><%= item.subnet.name %></p>
+          </h3>
+          <p class="truncate text-sm text-zinc-500 dark:text-zinc-400"><%= item.subnet.name %></p>
         </div>
-        <%= link_to edit_ip_address_path(item), data: { turbo_frame: "modal" } do %>
-            <span class="icon icon--square-pen"></span>
+        <%= link_to edit_ip_address_path(item), data: { turbo_frame: "modal" }, class: "shrink-0 text-zinc-400 hover:text-orange-500", aria: { label: "Edit IP" } do %>
+          <%= icon("square-pen", "h-4 w-4") %>
         <% end %>
       </div>
     </div>
-    <div class="text-right text-sm">
+    <div class="shrink-0 text-right text-sm">
       <% if item.device %>
-        <div class="text-subtle mbe-3">Assigned to:</div>
-        <div class="flex items-center gap-3 text-subtle">
-          <span class="icon icon--monitor"></span> 
-          <%= link_to item.device.name, item, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+        <div class="mb-1 text-xs text-zinc-500 dark:text-zinc-400">Assigned to:</div>
+        <div class="flex items-center justify-end gap-1.5 text-zinc-600 dark:text-zinc-300">
+          <%= icon("monitor", "h-3.5 w-3.5") %>
+          <%= link_to item.device.name, item.device, class: "truncate hover:text-orange-500", data: { turbo_frame: "_top" } %>
         </div>
         <% if item.device.employee.present? %>
-          <div class="flex items-center gap-3 text-subtle text-sm">
-            <span class="icon icon--user"></span> 
-            <%= link_to item.device.employee.full_name, item, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+          <div class="mt-1 flex items-center justify-end gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+            <%= icon("user", "h-3.5 w-3.5") %>
+            <%= link_to item.device.employee.full_name, item.device.employee, class: "truncate hover:text-orange-500", data: { turbo_frame: "_top" } %>
           </div>
         <% end %>
       <% else %>
-        <span class="text-gray-400 italic">Unassigned</span>
+        <span class="text-sm text-zinc-400 italic">Unassigned</span>
       <% end %>
     </div>
   </div>

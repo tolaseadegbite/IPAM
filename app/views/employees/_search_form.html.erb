@@ -1,53 +1,35 @@
-<div class=""
-  data-controller="search-filter"
-  data-action="click@window->search-filter#closeOnClickOutside">
-
-  <%# Button to toggle the visibility of the filters %>
-  <button type="button" class="btn btn--subtle mbe-4" data-action="search-filter#toggle">
-    <span class="icon icon--search"></span>
-    <span>Search & Filter</span>
+<div data-controller="search-filter" data-action="click@window->search-filter#closeOnClickOutside">
+  <button type="button" class="btn mb-4" data-action="search-filter#toggle">
+    <%= icon("search", "h-4 w-4") %>
+    <span>Search &amp; Filter</span>
   </button>
 
-  <div class="card mbe-4 hide" data-search-filter-target="filters">
-    <%= search_form_for @search, 
-        data: { 
+  <div class="card mb-4 hidden p-4" data-search-filter-target="filters">
+    <%= search_form_for @search,
+        data: {
           controller: "debounce",
-          turbo_frame: "employees_table", 
-          turbo_action: "advance" 
+          turbo_frame: "employees_table",
+          turbo_action: "advance"
         } do |f| %>
-      <div class="grid grid-cols-1 grid-cols-2@md grid-cols-4@lg gap-4 items-end">
-        
-        <%# 1. Name Search (Uses your 'full_name' ransacker) %>
-        <div class="col-span-1">
-          <%= f.label :full_name_cont, "Name", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.search_field :full_name_cont, 
-              placeholder: "Search Name...", 
-              class: "input p-2 border rounded",
+      <div class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <%= f.label :full_name_cont, "Name", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.search_field :full_name_cont, placeholder: "Search name…", class: "input",
               data: { action: "input->debounce#submit" } %>
         </div>
-
-        <%# 2. Branch Filter %>
-        <div class="col-span-1">
-          <%= f.label :department_branch_id_eq, "Branch", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.collection_select :department_branch_id_eq, 
-                Branch.order(:name), :id, :name, 
-                { include_blank: "All Branches" }, 
-                { class: "input p-2 border cursor-pointer", data: { action: "input->debounce#submit" } }
-                 %>
+        <div>
+          <%= f.label :department_branch_id_eq, "Branch", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.collection_select :department_branch_id_eq, Branch.order(:name), :id, :name,
+                { include_blank: "All Branches" },
+                { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
-
-        <%# 3. Status Filter %>
-        <div class="col-span-1">
-          <%= f.label :status_eq, "Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-          <%= f.select :status_eq, Employee.statuses.map { |k, v| [k.humanize, v] }, 
-                { include_blank: "All Statuses" }, 
-                { class: "input p-2 border cursor-pointer", data: { action: "input->debounce#submit" } }
-                 %>
+        <div>
+          <%= f.label :status_eq, "Status", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.select :status_eq, Employee.statuses.map { |k, v| [k.humanize, v] },
+                { include_blank: "All Statuses" },
+                { class: "input cursor-pointer", data: { action: "input->debounce#submit" } } %>
         </div>
-
-        <%# 4. Actions %>
-        <div class="col-span-1 flex gap-2">
-          <%#= f.submit "Filter", class: "btn bg-orange-500 hover:bg-orange-600 i-full" %>
+        <div class="flex gap-2">
           <%= link_to "Clear", employees_path, class: "btn btn--primary", data: { turbo_frame: "employees_table", action: "click->search-filter#clear" } %>
         </div>
       </div>

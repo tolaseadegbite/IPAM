@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_17_133431) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_06_000115) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -95,6 +95,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_133431) do
   create_table "departments", force: :cascade do |t|
     t.bigint "branch_id", null: false
     t.datetime "created_at", null: false
+    t.integer "devices_count", default: 0, null: false
+    t.integer "employees_count", default: 0, null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["branch_id"], name: "index_departments_on_branch_id"
@@ -113,6 +115,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_133431) do
     t.text "notes"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["critical"], name: "index_devices_on_critical"
     t.index ["department_id"], name: "index_devices_on_department_id"
     t.index ["device_type"], name: "index_devices_on_device_type"
     t.index ["employee_id"], name: "index_devices_on_employee_id"
@@ -152,6 +155,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_133431) do
     t.datetime "updated_at", null: false
     t.index ["address"], name: "index_ip_addresses_on_address", unique: true
     t.index ["device_id"], name: "index_ip_addresses_on_device_id"
+    t.index ["last_seen_at"], name: "index_ip_addresses_on_last_seen_at"
+    t.index ["reachability_status"], name: "index_ip_addresses_on_reachability_status"
+    t.index ["status"], name: "index_ip_addresses_on_status"
     t.index ["subnet_id"], name: "index_ip_addresses_on_subnet_id"
   end
 
@@ -215,6 +221,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_133431) do
     t.inet "ip_address"
     t.integer "kind", default: 0
     t.string "message", null: false
+    t.index ["created_at", "kind"], name: "index_network_events_on_created_at_and_kind"
     t.index ["device_id"], name: "index_network_events_on_device_id"
   end
 
@@ -230,7 +237,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_133431) do
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
-    t.datetime "sudo_at", null: false
     t.datetime "updated_at", null: false
     t.string "user_agent"
     t.bigint "user_id", null: false

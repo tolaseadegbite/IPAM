@@ -1,94 +1,73 @@
-<div id="<%= dom_id device, :card %>" class="card p-4 border rounded-md shadow-sm flex flex-col gap-3">
-  
-  <%# --- Header: Name, Type, Status --- %>
-  <div class="flex items-start justify-between">
-    <div>
-      <div class="font-semibold text-lg leading-tight"><%= link_to (device.name.presence || "Nil"), device, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></div>
-      <span class="text-sm text-subtle uppercase font-semibold"><%= device.device_type&.humanize.presence || "Nil" %></span>
+<div id="<%= dom_id device, :card %>" class="card flex flex-col gap-3 p-4">
+  <div class="flex items-start justify-between gap-2">
+    <div class="min-w-0">
+      <div class="truncate text-lg leading-tight font-semibold"><%= link_to (device.name.presence || "—"), device, class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></div>
+      <span class="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400"><%= device.device_type&.humanize.presence || "—" %></span>
     </div>
 
-    <div class="flex flex-col items-end gap-1">
-      <% 
-        # Note: Updated these statuses to match your Device model enum 
-        # (active, in_storage, in_repair, retired, lost)
-        status_color = case device.status 
-          when 'active' then 'bg-green-100 text-green-800'
-          when 'in_storage', 'in_repair' then 'bg-yellow-100 text-yellow-800'
-          when 'retired', 'lost' then 'bg-red-100 text-red-800'
-          else 'bg-shade text-subtle'
-          end 
+    <div class="flex shrink-0 flex-col items-end gap-1">
+      <%
+        status_badge = case device.status
+          when "active" then "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300"
+          when "in_storage", "in_repair" then "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
+          when "retired", "lost" then "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300"
+          else "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+          end
       %>
-
-      <span class="<%= status_color %> font-medium pi-2 pb-1 rounded-md text-xs"><%= device.status&.humanize || "Nil" %></span>
-
+      <span class="<%= status_badge %> rounded-md px-2 py-0.5 text-xs font-medium"><%= device.status&.humanize || "—" %></span>
       <% if device.critical? %>
-        <span class="font-medium pi-2 pb-1 rounded-md text-xs bg-blue-100 text-blue-800">Critical</span>
+        <span class="rounded-md bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800 dark:bg-orange-500/15 dark:text-orange-300">Critical</span>
       <% end %>
     </div>
   </div>
 
-  <%# --- IP Address (UPDATED TO HANDLE MULTIPLE IPs) --- %>
-  <div class="p-2 bg-shade rounded-md border flex items-start gap-2">
-    <span class="icon icon--globe text-subtle mbs-1"></span>
-    <div class="flex flex-col gap-1">
+  <div class="flex items-start gap-2 rounded-lg border border-zinc-200 bg-zinc-50 p-2 dark:border-white/10 dark:bg-white/5">
+    <%= icon("globe", "mt-0.5 h-4 w-4 shrink-0 text-zinc-400") %>
+    <div class="flex min-w-0 flex-col gap-1">
       <% if device.ip_addresses.any? %>
         <% device.ip_addresses.each do |ip| %>
-          <div class="font-mono flex gap-1 items-center text-sm">
-            <span><%= link_to ip.address, ip, class: "text-sky-500 hover:text-sky-400", data: { turbo_frame: "_top" } %></span>
-
-            <%# Optional: Show a tiny green/red dot next to each IP in the table %>
-            <% if ip.reachability_status_up? %>
-              <span class="inline-block rounded-full bg-green-500 mis-1" style="width: 6px; height: 6px;" title="Online"></span>
-            <% else %>
-              <span class="inline-block rounded-full bg-red-500 mis-1" style="width: 6px; height: 6px;" title="Offline"></span>
-            <% end %>
+          <div class="flex items-center gap-1.5 font-mono text-sm">
+            <%= link_to ip.address, ip, class: "truncate text-sky-600 hover:underline dark:text-sky-400", data: { turbo_frame: "_top" } %>
+            <span class="h-1.5 w-1.5 shrink-0 rounded-full <%= ip.reachability_status_up? ? "bg-green-500" : "bg-red-500" %>"
+                  title="<%= ip.reachability_status_up? ? "Online" : "Offline" %>"></span>
           </div>
         <% end %>
       <% else %>
-        <span class="text-subtle italic">Nil</span>
+        <span class="text-sm text-zinc-400 italic">No IP assigned</span>
       <% end %>
     </div>
   </div>
 
-  <%# --- Mac Address --- %>
-  <div class="p-2 bg-shade rounded-md border flex items-center gap-2">
-    <span class="icon icon--monitor text-subtle"></span>
+  <div class="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 p-2 font-mono text-sm dark:border-white/10 dark:bg-white/5">
+    <%= icon("monitor", "h-4 w-4 shrink-0 text-zinc-400") %>
     <% if device.mac_address %>
-      <span class="text-green-500 font-mono"><%= device.mac_address %></span>
+      <span class="truncate text-green-600 dark:text-green-400"><%= device.mac_address %></span>
     <% else %>
-      <span class="text-subtle italic">Nil</span>
+      <span class="text-zinc-400 italic">No MAC</span>
     <% end %>
   </div>
 
-  <%# --- Owner & Dept Info --- %>
-  <div class="flex items-center gap-3 border-t pbs-3 mbs-1">
-    <div class="flex items-center justify-center rounded-full bg-shade shrink-0 border" style="block-size: 2rem; inline-size: 2rem;">
-      <span class="font-semibold text-sm">
-        <%= device.employee&.first_name&.first || "?" %>
-      </span>
-    </div>
-    <div class="flex flex-col text-sm">
-
-      <span class="font-semibold"><%= link_to device.employee&.full_name.presence || "Owner: Nil", device.employee, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %></span>
-
-      <span class="text-xs text-subtle">
+  <div class="flex items-center gap-3 border-t border-zinc-200 pt-3 dark:border-white/10">
+    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-sm font-semibold dark:bg-zinc-700">
+      <%= device.employee&.first_name&.first || "?" %>
+    </span>
+    <div class="flex min-w-0 flex-col text-sm">
+      <span class="truncate font-semibold"><%= link_to device.employee&.full_name.presence || "Owner: —", device.employee, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %></span>
+      <span class="truncate text-xs text-zinc-500 dark:text-zinc-400">
         <% if device.department %>
           <%= device.department.branch.name %> (<%= device.department.name %>)
         <% else %>
-          Nil
+          —
         <% end %>
       </span>
     </div>
   </div>
 
-  <%# --- Actions --- %>
-  <div class="flex items-center justify-end text-xs gap-4 mbs-2">
-    <%= link_to "Edit", edit_device_path(device), class: "text-subtle hover:text-orange-500", data: { turbo_frame: "modal" } %>
-    
-    <% delete_trigger = button_tag "Delete", type: "button", class: "text-subtle hover:text-orange-500 border-0 bg-transparent cursor-pointer", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
-    
+  <div class="flex items-center justify-end gap-4 text-xs">
+    <%= link_to "Edit", edit_device_path(device), class: "font-medium text-zinc-500 hover:text-orange-500 dark:text-zinc-400", data: { turbo_frame: "modal" } %>
+    <% delete_trigger = button_tag "Delete", type: "button", class: "cursor-pointer font-medium text-zinc-500 hover:text-red-500 dark:text-zinc-400", data: { action: "dialog#showModal" } %>
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{device.name}'?" do %>
-      <p class="text-sm text-subtle mbe-4">This will permanently delete this device. This action cannot be undone.</p>
+      <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this device. This action cannot be undone.</p>
       <div class="flex items-center justify-end gap-2">
         <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
         <%= button_to "Continue", device, method: :delete, class: "btn btn--negative" %>

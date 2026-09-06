@@ -10,7 +10,7 @@
                 end
 %>
 
-<div class="grid grid-cols-2 gap-4 p-4 bg-shade rounded-lg"
+<div class="grid grid-cols-1 gap-4 rounded-lg bg-zinc-100 p-4 sm:grid-cols-2 dark:bg-white/5"
      data-controller="dependent-select" 
      data-dependent-select-url-value="<%= select_options_ip_addresses_path(field_name: 'device[ip_address_ids][]', frame_id: "ip_options_#{id}") %>"
      data-dependent-select-param-value="subnet_id"
@@ -18,17 +18,17 @@
        
   <!-- Subnet Filter -->
   <div>
-    <label class="block text-xs font-bold uppercase text-subtle mbe-1">Filter Subnet</label>
-    <%= select_tag "subnet_filter_#{id}", 
-          options_from_collection_for_select(Subnet.order(:name), :id, :name, assigned_ip&.subnet_id), 
-          prompt: "Select Network...", 
-          class: "input cursor-pointer i-full",
+    <label class="mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">Filter Subnet</label>
+    <%= select_tag "subnet_filter_#{id}",
+          options_from_collection_for_select(Subnet.order(:name), :id, :name, assigned_ip&.subnet_id),
+          prompt: "Select Network...",
+          class: "input w-full cursor-pointer",
           data: { dependent_select_target: "select", action: "change->dependent-select#load" } %>
   </div>
   
   <!-- IP Select -->
   <div>
-    <label class="block text-xs font-bold uppercase text-subtle mbe-1">Select IP</label>
+    <label class="mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">Select IP</label>
     <%= turbo_frame_tag "ip_options_#{id}", data: { dependent_select_target: "frame" } do %>
       <% 
          # If an IP is already assigned, load that subnet's free IPs + the assigned IP
@@ -40,10 +40,10 @@
                end
       %>
       
-      <%= select_tag "device[ip_address_ids][]", 
-            options_from_collection_for_select(ips, :id, :address, assigned_ip&.id), 
+      <%= select_tag "device[ip_address_ids][]",
+            options_from_collection_for_select(ips, :id, :address, assigned_ip&.id),
             prompt: assigned_ip ? "Select IP..." : "Select Subnet First",
-            class: "input cursor-pointer i-full" %>
+            class: "input w-full cursor-pointer" %>
     <% end %>
   </div>
 </div>

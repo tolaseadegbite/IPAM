@@ -1,5 +1,6 @@
 class NetworkReconService
   include BroadcastSafely
+  include DashboardData
   # Entry point for scanning a specific subnet.
   def self.scan_subnet(subnet_cidr)
     new.scan_subnet(subnet_cidr)
@@ -105,7 +106,8 @@ class NetworkReconService
       datasets: [ {
         label: "Devices",
         data: device_stats.values,
-        backgroundColor: [ "#6366f1", "#8b5cf6", "#ec4899", "#14b8a6", "#f59e0b", "#64748b" ],
+        # NOC categorical palette — matches DashboardsController, no purple.
+        backgroundColor: [ "#0ea5e9", "#22c55e", "#f59e0b", "#f97316", "#64748b", "#14b8a6" ],
         borderWidth: 0,
         borderRadius: 4,
         barThickness: 20
@@ -174,6 +176,20 @@ class NetworkReconService
                               .order(created_at: :desc)
                               .limit(5)
 
+    # Shared hero datasets (same shape as DashboardsController#show).
+    subnet_list = subnets.to_a
+    events_trend = build_events_trend
+    attention_items = build_attention_queue(
+      rogue_devices: rogue_devices,
+      ghost_assets: ghost_assets,
+      critical_devices: critical_devices,
+      high_priority_tasks: high_priority_tasks
+    )
+    network_status, status_reasons = derive_network_status(
+      critical_devices: critical_devices,
+      rogue_count: rogue_count
+    )
+
     # 5. Broadcast
     broadcast_safely do
       Turbo::StreamsChannel.broadcast_replace_to(
@@ -188,6 +204,12 @@ class NetworkReconService
           device_type_chart: device_type_chart,
           allocation_chart: allocation_chart,
           subnets: subnets,
+          top_subnets: subnet_list.first(5),
+          subnets_overflow: [ subnet_list.size - 5, 0 ].max,
+          events_trend: events_trend,
+          attention_items: attention_items,
+          network_status: network_status,
+          status_reasons: status_reasons,
           rogue_devices: rogue_devices,
           ghost_assets: ghost_assets,
           critical_devices: critical_devices,

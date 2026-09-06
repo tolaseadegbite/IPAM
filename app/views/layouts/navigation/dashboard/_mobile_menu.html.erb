@@ -1,11 +1,10 @@
-<div class="hide@md" data-controller="dialog">
-  <button type="button" class="btn btn--icon border-0 mbs-1" data-action="dialog#showModal">
-    <span class="icon icon--panel-left-open" style="--icon-size: 1.25rem" aria-hidden="true"></span>
-    <span class="sr-only">Open menu</span>
+<div class="lg:hidden" data-controller="dialog">
+  <button type="button" class="btn btn--borderless !px-2.5" data-action="dialog#showModal" aria-label="Open menu">
+    <%= icon("menu", "h-5 w-5") %>
   </button>
 
-  <dialog class="sheet sheet--left" data-dialog-target="content" data-action="click->dialog#closeOnClickOutside">
-    <div class="sheet__content p-2">
+  <dialog class="sheet sheet--left !bg-zinc-950" data-dialog-target="content" data-action="click->dialog#closeOnClickOutside" aria-label="Menu">
+    <div class="sheet__content flex !p-0 flex-col">
       <%= render "layouts/navigation/dashboard/sidebar_menu" %>
     </div>
   </dialog>

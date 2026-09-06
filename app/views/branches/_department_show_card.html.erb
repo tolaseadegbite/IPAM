@@ -1,10 +1,9 @@
-<%= link_to department, class: "list-row list-row--link flex items-center justify-between bg-surface hover:text-orange-600" do %>
-  <div class="flex flex-col gap-half">
-      <h5 class="text-sm leading-none font-medium"><%= department.name %></h5>
-      <p class="text-sm text-subtle"><%= department.employees.count %> Employees</p>
+<%= link_to department, class: "card flex items-center justify-between p-3 transition hover:border-orange-300 dark:hover:border-orange-500/40" do %>
+  <div class="flex min-w-0 flex-col gap-0.5">
+    <h5 class="truncate text-sm leading-none font-medium"><%= department.name %></h5>
+    <p class="text-xs text-zinc-500 dark:text-zinc-400"><%= department.employees_count %> employees</p>
   </div>
-
-  <div>
-    <%= pluralize(department.devices.count, "Device") %>
+  <div class="shrink-0 text-sm font-medium tabular-nums">
+    <%= pluralize(department.devices_count, "Device") %>
   </div>
 <% end %>

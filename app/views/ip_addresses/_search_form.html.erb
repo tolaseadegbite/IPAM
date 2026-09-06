@@ -3,12 +3,12 @@
   data-action="click@window->search-filter#closeOnClickOutside">
 
   <%# Button to toggle the visibility of the filters %>
-  <button type="button" class="btn btn--subtle mbe-4" data-action="search-filter#toggle">
-    <span class="icon icon--search"></span>
+  <button type="button" class="btn mb-4" data-action="search-filter#toggle">
+    <%= icon("search", "h-4 w-4") %>
     <span>Search & Filter</span>
   </button>
 
-  <div class="card bg-main mbe-4" data-search-filter-target="filters">
+  <div class="card mb-4 hidden p-4" data-search-filter-target="filters">
     <%# ADD 'turbo_frame: "ip_addresses"' BACK %>
     <%= search_form_for @search, 
         data: { 
@@ -18,19 +18,19 @@
           action: "input->debounce#submit" 
         } do |f| %>
       
-      <div class="grid grid-cols-1 grid-cols-2@md grid-cols-3@lg grid-cols-4@xl gap-4 items-center">
+      <div class="grid grid-cols-1 items-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         
         <%# 1. IP Search %>
-        <div class="col-span-1">
-          <%= f.label :address_string_cont, "IP Address", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+        <div>
+          <%= f.label :address_string_cont, "IP Address", class: "mb-1 block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400" %>
           <%= f.search_field :address_string_cont, 
               placeholder: "192.168...", 
-              class: "input cursor-pointer w-full p-2 border rounded" %>
+              class: "input cursor-pointer" %>
         </div>
 
         <%# 2. Subnet Filter %>
-        <div class="col-span-1">
-          <%= f.label :subnet_id_eq, "Subnet", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+        <div>
+          <%= f.label :subnet_id_eq, "Subnet", class: "mb-1 block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400" %>
           <%= f.collection_select :subnet_id_eq, Subnet.order(:name), :id, :name, 
                 { include_blank: "All Subnets" }, 
                 { class: "input cursor-pointer" } %>
@@ -48,8 +48,8 @@
              data-dependent-select-frame-id-value="search_dept_options">
 
           <%# 3. Branch Filter %>
-          <div class="col-span-1">
-            <%= f.label :device_department_branch_id_eq, "Branch", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+          <div>
+            <%= f.label :device_department_branch_id_eq, "Branch", class: "mb-1 block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400" %>
             <%= f.collection_select :device_department_branch_id_eq, Branch.order(:name), :id, :name, 
                   { include_blank: "All Branches" }, 
                   { 
@@ -62,8 +62,8 @@
           </div>
 
           <%# 4. Department Filter %>
-          <div class="col-span-1 mbs-2">
-            <%= f.label :device_department_id_eq, "Department", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+          <div>
+            <%= f.label :device_department_id_eq, "Department", class: "mb-1 block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400" %>
             
             <%= turbo_frame_tag "search_dept_options" do %>
               <% 
@@ -83,27 +83,27 @@
         </div>
 
         <%# 5. Status Filter %>
-        <div class="col-span-1">
-          <%= f.label :status_eq, "Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+        <div>
+          <%= f.label :status_eq, "Status", class: "mb-1 block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400" %>
           <%= f.select :status_eq, IpAddress.statuses.map { |k, v| [k.humanize, v] }, 
                 { include_blank: "All Statuses" }, 
                 { class: "input cursor-pointer" } %>
         </div>
 
         <%# 6. Reachability Status Filter %>
-        <div class="col-span-1">
-          <%= f.label :reachability_status_eq, "Reachability Status", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+        <div>
+          <%= f.label :reachability_status_eq, "Reachability Status", class: "mb-1 block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400" %>
           <%= f.select :reachability_status_eq, IpAddress.reachability_statuses.map { |k, v| [k.humanize, v] }, 
                 { include_blank: "Select Reachability status" }, 
                 { class: "input cursor-pointer" } %>
         </div>
 
         <%# 7. Rogue Filter %>  
-        <div class="col-span-1">
-          <label class="block text-xs font-bold uppercase text-subtle mbe-1">Security Filter</label>
+        <div>
+          <label class="mb-1 block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Security Filter</label>
 
-          <div class="flex items-center justify-between bg-surface gap border pi-3 pb-2 rounded-md">
-            <%= label_tag :rogue_only, "Rogue devices?", class: "text-sm font-medium cursor-pointer mie-2" %>
+          <div class="flex items-center justify-between gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-zinc-900">
+            <%= label_tag :rogue_only, "Rogue devices?", class: "text-sm font-medium me-2 cursor-pointer" %>
             <%= f.check_box :rogue_only, 
                   class: "switch cursor-pointer", 
                   role: "switch",
@@ -114,13 +114,12 @@
         </div>
 
         <%# 8. Actions %>
-        <div class="col-span-1 flex gap-2">
-          <%#= f.submit "Filter", 
-                class: "btn bg-orange-500 hover:bg-orange-600 i-full", 
+        <div class="flex gap-2">
+          <%#= f.submit "Filter", class: "btn btn--primary w-full",
                 data: { action: "click->search-filter#preventClose" } %>
           
           <%= link_to "Clear", ip_addresses_path, 
-                class: "btn btn--primary items-end", 
+                class: "btn btn--primary", 
                 data: { 
                   # Clear can target the frame because it's a simple GET, 
                   # but using _top or stream is safer for header updates.

@@ -1,0 +1,28 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "469dfba6cbbfad395644e79afe8a29dced3160b50bb24a75e5336d19eb84dcdf",
+      "note": "Admin::UsersController permits :admin/:verified, but the whole controller sits behind require_admin \u2014 only admins can mass-assign those fields."
+    },
+    {
+      "fingerprint": "49eddc62fc772e252ebafc88492fa494d14138f8cc3e7bfb678f95f9deec600e",
+      "note": "Weak RegexDoS \u2014 pattern built from authenticated-user device names; worst case degrades the attacker's own request. Accepted."
+    },
+    {
+      "fingerprint": "7b0c19da00e2cced8032693cb431f425291c8e711a6f67089986a7b644574aed",
+      "note": "constantize on referenceable_type then only calls .find \u2014 no arbitrary method dispatch. Accepted risk; follow-up is an explicit %w[Device IpAddress] allowlist."
+    },
+    {
+      "fingerprint": "9f5de323956be7f71c8759ec958546128ee88020358e52bdb94ded5ef10904fe",
+      "note": "nmap target comes from persisted Subnet records (CIDR-validated at creation by authenticated users), not raw request input. Accepted; follow-up is shell-escaping/allowlist hardening."
+    },
+    {
+      "fingerprint": "a993f786f5340d9fc7ac3c4088cdfb550d39452acc3f55bebc5f2116671d12b4",
+      "note": "Uses safe_constantize (nil-safe) guarded by `if item_class`. False positive."
+    },
+    {
+      "fingerprint": "e68a094afcc07e37007a4a57599749294d06f31bfa979c34cb3132c29ec437ec",
+      "note": "pg_reports dashboard basic-auth uses a default password, but the engine is mounted development-only (see routes.rb guard) and never exposed in production."
+    }
+  ]
+}

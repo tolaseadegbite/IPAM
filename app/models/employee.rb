@@ -6,7 +6,7 @@ class Employee < ApplicationRecord
   # Search by Name or Email
   multisearchable against: [ :first_name, :last_name ]
 
-  belongs_to :department
+  belongs_to :department, counter_cache: true
   has_many :devices # History: "What devices does Sarah have?"
 
   enum :status, { active: 0, on_leave: 1, terminated: 2 }

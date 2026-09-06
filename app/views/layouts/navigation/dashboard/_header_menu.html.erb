@@ -1,43 +1,33 @@
-<div class="flex justify-between items-center gap i-full">
-  <div class="flex-1 min-i-0">
-    <div class="font-semibold truncate"><%= yield(:page_header) || "Dashboard" %></div>
+<div class="flex h-16 shrink-0 items-center gap-2 px-3">
+  <%= render "layouts/navigation/dashboard/mobile_menu" %>
+
+  <div class="min-w-0 flex-1 truncate text-[15px] font-semibold text-zinc-900 dark:text-zinc-100">
+    <%= yield(:page_header).presence || "Dashboard" %>
   </div>
 
-  <div class="flex items-center gap">
-    <div class="flex-grow flex justify-center hide@touch">
-      <%= form_with url: search_path, method: :get, class: "relative w-full max-w-md", data: { turbo_frame: "main_content" } do |f| %>
-        <label class="input input--actor flex items-center gap">
-          <span class="icon icon--search" aria-hidden="true"></span>
-          <%= text_field_tag :query, nil, placeholder: "Search Devices, IPs, People...", autocomplete: "on" %>
-      <% end %>
-    </div>
-    
-    <div>
-      <%= yield :header_action_buttons %>
-    </div>
+  <div class="hidden min-w-0 flex-1 justify-center px-4 md:flex">
+    <%= form_with url: search_path, method: :get, class: "relative w-full max-w-md" do %>
+      <span class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400">
+        <%= icon("search", "h-4 w-4") %>
+      </span>
+      <%= text_field_tag :query, params[:query], placeholder: "Search devices, IPs, people…",
+                         autocomplete: "off",
+                         class: "input rounded-full pl-9" %>
+    <% end %>
+  </div>
 
-    <!--<%# trigger = button_tag type: "button", class: "btn btn--icon hide@md", data: { action: "dialog#showModal" } do %>
-      <span class="icon icon--sun icon--color-scheme-light" aria-hidden="true"></span>
-      <span class="icon icon--moon icon--color-scheme-dark" aria-hidden="true"></span>
-      <span class="sr-only">Theme switcher</span>
-    <%# end %>
+  <div class="flex items-center gap-1.5">
+    <%= yield :header_action_buttons %>
 
-    <%#= modal_dialog trigger, title: "Select a theme" do %>
-      <div class="menu bg-main" data-controller="menu" data-action="keydown->menu#navigate" role="menu">
-        
-        <button type="button" class="btn menu__item bg-main" data-action="dialog#close color-scheme#setLight" data-menu-target="item" role="menuitem">
-          <span class="icon icon--sun"></span>
-          Light
-        </button>
-        <button type="button" class="btn menu__item bg-main" data-action="dialog#close color-scheme#setDark" data-menu-target="item" role="menuitem">
-        <span class="icon icon--moon"></span>
-          Dark
-        </button>
-        <button type="button" class="btn menu__item bg-main" data-action="dialog#close color-scheme#setSystem" data-menu-target="item" role="menuitem">
-          <span class="icon icon--laptop"></span>
-          System
-        </button>
-      </div>
-    <%# end %>-->
+    <button type="button" class="btn btn--borderless !px-2.5 hidden dark:inline-flex"
+            data-action="color-scheme#setLight" title="Switch to light mode">
+      <%= icon("sun", "h-[18px] w-[18px]") %>
+      <span class="sr-only">Switch to light mode</span>
+    </button>
+    <button type="button" class="btn btn--borderless !px-2.5 dark:hidden"
+            data-action="color-scheme#setDark" title="Switch to dark mode">
+      <%= icon("moon", "h-[18px] w-[18px]") %>
+      <span class="sr-only">Switch to dark mode</span>
+    </button>
   </div>
 </div>

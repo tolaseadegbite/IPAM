@@ -1,29 +1,36 @@
 <% content_for :title, "Search Results" %>
 
-<% content_for :page_header do %>
-  <h4 class="font-semibold">Search results</h4>
-<% end %>
+<% content_for :page_header do %>Search<% end %>
 
-<div class="p-4 i-full mi-auto" style="max-inline-size: 70rem">
-  <h1 class="text-2xl font-bold mbe-6">
-    Search Results for "<span class="text-orange-600"><%= params[:query] %></span>"
-  </h1>
+<div class="mx-auto flex w-full max-w-4xl flex-col gap-4">
+  <%= form_with url: search_path, method: :get, class: "relative w-full" do %>
+    <span class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400">
+      <%= icon("search", "h-4 w-4") %>
+    </span>
+    <%= text_field_tag :query, params[:query], placeholder: "Search devices, IPs, people…",
+                       autocomplete: "off", autofocus: params[:query].blank?,
+                       class: "input rounded-full pl-9" %>
+  <% end %>
+
+  <% if params[:query].present? %>
+    <h1 class="text-xl font-bold tracking-tight sm:text-2xl">
+      Results for "<span class="text-orange-600 dark:text-orange-400"><%= params[:query] %></span>"
+    </h1>
+  <% else %>
+    <h1 class="text-xl font-bold tracking-tight sm:text-2xl">Search the inventory</h1>
+  <% end %>
 
   <% if @results.any? %>
-    <div class="grid grid-cols-1 gap-4">
+    <div class="grid grid-cols-1 gap-3">
       <% @results.each do |result| %>
-        <%# 'result.searchable' is the actual Device, Employee, or IpAddress object %>
         <% item = result.searchable %>
-        
         <% if item.present? %>
-          <%# Render specific partial based on type %>
           <%= render "search/result_#{item.class.name.underscore}", item: item %>
         <% end %>
       <% end %>
     </div>
   <% else %>
-    <div class="p-8 text-center bg-gray-50 rounded-lg border">
-      <p class="text-subtle">No matches found.</p>
-    </div>
+    <%= render "shared/empty_state", object: "result", title: "No matches found.", icon: "search",
+               description: "Try a different hostname, IP address, or name." %>
   <% end %>
 </div>

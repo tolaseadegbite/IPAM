@@ -1,22 +1,20 @@
 <tr id="<%= dom_id(branch, :table_row) %>">
-  <td class="p-3 font-semibold"><span><%= link_to branch.name, branch, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
-
-  <td class="p-3"><span><%= branch.location.present? ? branch.location : "Nil" %></span></td>
-
-  <td class="p-3"><span><%= branch.contact_phone.present? ? branch.contact_phone : "Nil" %></span></td>
-
-  <td class="flex items-center justify-end gap-4">
-    <%= link_to "Edit", edit_branch_path(branch),
-                class: "text-xs text-orange-500 hover:text-orange-600",
-                data: { turbo_frame: "modal" } %>
-
-    <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
-    <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{branch.name}'?" do %>
-      <p class="text-sm text-subtle mbe-4">This will permanently delete this branch. This action cannot be undone.</p>
-      <div class="flex items-center justify-end gap">
-        <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
-        <%= button_to "Continue", branch, method: :delete, class: "btn btn--negative" %>
-      </div>
-    <% end %>
+  <td class="p-3 font-semibold"><%= link_to branch.name, branch, class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></td>
+  <td class="p-3 text-sm"><%= branch.location.present? ? branch.location : "—" %></td>
+  <td class="p-3 font-mono text-sm"><%= branch.contact_phone.present? ? branch.contact_phone : "—" %></td>
+  <td class="p-3">
+    <div class="flex items-center justify-end gap-3">
+      <%= link_to "Edit", edit_branch_path(branch),
+                  class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400",
+                  data: { turbo_frame: "modal" } %>
+      <% delete_trigger = button_tag "Delete", type: "button", class: "cursor-pointer text-sm font-medium text-red-600 hover:underline dark:text-red-400", data: { action: "dialog#showModal" } %>
+      <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{branch.name}'?" do %>
+        <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this branch. This action cannot be undone.</p>
+        <div class="flex items-center justify-end gap-2">
+          <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
+          <%= button_to "Continue", branch, method: :delete, class: "btn btn--negative" %>
+        </div>
+      <% end %>
+    </div>
   </td>
 </tr>

@@ -10,14 +10,14 @@
           aria-label="<%= label %>">
 
     <button type="button" class="btn btn--plain dialog__close" data-action="click->dialog#close">
-      <span class="icon icon--x" aria-hidden="true"></span>
+      <%= icon("x", "h-[18px] w-[18px]") %>
       <span class="sr-only">Close</span>
     </button>
 
     <div class="dialog__content">
       <%# Only render the title if one was provided %>
       <% if title.present? %>
-        <h2 class="font-semibold text-lg mbe-4"><%= title %></h2>
+        <h2 class="mb-4 text-lg font-semibold"><%= title %></h2>
       <% end %>
 
       <%# Render the main content block that was passed in %>

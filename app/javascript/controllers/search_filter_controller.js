@@ -4,16 +4,16 @@ export default class extends Controller {
   static targets = ["filters"]
 
   toggle() {
-    this.filtersTarget.classList.toggle("hide")
+    this.filtersTarget.classList.toggle("hidden")
   }
 
   closeOnClickOutside(event) {
     const isOutside = !this.element.contains(event.target)
-    const isVisible = !this.filtersTarget.classList.contains("hide")
+    const isVisible = !this.filtersTarget.classList.contains("hidden")
     const isActionInside = this.filtersTarget.contains(event.target)
 
     if (isOutside && isVisible && !isActionInside) {
-      this.filtersTarget.classList.add("hide")
+      this.filtersTarget.classList.add("hidden")
     }
   }
 

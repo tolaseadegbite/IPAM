@@ -2,26 +2,26 @@
   <%= render "shared/error_messages", object: card %>
 
   <!-- Title -->
-  <div class="mbe-4">
-    <%= form.label :title, "Task Title", class: "block font-medium mbe-1" %>
+  <div class="mb-4">
+    <%= form.label :title, "Task Title", class: "mb-1 block font-medium" %>
     <%= form.text_field :title, class: "input", placeholder: "e.g. Replace faulty switch" %>
   </div>
 
   <!-- Description -->
-  <div class="mbe-4">
-    <%= form.label :description, "Description", class: "block font-medium mbe-1" %>
+  <div class="mb-4">
+    <%= form.label :description, "Description", class: "mb-1 block font-medium" %>
     <%= form.text_area :description, rows: 5, class: "input", placeholder: "Details about the issue..." %>
   </div>
 
   <!-- DEPENDENT DROPDOWN: Board -> List -->
-  <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-4"
+  <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2"
        data-controller="dependent-select"
        data-dependent-select-url-value="<%= select_options_lists_path %>"
        data-dependent-select-param-value="board_id"
        data-dependent-select-frame-id-value="list_options_frame">
 
     <div class="col-span-1">
-      <label class="block font-medium mbe-1">Board</label>
+      <label class="mb-1 block font-medium">Board</label>
       <% 
          current_list = List.find_by(id: card.list_id)
          selected_board_id = current_list&.board_id || Board.first&.id
@@ -38,7 +38,7 @@
     </div>
 
     <div class="col-span-1">
-      <%= form.label :list_id, "Status (Column)", class: "block font-medium mbe-1" %>
+      <%= form.label :list_id, "Status (Column)", class: "mb-1 block font-medium" %>
       <%= turbo_frame_tag "list_options_frame" do %>
         <% lists = selected_board_id ? List.where(board_id: selected_board_id).order(:position) : [] %>
         <%= form.select :list_id, 
@@ -50,14 +50,14 @@
   </div>
 
   <!-- Priority & Assignees -->
-  <div class="grid grid-cols-1 grid-cols-2@md gap-4 mbe-4">
+  <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
     <div class="col-span-1">
-      <%= form.label :priority, "Priority", class: "block font-medium mbe-1" %>
+      <%= form.label :priority, "Priority", class: "mb-1 block font-medium" %>
       <%= form.select :priority, Card.priorities.keys.map { |k| [k.humanize, k] }, {}, { class: "input cursor-pointer" } %>
     </div>
     
     <div class="col-span-1">
-      <%= form.label :user_ids, "Assign To", class: "block font-medium mbe-1" %>
+      <%= form.label :user_ids, "Assign To", class: "mb-1 block font-medium" %>
       <%= form.collection_select :user_ids, User.all, :id, :username, 
             { include_blank: "Assign" }, 
             { multiple: true, class: "cursor-pointer", size: 1, data: { controller: "combobox" } } %>
@@ -65,23 +65,23 @@
   </div>
 
   <!-- Linked Asset Section (Refactored for Smart Combobox) -->
-  <div class="mbe-6 p-3 bg-shade border border-main rounded-md">
-    <label class="block font-bold text-xs uppercase text-subtle mbe-2">Linked Asset (Context)</label>
+  <div class="mb-6 rounded-lg border border-zinc-200 bg-zinc-100 p-3 dark:border-white/10 dark:bg-white/5">
+    <label class="mb-2 block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Linked Asset (Context)</label>
     
     <% if card.referenceable %>
       <!-- 1. Display mode (Locked) -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <span class="text-lg"><%= card.referenceable_type == 'Device' ? '💻' : '🌐' %></span>
+          <%= icon(card.referenceable_type == 'Device' ? 'monitor' : 'globe', "h-5 w-5 text-zinc-400") %>
           <span class="font-medium text-sm"><%= card.referenceable.respond_to?(:name) ? card.referenceable.name : card.referenceable.address %></span>
         </div>
         <%= form.hidden_field :referenceable_type %>
         <%= form.hidden_field :referenceable_id %>
-        <span class="bg-black text-reversed pi-2 pb-1 rounded-full uppercase font-bold text-xs">Locked</span>
+        <span class="rounded-full bg-zinc-900 px-2 py-0.5 text-xs font-bold uppercase text-white dark:bg-zinc-100 dark:text-zinc-900">Locked</span>
       </div>
     <% else %>
       <!-- 2. Select mode (Smart Search) -->
-      <div class="grid grid-cols-1 grid-cols-2@md gap-2"
+      <div class="grid grid-cols-1 gap-2 md:grid-cols-2"
            data-controller="dependent-select"
            data-dependent-select-url-value="<%= select_assets_cards_path %>"
            data-dependent-select-param-value="asset_type"
@@ -101,7 +101,7 @@
         <div>
           <%= turbo_frame_tag "asset_options_frame" do %>
             <%# Initial empty state %>
-            <div class="input bg-surface opacity-50 cursor-not-allowed">
+            <div class="input cursor-not-allowed opacity-50">
               Select type to search...
             </div>
           <% end %>
@@ -111,16 +111,16 @@
   </div>
 
   <!-- Description -->
-  <div class="mbe-4">
-    <%= form.label :notes, "Notes", class: "block font-medium mbe-1" %>
+  <div class="mb-4">
+    <%= form.label :notes, "Notes", class: "mb-1 block font-medium" %>
     <%= form.text_area :notes, rows: 5, class: "input", placeholder: "Notes on this task..." %>
   </div>
 
   <!-- Actions -->
   <div class="flex justify-between items-center">
     <div class="flex gap-3 items-center">
-      <%= form.submit "Save Task", class: "btn bg-orange-400 text-white font-semibold rounded pi-4 pb-2" %>
-      <%= link_to "Cancel", "#", class: "text-subtle", data: { action: "click->modal#close" } %>
+      <%= form.submit "Save Task", class: "btn btn--primary" %>
+      <%= link_to "Cancel", "#", class: "text-sm text-zinc-500 hover:underline dark:text-zinc-400", data: { action: "click->modal#close" } %>
     </div>
     
     <% if card.persisted? %>

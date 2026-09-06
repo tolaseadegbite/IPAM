@@ -2,9 +2,9 @@
 
 ## Project Overview
 
-- **Rails 8.1.1** (Ruby 3.4.5) — IP Address Management (IPAM) system
+- **Rails 8.1.1** (Ruby 3.4.5) — Mainline network inventory (branches, devices, subnets, IPs, ops boards)
 - **Database:** PostgreSQL (primary) + SQLite3 (SolidQueue/SolidCache/SolidCable in dev)
-- **Frontend:** Hotwire (Turbo + Stimulus), Importmap-rails, CSS-Zero design system, Propshaft
+- **Frontend:** Hotwire (Turbo + Stimulus), Importmap-rails, Tailwind CSS v4 (via tailwindcss-rails, class-based dark mode), Propshaft
 - **Auth:** Session-based via signed cookies (authentication-zero gem), `Current` object pattern
 - **Search/Pagination:** Ransack + Pagy
 - **Auditing:** PaperTrail
@@ -104,7 +104,9 @@ RAILS_ENV=test bin/rails db:seed:replant
 - **Partials:** `_<model>.html.erb`, `_<model>_card.html.erb`, `shared/_flash.html.erb`
 - **Layout:** Single `application.html.erb` with conditional branching (`is_auth_page`, `is_dashboard_view`, `is_public_page`) rather than separate layout files.
 - **Hotwire:** `turbo_frame_tag` for modals, Stimulus `data-controller` and `data-action` attributes on elements.
-- **CSS:** CSS-Zero utility classes (`flex`, `flex-col`, `gap-0`, etc.).
+- **CSS:** Tailwind CSS v4 utilities + component classes defined in `app/assets/stylesheets/application.tailwind.css` (`.btn`, `.input`, `.card`, `.badge`, `.table`, `.dialog`, `.sheet`, `.popover`, `.menu`, `.flash`, `.switch`, `.accordion`, `.message`, `.sidebar-link`). Icons via `icon(name, classes)` helper backed by `shared/_icon_sprite`.
+- **Dark mode:** class-based (`.dark` on `<html>`, default dark). Every color utility needs its `dark:` variant. Sidebar stays dark always. Accent is orange-500, used sparingly for primary actions/links only — no purple, no gradients.
+- **Responsive:** mobile-first; tables get a `hidden md:block` wrapper + `md:hidden` card list; grids collapse to 1 col; FABs (`fixed bottom-24 md:hidden`) for primary create actions; bottom tab bar for mobile nav.
 
 ### JavaScript (Stimulus)
 

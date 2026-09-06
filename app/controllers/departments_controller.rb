@@ -9,7 +9,7 @@ class DepartmentsController < ApplicationController
 
   def show
     @employees = @department.employees.order(:first_name)
-    @devices = @department.devices.order(:name)
+    @devices = @department.devices.includes(:employee).order(:name)
   end
 
   def new
@@ -95,7 +95,7 @@ class DepartmentsController < ApplicationController
 
   private
     def set_department
-      @department = Department.find(params[:id])
+      @department = Department.includes(:branch).find(params[:id])
     end
 
     def department_params

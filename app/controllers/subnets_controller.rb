@@ -8,7 +8,7 @@ class SubnetsController < ApplicationController
   end
 
   def show
-    @ip_addresses = @subnet.ip_addresses.includes(:device).order(:address)
+    @pagy, @pool_ips = pagy(@subnet.ip_addresses.includes(:device).order(:address), limit: 96)
   end
 
   def new

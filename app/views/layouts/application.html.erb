@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="dark" lang="en">
   <head>
     <title><%= full_title(yield(:title)) %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -10,75 +10,70 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%# Apply theme before first paint to avoid flashing the wrong mode %>
+    <script>
+      try {
+        var scheme = localStorage.getItem("color_scheme") || "<%= cookies[:color_scheme].presence || "system" %>";
+        if (scheme === "light" || (scheme === "system" && window.matchMedia("(prefers-color-scheme: light)").matches)) {
+          document.documentElement.classList.remove("dark");
+        }
+      } catch (e) {}
+    </script>
+
     <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <%# <link rel="icon" href="/icon.svg" type="image/svg+xml"> %>
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="/icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-    <%= stylesheet_link_tag "css-zero/reset", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "css-zero/variables", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "css-zero/utilities", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <%
     is_dashboard_view = current_user.present?
     is_auth_page = !is_dashboard_view && controller_name.in?(['sessions', 'passwords', 'registrations', 'passwordlesses', 'password_resets'])
-    is_public_page = !is_dashboard_view && controller_name == 'pages'
+    is_public_page = !is_dashboard_view && !is_auth_page
   %>
 
-  <%# 1. Define the variable here %>
-  <% current_scheme = cookies[:color_scheme] || "system" %>
+  <body class="min-h-dvh bg-zinc-100 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100"
+        data-controller="color-scheme">
 
-  <%# 2. Now use it in the body tag %>
-  <body class="<%= 'min-b-screen flex flex-col justify-center items-center p-4' if is_auth_page %> bg-main" 
-        data-controller="color-scheme" 
-        data-color-scheme="<%= current_scheme %>" 
-        <% if is_dashboard_view %>data-action="show@window->player#show"<% end %>>
+    <%= render "shared/icon_sprite" %>
 
     <div id="flash_messages">
       <%= render "shared/flash" %>
     </div>
 
-    <%# --- Main Conditional Layout Logic --- %>
-
     <% if is_dashboard_view %>
-      <%# --- RENDER DASHBOARD LAYOUT --- %>
-      <div class="sidebar-layout">
-        <aside id="sidebar">
+      <div class="min-h-dvh lg:pl-64">
+        <aside class="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-zinc-950 lg:flex">
           <%= render "layouts/navigation/dashboard/sidebar_menu" %>
         </aside>
 
-        <main id="main" style="padding: 0 !important; gap: 0 !important;">
-          <div class="header-layout">
-            <header class="" id="header">
-              <%= render "layouts/navigation/dashboard/mobile_menu" %>
-              <%= render "layouts/navigation/dashboard/header_menu" %>
-            </header>
-            <%= yield %>
-          </div>
+        <header class="sticky top-0 z-30 border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-white/10 dark:bg-zinc-950/80">
+          <%= render "layouts/navigation/dashboard/header_menu" %>
+        </header>
+
+        <main id="main" class="mx-auto w-full max-w-7xl p-4 pb-28 sm:p-6 lg:pb-10">
+          <%= yield %>
         </main>
+
+        <%= render "layouts/navigation/dashboard/bottom_nav" %>
       </div>
 
-    <% else %>
-      <%# --- RENDER PUBLIC/AUTH LAYOUT --- %>
-      <% if is_public_page %>
-        <%= render "layouts/navigation/public/navbar" %>
-      <% end %>
-
-      <% if is_auth_page %>
+    <% elsif is_auth_page %>
+      <main class="flex min-h-dvh flex-col items-center justify-center p-4">
         <%= yield %>
-      <% else %>
-        <main id="main">
-          <div class="container">
-            <%= yield %>
-          </div>
-        </main>
-      <% end %>
+      </main>
+
+    <% else %>
+      <%= render "layouts/navigation/public/navbar" %>
+      <main id="main" class="mx-auto w-full max-w-7xl p-4 sm:p-6">
+        <%= yield %>
+      </main>
     <% end %>
+
     <%= turbo_frame_tag "modal" %>
   </body>
 </html>

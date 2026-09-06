@@ -1,22 +1,17 @@
 <% content_for :title, "Kanban Boards" %>
 
-<% content_for :page_header do %>
-  <h4 class="font-semibold">IT Operations Boards</h4>
-<% end %>
+<% content_for :page_header do %>Operations Boards<% end %>
 
 <% content_for :header_action_buttons do %>
-  <%= link_to "New Board", new_board_path, class: "btn bg-orange-400 text-white font-semibold rounded-md", data: { turbo_frame: "modal" } %>
+  <%= link_to "New Board", new_board_path, class: "btn btn--primary !px-3 !py-1.5 text-sm", data: { turbo_frame: "modal" } %>
 <% end %>
 
-<div class="p-4 i-full">
-  <%# Added ID 'boards-grid' %>
-  <div id="boards-grid" class="grid grid-cols-1 grid-cols-2@md grid-cols-3@lg gap-4">
-    <%= render @boards %>
-  </div>
-
-  <% if @boards.empty? %>
-    <div id="empty_state" class="p-8 text-center text-subtle italic border border-dashed rounded-lg mbs-4">
-      No boards created yet. Click "New Board" to get started.
-    </div>
-  <% end %>
+<div id="boards-grid" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+  <%= render @boards %>
 </div>
+
+<% if @boards.empty? %>
+  <div id="empty_state" class="mt-4 rounded-lg border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 italic dark:border-white/10 dark:text-zinc-400">
+    No boards created yet. Click "New Board" to get started.
+  </div>
+<% end %>

@@ -1,69 +1,63 @@
-<%# Network Card %>
-<div class="card bg-white shadow-sm flex flex-col">
-  <h3 class="font-bold text-lg mbe-4 border-be pbe-2 flex items-center gap-2">
-    <span class="icon icon--globe"></span> Network
+<div class="card flex flex-col p-4 sm:p-5">
+  <h3 class="mb-4 flex items-center gap-2 border-b border-zinc-200 pb-2 text-lg font-bold dark:border-white/10">
+    <%= icon("globe", "h-5 w-5 text-zinc-400") %> Network
   </h3>
-  
-  <%# FIX 1: Check for multiple IPs and loop through them %>
+
   <% if @device.ip_addresses.any? %>
     <div class="flex flex-col gap-3">
       <% @device.ip_addresses.each do |ip| %>
-        <div class="text-center p-4 bg-green-50 border border-green-100 rounded-md">
-          <div class="font-mono text-2xl font-bold text-green-700 mbe-1">
+        <div class="rounded-lg border border-green-200 bg-green-50 p-4 text-center dark:border-green-500/20 dark:bg-green-500/10">
+          <div class="mb-1 font-mono text-2xl font-bold text-green-700 dark:text-green-300">
             <%= link_to ip.address, ip_address_path(ip), data: { turbo_frame: "_top" } %>
           </div>
-          <div class="text-sm text-green-600"><%= ip.subnet.name %></div>
+          <div class="text-sm text-green-600 dark:text-green-400"><%= ip.subnet.name %></div>
         </div>
       <% end %>
     </div>
   <% else %>
-    <div class="text-center p-4 bg-gray-50 border border-dashed rounded-md text-subtle flex-item-grow flex items-center justify-center">
+    <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500 dark:border-white/10 dark:text-zinc-400">
       No IP Address Assigned
     </div>
   <% end %>
 </div>
 
-<%# Mac Address Card %>
-<div class="card bg-white shadow-sm flex flex-col">
-  <h3 class="font-bold text-lg mbe-4 border-be pbe-2 flex items-center gap-2">
-    <span class="icon icon--monitor"></span> MAC ADDR
+<div class="card flex flex-col p-4 sm:p-5">
+  <h3 class="mb-4 flex items-center gap-2 border-b border-zinc-200 pb-2 text-lg font-bold dark:border-white/10">
+    <%= icon("monitor", "h-5 w-5 text-zinc-400") %> MAC Address
   </h3>
-  
-  <%# FIX 2: Check the MAC address, not the IP address! %>
+
   <% if @device.mac_address.present? %>
-    <div class="text-center p-4 bg-blue-50 border border-blue-100 rounded-md">
-      <div class="font-mono text-2xl font-bold text-blue-700 mbe-1"><%= @device.mac_address %></div>
+    <div class="rounded-lg border border-sky-200 bg-sky-50 p-4 text-center dark:border-sky-500/20 dark:bg-sky-500/10">
+      <div class="mb-1 font-mono text-2xl font-bold break-all text-sky-700 dark:text-sky-300"><%= @device.mac_address %></div>
     </div>
   <% else %>
-    <div class="text-center p-4 bg-gray-50 border border-dashed rounded-md text-subtle flex-item-grow flex items-center justify-center">
+    <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500 dark:border-white/10 dark:text-zinc-400">
       No MAC Address Assigned
     </div>
   <% end %>
 </div>
 
-<%# Owner Card %>
-<div class="card p-6 border rounded-md bg-white shadow-sm flex flex-col">
-  <h3 class="font-bold text-lg mbe-4 border-be pbe-2 flex items-center gap-2">
-    <span class="icon icon--user"></span> Assignment
+<div class="card flex flex-col p-4 sm:p-5">
+  <h3 class="mb-4 flex items-center gap-2 border-b border-zinc-200 pb-2 text-lg font-bold dark:border-white/10">
+    <%= icon("user", "h-5 w-5 text-zinc-400") %> Assignment
   </h3>
-  
+
   <% if @device.employee %>
     <div class="flex items-center gap-4">
-      <div class="bg-shade rounded-full flex items-center justify-center text-lg font-bold border shrink-0" style="block-size: 5rem; inline-size: 5rem;">
+      <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-zinc-200 bg-zinc-100 text-lg font-bold dark:border-white/10 dark:bg-zinc-800">
         <%= @device.employee.first_name.first %><%= @device.employee.last_name.first %>
       </div>
-      <div>
-        <div class="font-bold text-lg">
+      <div class="min-w-0">
+        <div class="truncate text-lg font-bold">
           <%= link_to @device.employee.full_name, @device.employee, class: "hover:underline" %>
         </div>
-        <div class="text-sm text-subtle"><%= @device.department.name %></div>
+        <div class="text-sm text-zinc-500 dark:text-zinc-400"><%= @device.department.name %></div>
       </div>
     </div>
   <% else %>
     <div class="flex items-center gap-4 opacity-50">
-      <%# FIX 3: Removed w-12 h-12 in favor of CSS-Zero block-size/inline-size %>
-      <div class="bg-shade border rounded-full shrink-0" style="block-size: 4rem; inline-size: 4rem;"></div>
-      <div class="font-medium text-subtle">Unassigned</div>
+      <div class="h-16 w-16 shrink-0 rounded-full border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-zinc-800"></div>
+      <div class="font-medium text-zinc-500 dark:text-zinc-400">Unassigned</div>
     </div>
   <% end %>
 </div>

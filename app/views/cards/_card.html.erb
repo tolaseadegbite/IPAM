@@ -1,46 +1,37 @@
-<% 
-  # Priority Color Logic (Border left)
+<%
   border_color = case card.priority
-                 when "high" then "border-l-4 border-red-500"
-                 when "medium" then "border-l-4 border-yellow-400"
-                 else "border-l-4 border-blue-400"
+                 when "high" then "border-l-4 !border-l-red-500"
+                 when "medium" then "border-l-4 !border-l-amber-400"
+                 else "border-l-4 !border-l-sky-400"
                  end
 %>
 
-<div id="<%= dom_id card %>" data-id="<%= card.id %>" class="card p-3 shadow-sm hover:shadow-md transition-shadow cursor-grab bg-white <%= border_color %>">
-  
-  <!-- Title -->
-  <div class="font-medium text-sm mbe-1 text-primary">
+<div id="<%= dom_id card %>" data-id="<%= card.id %>" class="card cursor-grab p-3 shadow-sm transition-shadow hover:shadow-md <%= border_color %>">
+
+  <div class="mb-1 text-sm font-medium">
     <%= link_to card.title, edit_card_path(card), data: { turbo_frame: "modal" }, class: "hover:text-orange-500" %>
   </div>
 
-  <!-- Linked Asset (The IPAM Integration) -->
   <% if card.referenceable %>
-    <div class="text-xs text-subtle mbe-2 flex items-center gap-1 p-1 bg-surface rounded-md border border-main">
+    <div class="mb-2 flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 p-1.5 text-xs dark:border-white/10 dark:bg-white/5">
       <% if card.referenceable.is_a?(Device) %>
-        <span class="icon icon--monitor"></span>
-        <%= link_to card.referenceable.name, device_path(card.referenceable), class: "hover:underline", data: { turbo_frame: "_top" } %>
+        <%= icon("monitor", "h-3.5 w-3.5 shrink-0 text-zinc-400") %>
+        <%= link_to card.referenceable.name, device_path(card.referenceable), class: "truncate hover:underline", data: { turbo_frame: "_top" } %>
       <% elsif card.referenceable.is_a?(IpAddress) %>
-        <span class="icon icon--globe"></span>
-        <%= link_to card.referenceable.address, ip_address_path(card.referenceable), class: "hover:underline", data: { turbo_frame: "_top" } %>
+        <%= icon("globe", "h-3.5 w-3.5 shrink-0 text-zinc-400") %>
+        <%= link_to card.referenceable.address, ip_address_path(card.referenceable), class: "truncate font-mono hover:underline", data: { turbo_frame: "_top" } %>
       <% end %>
     </div>
   <% end %>
 
-  <!-- Footer: Assignees & ID -->
-  <div class="flex justify-between items-end mbs-2">
-    <div class="flex overflow-hidden gap-half">
+  <div class="mt-2 flex items-end justify-between">
+    <div class="flex flex-wrap gap-1">
       <% card.users.each do |user| %>
-        <!-- Simple Avatar Placeholder -->
-        <!--<div class="bg-blue-500 rounded-full flex items-center justify-center text-xs font-semibold text-gray-50 p-2" style="block-size: 1rem; inline-size: 1rem;" title="<%= user.username %>">
-          <%#= user.username[0].upcase %>
-        </div> -->
-        <div class="text-sky-500 border border-sky-500 rounded-md flex items-center justify-center text-xs pb-1 pi-2" style="">
+        <span class="rounded-md border border-sky-500 px-2 py-0.5 text-xs text-sky-600 dark:text-sky-400">
           <%= user.username %>
-        </div>
+        </span>
       <% end %>
     </div>
-    
-    <span class="text-xs text-subtle">#<%= card.id %></span>
+    <span class="shrink-0 text-xs text-zinc-400">#<%= card.id %></span>
   </div>
 </div>

@@ -1,4 +1,6 @@
 class DashboardsController < ApplicationController
+  include DashboardData
+
   def show
     load_dashboard_data
     render :show, locals: dashboard_locals(scanning: false)
@@ -49,8 +51,8 @@ class DashboardsController < ApplicationController
     datasets: [ {
       label: "Devices",
       data: device_stats.values,
-      # A nice palette for categorical data
-      backgroundColor: [ "#6366f1", "#8b5cf6", "#ec4899", "#14b8a6", "#f59e0b", "#64748b" ],
+      # NOC categorical palette — solid ops colors, no purple.
+      backgroundColor: [ "#0ea5e9", "#22c55e", "#f59e0b", "#f97316", "#64748b", "#14b8a6" ],
       borderWidth: 0,
       borderRadius: 3,
       barThickness: 20
@@ -85,27 +87,34 @@ class DashboardsController < ApplicationController
     @critical_devices = Device.where(critical: true).includes(:ip_addresses).limit(10)
     @recent_events = NetworkEvent.includes(:device).order(created_at: :desc).limit(10)
 
-    # 4. Timestamp (NEW)
-    # Read from cache to match the Service, fallback to DB, fallback to Now
-    @last_scan = Rails.cache.read("last_network_scan_completed_at") || IpAddress.maximum(:last_seen_at) || Time.current
-
-    # 5. Duration (NEW)
-    @last_duration = Rails.cache.read("last_scan_duration") || 0
-
-    # --- 6. KANBAN INTEGRATION (NEW) ---
-    # Fetch High Priority cards.
-    # Ideally exclude "Done" lists, but for now we grab all High Priority.
-    # @high_priority_tasks = Card.where(priority: :high)
-    #                            .includes(:list, :users, :referenceable)
-    #                            .order(created_at: :desc)
-    #                            .limit(5)
-
+    # 3b. Hero datasets: 14-day event trend, ranked attention queue, derived status.
+    # NOTE: high-priority cards load here because the queue builder needs them.
     @high_priority_tasks = Card.joins(:list)
                            .where(priority: :high)
                            .where("lists.name ILIKE ? OR lists.name ILIKE ?", "%to do%", "%todo%")
                            .preload(:list, :users, :referenceable)
                            .order(created_at: :desc)
                            .limit(5)
+    @events_trend = build_events_trend
+    @attention_items = build_attention_queue(
+      rogue_devices: @rogue_devices,
+      ghost_assets: @ghost_assets,
+      critical_devices: @critical_devices,
+      high_priority_tasks: @high_priority_tasks
+    )
+    @network_status, @status_reasons = derive_network_status(
+      critical_devices: @critical_devices,
+      rogue_count: @rogue_count
+    )
+    @top_subnets = @subnets.first(5)
+    @subnets_overflow = [ @subnets.length - 5, 0 ].max
+
+    # 4. Timestamp (NEW)
+    # Read from cache to match the Service, fallback to DB, fallback to Now
+    @last_scan = Rails.cache.read("last_network_scan_completed_at") || IpAddress.maximum(:last_seen_at) || Time.current
+
+    # 5. Duration (NEW)
+    @last_duration = Rails.cache.read("last_scan_duration") || 0
   end
 
   def dashboard_locals(scanning: false)
@@ -114,10 +123,15 @@ class DashboardsController < ApplicationController
       total_ips: @total_ips,
       rogue_count: @rogue_count,
       utilization_percent: @utilization_percent,
-      # reachability_chart: @reachability_chart,
       device_type_chart: @device_type_chart,
       allocation_chart: @allocation_chart,
       subnets: @subnets,
+      top_subnets: @top_subnets,
+      subnets_overflow: @subnets_overflow,
+      events_trend: @events_trend,
+      attention_items: @attention_items,
+      network_status: @network_status,
+      status_reasons: @status_reasons,
       rogue_devices: @rogue_devices,
       ghost_assets: @ghost_assets,
       critical_devices: @critical_devices,

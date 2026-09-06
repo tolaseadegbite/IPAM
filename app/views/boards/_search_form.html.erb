@@ -1,46 +1,34 @@
-<div class="mbe-6 card p-4">
-  <%= search_form_for search, url: board_path(board), 
-      method: :get, 
-      data: { 
-        turbo_frame: "_top", 
-        turbo_action: "advance", 
-        controller: "debounce", 
-        action: "input->debounce#submit change->debounce#submit" 
+<div class="card mb-6 p-4">
+  <%= search_form_for search, url: board_path(board),
+      method: :get,
+      data: {
+        turbo_frame: "_top",
+        turbo_action: "advance",
+        controller: "debounce",
+        action: "input->debounce#submit change->debounce#submit"
       } do |f| %>
-    
-    <div class="grid grid-cols-1 grid-cols-2@sm grid-cols-4@md gap-4 items-end">
-      
-      <!-- 1. Keyword Search -->
-      <div class="col-span-1">
-        <%= f.label :title_or_description_or_referenceable_of_Device_type_name_or_referenceable_of_IpAddress_type_address_string_cont, "Search Tasks or Assets", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-        <%= f.search_field :title_or_description_or_referenceable_of_Device_type_name_or_referenceable_of_IpAddress_type_address_string_cont, 
-            placeholder: "Task, Hostname, or IP...", 
-            class: "input" %>
+    <div class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 md:grid-cols-4">
+      <div>
+        <%= f.label :title_or_description_or_referenceable_of_Device_type_name_or_referenceable_of_IpAddress_type_address_string_cont, "Search Tasks or Assets", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+        <%= f.search_field :title_or_description_or_referenceable_of_Device_type_name_or_referenceable_of_IpAddress_type_address_string_cont,
+            placeholder: "Task, hostname, or IP…", class: "input" %>
       </div>
-
-      <!-- 2. Priority Filter -->
-      <div class="col-span-1">
-        <%= f.label :priority_eq, "Priority", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
-        <%= f.select :priority_eq, Card.priorities.map { |k, v| [k.humanize, v] }, 
-              { include_blank: "All Priorities" }, 
-              { class: "input cursor-pointer" } %>
+      <div>
+        <%= f.label :priority_eq, "Priority", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+        <%= f.select :priority_eq, Card.priorities.map { |k, v| [k.humanize, v] },
+              { include_blank: "All Priorities" }, { class: "input cursor-pointer" } %>
       </div>
-
-      <!-- 3. NEW: Created After (Date) -->
-      <div class="col-span-1">
-        <%= f.label :created_at_gteq, "Created After", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+      <div>
+        <%= f.label :created_at_gteq, "Created After", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
         <%= f.date_field :created_at_gteq, class: "input cursor-pointer" %>
       </div>
-
-      <!-- 4. NEW: Created Before (Date) -->
-      <div class="col-span-1 flex gap-2 items-end">
-        <div class="flex-item-grow">
-          <%= f.label :created_at_lteq, "Created Before", class: "block text-xs font-bold uppercase text-subtle mbe-1" %>
+      <div class="flex items-end gap-2">
+        <div class="flex-1">
+          <%= f.label :created_at_lteq, "Created Before", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
           <%= f.date_field :created_at_lteq, class: "input cursor-pointer" %>
         </div>
-        <%= link_to "Reset", board_path(board), class: "btn btn--subtle text-xs mbe-1" %>
+        <%= link_to "Reset", board_path(board), class: "btn mb-px text-xs" %>
       </div>
-
     </div>
   <% end %>
 </div>

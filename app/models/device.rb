@@ -8,7 +8,7 @@ class Device < ApplicationRecord
   # Search by Name, Serial, or Tag.
   multisearchable against: [ :name ]
 
-  belongs_to :department
+  belongs_to :department, counter_cache: true
   belongs_to :employee, optional: true # Optional: New laptops might be in storage (no owner)
 
   # When a device is deleted/retired, the IP is automatically freed (set to null)
@@ -52,8 +52,6 @@ class Device < ApplicationRecord
       errors.add(:status, "cannot be Retired while holding an IP Address. Release the IP first.")
     end
   end
-
-  private
 
   def normalize_mac_address
     self.mac_address = nil if mac_address.blank?

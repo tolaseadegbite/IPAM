@@ -1,76 +1,59 @@
 <% content_for :title, @device.name %>
 
-<% content_for :page_header do %>
-  <h4 class="font-semibold"><%= @device.name %></h4>
-<% end %>
+<% content_for :page_header do %><%= @device.name %><% end %>
 
 <% content_for :header_action_buttons do %>
-  <div class="flex items-center gap-2">
-    <%= link_to "Edit", edit_device_path(@device), class: "btn bg-orange-400 show@md", data: { turbo_frame: "modal" } %>
-    
-    <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+  <div class="hidden items-center gap-2 md:flex">
+    <%= link_to "Edit", edit_device_path(@device), class: "btn btn--primary !px-3 !py-1.5 text-sm", data: { turbo_frame: "modal" } %>
+    <% delete_trigger = button_tag "Delete", type: "button", class: "btn !border-red-200 !px-3 !py-1.5 text-sm !text-red-600 hover:!bg-red-50 dark:!border-red-500/30 dark:!text-red-400 dark:hover:!bg-red-500/10", data: { action: "dialog#showModal" } %>
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{@device.name}'?" do %>
-      <p class="text-sm text-subtle mbe-4">This will permanently delete this device. This action cannot be undone.</p>
-      <div class="flex items-center justify-end gap">
+      <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this device. This action cannot be undone.</p>
+      <div class="flex items-center justify-end gap-2">
         <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
         <%= button_to "Continue", @device, method: :delete, data: { turbo: false }, class: "btn btn--negative" %>
       </div>
     <% end %>
-
-    <%= link_to new_card_path(referenceable_type: 'Device', referenceable_id: @device.id), 
-          class: "btn btn--subtle btn--sm flex items-center gap-1", 
-          data: { turbo_frame: "modal" } do %>
-      <span class="icon">📋</span> Log Maintenance Task
-    <% end %>
   </div>
 <% end %>
 
-<div class="absolute hide@md" style="bottom: 10rem; right: 1rem; z-index: 9999">
-  <%= link_to edit_device_path(@device), class: "btn bg-orange-400 text-white font-semibold rounded-full p-5", data: { turbo_frame: "modal" } do %>
-    <span class="icon icon--square-pen"></span>
-  <% end %>
-</div>
+<%= link_to edit_device_path(@device), class: "btn btn--primary fixed right-4 bottom-24 z-30 !rounded-full !p-4 shadow-lg md:hidden",
+            data: { turbo_frame: "modal" }, aria: { label: "Edit device" } do %>
+  <%= icon("square-pen", "h-5 w-5") %>
+<% end %>
 
-<div class="p-4">
-  <div class="flex items-center justify-between mbe-6">
-    <div class="flex items-center gap-4">
-      <%= link_to :back, class: "btn btn--subtle btn--icon" do %>
-        <span class="icon icon--chevron-left"></span>
+<div class="flex flex-col gap-6">
+  <div class="flex items-center justify-between gap-3">
+    <div class="flex min-w-0 items-center gap-3">
+      <%= link_to :back, class: "btn shrink-0 !p-2", aria: { label: "Back" } do %>
+        <%= icon("chevron-left", "h-4 w-4") %>
       <% end %>
-      <div id="name_and_serial">
+      <div id="name_and_serial" class="min-w-0">
         <%= render "devices/name_and_serial" %>
       </div>
     </div>
+    <div class="flex shrink-0 items-center gap-2 md:hidden">
+      <%= link_to "Edit", edit_device_path(@device), class: "btn btn--primary !px-3 !py-1.5 text-sm", data: { turbo_frame: "modal" } %>
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 grid-cols-2@md gap-6">
-    
-    <%# --- Hardware Details --- %>
-    <div id="hardware_details" class="col-span-1 card bg-main shadow-sm">
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div id="hardware_details" class="card h-fit p-4 sm:p-5">
       <%= render "devices/hardware_details" %>
     </div>
 
-    <%# --- Network & Assignment --- %>
-    <div id="network_and_owner_cards" class="col-span-1 flex flex-col gap-6">
+    <div id="network_and_owner_cards" class="flex flex-col gap-6">
       <%= render "devices/network_and_owner_cards" %>
     </div>
   </div>
 
-  <!-- ... existing device details ... -->
-
-  <div class="">
+  <div>
     <%= render "cards/history", cards: @cards, parent: @device %>
   </div>
-  
-  <div class="mbs-6">
-    <%# --- NEW: AUDIT LOG SECTION --- %>
-    <%# We load versions for the device AND its IP address history if available %>
-    <% 
-      device_versions = @device.versions.limit(20).order(created_at: :desc)
-      # Optional: Merge IP history if you want to see IP changes on this page too
-    %>
 
-    <%# Pass the parent object (@device) explicitly %>
+  <div>
+    <%
+      device_versions = @device.versions.limit(20).order(created_at: :desc)
+    %>
     <%= render "shared/audit_log", records: device_versions, parent: @device %>
-  </div
+  </div>
 </div>

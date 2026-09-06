@@ -1,43 +1,31 @@
-<p style="color: red"><%= alert %></p>
-
-<% if Current.user.verified? %>
-  <h1>Change your email</h1>
-<% else %>
-  <h1>Verify your email</h1>
-  <p>We sent a verification email to the address below. Check that email and follow those instructions to confirm it's your email address.</p>
-  <p><%= button_to "Re-send verification email", identity_email_verification_path %></p>
-<% end %>
-
-<%= form_with(url: identity_email_path, method: :patch) do |form| %>
-  <% if @user.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
-
-      <ul>
-        <% @user.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
+<div class="card mx-auto w-full p-6 sm:p-8" style="max-width: 25rem;">
+  <% if Current.user.verified? %>
+    <h1 class="mb-6 text-center text-2xl font-semibold">Change your email</h1>
+  <% else %>
+    <h1 class="mb-2 text-center text-2xl font-semibold">Verify your email</h1>
+    <p class="mb-4 text-center text-sm text-zinc-500 dark:text-zinc-400">We sent a verification email to the address below. Check that email and follow the instructions.</p>
+    <p class="mb-6 text-center"><%= button_to "Re-send verification email", identity_email_verification_path, class: "btn w-full" %></p>
   <% end %>
 
-  <div>
-    <%= form.label :email, "New email", style: "display: block" %>
-    <%= form.email_field :email, required: true, autofocus: true %>
+  <%= form_with(url: identity_email_path, method: :patch, class: "flex flex-col gap-4") do |form| %>
+    <% if @user.errors.any? %>
+      <%= render "shared/error_messages", object: @user %>
+    <% end %>
+
+    <div>
+      <%= form.label :email, "New email", class: "mb-1 block text-sm font-semibold" %>
+      <%= form.email_field :email, required: true, autofocus: true, autocomplete: "email", class: "input" %>
+    </div>
+
+    <div>
+      <%= form.label :password_challenge, class: "mb-1 block text-sm font-semibold" %>
+      <%= form.password_field :password_challenge, required: true, autocomplete: "current-password", class: "input" %>
+    </div>
+
+    <%= form.submit "Save changes", class: "btn btn--primary w-full" %>
+  <% end %>
+
+  <div class="mt-6 text-center text-sm">
+    <%= link_to "Back", root_path, class: "font-medium text-orange-600 hover:underline dark:text-orange-400" %>
   </div>
-
-  <div>
-    <%= form.label :password_challenge, style: "display: block" %>
-    <%= form.password_field :password_challenge, required: true, autocomplete: "current-password" %>
-  </div>
-
-  <div>
-    <%= form.submit "Save changes" %>
-  </div>
-<% end %>
-
-<br>
-
-<div>
-  <%= link_to "Back", root_path %>
 </div>

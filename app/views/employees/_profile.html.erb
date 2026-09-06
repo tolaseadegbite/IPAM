@@ -1,25 +1,23 @@
-<div class="card p-4 border shadow-sm flex flex-col gap-4">
-    <div class="flex items-center justify-center mbe-2">
-        <div class="bg-shade rounded-full flex items-center justify-center text-3xl font-bold text-subtle border" style="block-size: 5rem; inline-size: 5rem;">
-        <%= @employee.first_name.first %><%= @employee.last_name.first %>
-        </div>
+<div class="card flex flex-col gap-4 border p-4 shadow-sm">
+  <div class="mb-2 flex items-center justify-center">
+    <div class="flex h-20 w-20 items-center justify-center rounded-full border border-zinc-200 bg-zinc-100 text-3xl font-bold text-zinc-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
+      <%= @employee.first_name.first %><%= @employee.last_name.first %>
     </div>
-    
-    <div class="text-center mbe-2">
-        <% status_color = @employee.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>
-        <span class="<%= status_color %> pi-3 pb-1 rounded-full text-sm font-bold uppercase"><%= @employee.status.humanize %></span>
+  </div>
+
+  <div class="mb-2 text-center">
+    <% status_pill = @employee.status == "active" ? "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300" : "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300" %>
+    <span class="<%= status_pill %> rounded-full px-3 py-0.5 text-sm font-bold uppercase"><%= @employee.status.humanize %></span>
+  </div>
+
+  <div class="flex flex-col gap-2 border-t border-zinc-200 pt-4 dark:border-white/10">
+    <div class="flex items-center justify-center gap-2">
+      <label class="label-mono block">Department:</label>
+      <div><%= link_to @employee.department.name, @employee.department, class: "text-sm font-medium text-sky-600 hover:underline dark:text-sky-400" %></div>
     </div>
-
-    <div class="flex flex-col gap-2 pbs-4">
-
-        <div class="flex gap-2 items-center justify-center">
-            <label class="block text-subtle font-bold uppercase">Department:</label>
-            <div><%= link_to @employee.department.name, @employee.department, class: "text-sky-600 hover:underline" %></div>
-        </div>
-
-        <div class="flex gap-2 items-center justify-center">
-            <label class="block text-subtle font-bold uppercase">Branch:</label>
-            <div><%= link_to @employee.department.branch.name, branch_path(@employee.department.branch), class: "text-orange-500 hover:text-orange-600" %></div>
-        </div>
+    <div class="flex items-center justify-center gap-2">
+      <label class="label-mono block">Branch:</label>
+      <div><%= link_to @employee.department.branch.name, branch_path(@employee.department.branch), class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400" %></div>
     </div>
+  </div>
 </div>

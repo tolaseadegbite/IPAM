@@ -1,29 +1,33 @@
 <tr id="<%= dom_id(employee, :table_row) %>">
-  <td class="p-3 font-semibold"><span><%= link_to employee.full_name, employee, class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
-
-  <td class="p-3"><%= employee.department.name %> <span class="text-sm text-subtle block"><%= link_to employee.department.branch.name, branch_path(employee.department.branch), class: "text-orange-500 hover:text-orange-600", data: { turbo_frame: "_top" } %></span></td>
-
-  <td class="p-3">
-    <% status_color = case employee.status 
-       when 'active' then 'bg-green-100 text-green-800'
-       when 'on_leave' then 'bg-yellow-100 text-yellow-800'
-       when 'terminated' then 'bg-red-100 text-red-800'
-       end %>
-    <span class="<%= status_color %> font-medium pi-2 pb-1 rounded-md text-sm"><%= employee.status.humanize %></span>
+  <td class="p-3 font-semibold"><%= link_to employee.full_name, employee, class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></td>
+  <td class="p-3 text-sm">
+    <%= employee.department.name %>
+    <span class="block text-xs"><%= link_to employee.department.branch.name, branch_path(employee.department.branch), class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></span>
   </td>
-
-  <td class="flex items-center justify-end gap-4">
-    <%= link_to "Edit", edit_employee_path(employee),
-                class: "text-orange-500 hover:text-orange-600",
-                data: { turbo_frame: "modal" } %>
-
-    <% delete_trigger = button_tag "Delete", type: "button", class: "btn bg-white border border-red-200 text-red-600 font-semibold hover:bg-red-50", data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
-    <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{employee.full_name}'?" do %>
-      <p class="text-sm text-subtle mbe-4">This will permanently delete this employee. This action cannot be undone.</p>
-      <div class="flex items-center justify-end gap">
-        <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
-        <%= button_to "Continue", employee, method: :delete, class: "btn btn--negative" %>
-      </div>
-    <% end %>
+  <td class="p-3">
+    <%
+      status_badge = case employee.status
+        when "active" then "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300"
+        when "on_leave" then "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
+        when "terminated" then "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300"
+        else "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+        end
+    %>
+    <span class="<%= status_badge %> rounded-md px-2 py-0.5 text-sm font-medium"><%= employee.status.humanize %></span>
+  </td>
+  <td class="p-3">
+    <div class="flex items-center justify-end gap-3">
+      <%= link_to "Edit", edit_employee_path(employee),
+                  class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400",
+                  data: { turbo_frame: "modal" } %>
+      <% delete_trigger = button_tag "Delete", type: "button", class: "cursor-pointer text-sm font-medium text-red-600 hover:underline dark:text-red-400", data: { action: "dialog#showModal" } %>
+      <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{employee.full_name}'?" do %>
+        <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this employee. This action cannot be undone.</p>
+        <div class="flex items-center justify-end gap-2">
+          <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
+          <%= button_to "Continue", employee, method: :delete, class: "btn btn--negative" %>
+        </div>
+      <% end %>
+    </div>
   </td>
 </tr>

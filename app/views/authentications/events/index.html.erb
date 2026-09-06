@@ -1,33 +1,24 @@
-<h1>Activity Log</h1>
+<% content_for :title, "Activity Log" %>
 
-<div id="sessions">
-  <% @events.each do |event| %>
-    <div id="<%= dom_id event %>">
-      <p>
-        <strong>User Agent:</strong>
-        <%= event.user_agent %>
-      </p>
+<% content_for :page_header do %>Activity Log<% end %>
 
-      <p>
-        <strong>Action:</strong>
-        <%= event.action %>
-      </p>
+<div class="flex w-full flex-col gap-4">
+  <div id="sessions" class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <% @events.each do |event| %>
+      <div id="<%= dom_id event %>" class="card p-4 font-mono text-sm">
+        <p><strong>User Agent:</strong> <span class="break-all"><%= event.user_agent %></span></p>
+        <p class="mt-1"><strong>Action:</strong> <%= event.action %></p>
+        <p class="mt-1"><strong>IP Address:</strong> <%= event.ip_address %></p>
+        <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400"><%= event.created_at %></p>
+      </div>
+    <% end %>
+  </div>
 
-      <p>
-        <strong>Ip Address:</strong>
-        <%= event.ip_address %>
-      </p>
-
-      <p>
-        <strong>Created at:</strong>
-        <%= event.created_at %>
-      </p>
-    </div>
+  <% if @events.empty? %>
+    <%= render "shared/empty_state", object: "event" %>
   <% end %>
-</div>
 
-<br>
-
-<div>
-  <%= link_to "Back", root_path %>
+  <div>
+    <%= link_to "Back", root_path, class: "btn" %>
+  </div>
 </div>

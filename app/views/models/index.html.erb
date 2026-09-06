@@ -1,38 +1,33 @@
-<% if notice.present? %>
-  <p style="color: green"><%= notice %></p>
-<% end %>
-
 <% content_for :title, "Models" %>
 
-<h1>Models</h1>
-<p>
-  <%= link_to "Chats", chats_path %>
-</p>
+<% content_for :page_header do %>AI Models<% end %>
 
-<p>
-  <%= button_to "Refresh Models", refresh_models_path, method: :post %>
-</p>
+<div class="flex w-full flex-col gap-4">
+  <div class="flex flex-wrap items-center gap-3">
+    <%= link_to "Chats", chats_path, class: "btn !px-3 !py-1.5 text-sm" %>
+    <%= button_to "Refresh Models", refresh_models_path, method: :post, class: "btn btn--primary !px-3 !py-1.5 text-sm" %>
+  </div>
 
-<div id="models">
-  <% if @models.any? %>
-    <table>
-      <thead>
-        <tr>
-          <th>Provider</th>
-          <th>Model</th>
-          <th>Context Window</th>
-          <th>$/1M tokens (In/Out)</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @models.each do |model_info| %>
-          <%= render "models/model",
-            model: model_info %>
-        <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p>No chat models found.</p>
-  <% end %>
+  <div id="models" class="relative overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-900">
+    <% if @models.any? %>
+      <table class="table w-full">
+        <thead class="bg-zinc-50 dark:bg-white/5">
+          <tr>
+            <th class="p-3">Provider</th>
+            <th class="p-3">Model</th>
+            <th class="p-3">Context Window</th>
+            <th class="p-3">$/1M tokens (In/Out)</th>
+            <th class="p-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @models.each do |model_info| %>
+            <%= render "models/model", model: model_info %>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="p-8 text-center text-sm text-zinc-500 dark:text-zinc-400">No chat models found.</div>
+    <% end %>
+  </div>
 </div>
