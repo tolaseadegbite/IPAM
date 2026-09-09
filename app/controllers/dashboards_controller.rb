@@ -33,15 +33,6 @@ class DashboardsController < ApplicationController
     @utilization_percent = @total_ips > 0 ? (used_count.to_f / @total_ips * 100).to_i : 0
 
   # 2. Charts
-  # @reachability_chart = {
-  #   labels: [ "Online", "Offline" ],
-  #   datasets: [ {
-  #     data: [ @online_count, @total_ips - @online_count ],
-  #     backgroundColor: [ "#22c55e", "#f3f4f6" ],
-  #     borderWidth: 0
-  #   } ]
-  # }
-
   # Device Type Breakdown
   # Groups by device_type (e.g., "server", "printer") and counts them
   device_stats = Device.group(:device_type).count.transform_keys { |k| k.to_s.humanize }

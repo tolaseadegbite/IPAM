@@ -8,6 +8,5 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 
 pin "chart.js", to: "chart.js"
 pin "@floating-ui/dom", to: "floating_ui_dom.js"
-pin "lodash", to: "lodash.js"
 pin "sortablejs", to: "sortable.esm.js"
 pin "@stimulus-components/rails-nested-form", to: "@stimulus-components--rails-nested-form.js" # @5.0.0

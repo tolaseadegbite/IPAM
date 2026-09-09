@@ -12,7 +12,6 @@ class Device < ApplicationRecord
   belongs_to :employee, optional: true # Optional: New laptops might be in storage (no owner)
 
   # When a device is deleted/retired, the IP is automatically freed (set to null)
-  # has_many :ip_address, dependent: :nullify
   has_many :ip_addresses, dependent: :nullify
 
   accepts_nested_attributes_for :ip_addresses, allow_destroy: false, reject_if: :all_blank
@@ -27,8 +26,6 @@ class Device < ApplicationRecord
   enum :device_type, { desktop: 0, all_in_one: 1, laptop: 2, printer: 3, server: 4, tablet: 5, biometrics_machine: 6, router: 7 }
   enum :status, { active: 0, in_storage: 1, in_repair: 2, retired: 3, lost: 4 }
 
-  # validates :serial_number, uniqueness: { case_sensitive: false }
-  # validates :asset_tag, uniqueness: { case_sensitive: false }
   validates :mac_address, uniqueness: { case_sensitive: false }, allow_nil: true
   validates :name, presence: true, uniqueness: { case_sensitive: false }
   validates :device_type, presence: true

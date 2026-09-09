@@ -6,7 +6,7 @@ class VersionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get versions_index_url
+    get versions_url
     assert_response :success
   end
 end

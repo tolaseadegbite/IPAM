@@ -1,6 +1,5 @@
 <% system ||= local_assigns[:message] %>
-<div id="message_<%= system.id %>" class="message"
-     style="margin-bottom: 8px; padding: 8px 12px; border-left: 3px solid #6b7280; background: #f3f4f6; color: #111827; border-radius: 6px;">
-  <div style="font-weight: bold; margin-bottom: 4px; font-size: 0.85em; color: #374151;">System</div>
-  <div style="white-space: pre-wrap; font-size: 0.85em;"><%= system.content %></div>
+<div id="message_<%= system.id %>" class="message message--assistant border-l-[3px] !border-l-zinc-400">
+  <div class="message__header">System</div>
+  <div class="message__content whitespace-pre-wrap"><%= system.content %></div>
 </div>

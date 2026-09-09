@@ -32,7 +32,7 @@
 
   <%
     is_dashboard_view = current_user.present?
-    is_auth_page = !is_dashboard_view && controller_name.in?(['sessions', 'passwords', 'registrations', 'passwordlesses', 'password_resets'])
+    is_auth_page = !is_dashboard_view && controller_name.in?(['sessions', 'passwords', 'password_resets'])
     is_public_page = !is_dashboard_view && !is_auth_page
   %>
 

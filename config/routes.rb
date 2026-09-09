@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :chats do
+  resources :chats, except: [ :edit, :update ] do
     resources :messages, only: [ :create ]
   end
   resources :models, only: [ :index, :show ] do
@@ -7,7 +7,6 @@ Rails.application.routes.draw do
       post :refresh
     end
   end
-  get "versions/index"
   mount MissionControl::Jobs::Engine, at: "/jobs"
   mount Flightdeck::Engine, at: "/flightdeck"
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
@@ -15,10 +14,8 @@ Rails.application.routes.draw do
 
   get  "sign_in", to: "sessions#new"
   post "sign_in", to: "sessions#create"
-  # get  "sign_up", to: "registrations#new"
-  # post "sign_up", to: "registrations#create"
-  resources :users, only: [ :index ]
-  resources :sessions, only: [ :index, :show, :destroy ]
+  get  "account", to: "home#index"
+  resources :sessions, only: [ :index, :destroy ]
   resource  :password, only: [ :edit, :update ]
   namespace :identity do
     resource :email,              only: [ :edit, :update ]
@@ -31,7 +28,7 @@ Rails.application.routes.draw do
   post "users/:user_id/masquerade", to: "masquerades#create", as: :user_masquerade
 
   namespace :admin do
-    resources :users
+    resources :users, except: [ :show ]
   end
 
   resource :dashboard, only: [ :show ] do
@@ -55,14 +52,14 @@ Rails.application.routes.draw do
   end
 
   resources :boards do
-    resources :lists, shallow: true do
+    resources :lists, shallow: true, only: [ :new, :create, :edit, :update, :destroy ] do
       member do
         patch :move
       end
     end
   end
 
-  resources :cards do
+  resources :cards, except: [ :index, :show ] do
     collection do
       get :select_assets # /cards/select_assets?asset_type=Device
     end
