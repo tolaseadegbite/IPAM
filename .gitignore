@@ -40,3 +40,6 @@
 # Ignore dev SQLite databases (SolidQueue, SolidCache, SolidCable)
 /db/*.sqlite3
 
+
+# Kamal secrets are fetched at deploy time, never committed.
+/.kamal/secrets

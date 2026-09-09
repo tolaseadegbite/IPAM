@@ -25,7 +25,9 @@
   </div>
 
   <div class="card flex flex-row flex-wrap items-center gap-3 p-4 sm:p-5">
-    <%= button_to "Sign in as last user", user_masquerade_path(User.last), class: "btn !px-3 !py-1.5 text-sm" %>
+    <% if Rails.env.development? %>
+      <%= button_to "Sign in as last user", user_masquerade_path(User.last), class: "btn !px-3 !py-1.5 text-sm" %>
+    <% end %>
     <%= button_to "Log out", Current.session, method: :delete, class: "btn btn--negative !px-3 !py-1.5 text-sm" %>
   </div>
 </div>
