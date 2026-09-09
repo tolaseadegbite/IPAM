@@ -1,5 +1,6 @@
 class DevicesController < ApplicationController
   before_action :set_device, only: %i[ show edit update destroy ]
+  before_action :require_admin, only: [ :destroy ]
 
   def index
     records = Device.includes(:employee, :ip_addresses, department: :branch).order(:name)
@@ -65,7 +66,9 @@ class DevicesController < ApplicationController
 
     if @device.update(device_params)
 
-      # 4. Manually enforce the status changes using SQL for speed and reliability
+      # NOTE: status flips use update_all deliberately — the device update
+      # itself is versioned, and per-IP versions for bulk flips would spam
+      # the audit log. IP transitions remain visible via device history.
       if ips_to_release.any?
         IpAddress.where(id: ips_to_release).update_all(status: :available)
       end

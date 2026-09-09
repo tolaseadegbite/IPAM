@@ -1,4 +1,6 @@
 class ModelsController < ApplicationController
+  before_action :require_admin, only: [ :refresh ]
+
   def index
     @models = available_chat_models
   end

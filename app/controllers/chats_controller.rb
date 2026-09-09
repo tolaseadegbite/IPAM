@@ -3,7 +3,7 @@ class ChatsController < ApplicationController
   before_action :set_chat_with_agent, only: [ :show ]
 
   def index
-    records = Chat.includes(:messages, :user).order(updated_at: :desc)
+    records = current_user.chats.includes(:messages, :user).order(updated_at: :desc)
     @pagy, @chats = pagy(records, limit: 20)
   end
 
@@ -45,10 +45,11 @@ class ChatsController < ApplicationController
   private
 
   def set_chat
-    @chat = Chat.find(params[:id])
+    @chat = current_user.chats.find(params[:id])
   end
 
   def set_chat_with_agent
+    current_user.chats.find(params[:id])
     @chat = NatAgent.find(params[:id])
   end
 end

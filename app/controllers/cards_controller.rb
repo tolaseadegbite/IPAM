@@ -1,11 +1,15 @@
 class CardsController < ApplicationController
   before_action :set_card, only: %i[ edit update destroy move ]
 
+  # Only these models may be linked to a card.
+  REFERENCEABLE_TYPES = %w[Device IpAddress].freeze
+
   def new
     @card = Card.new(list_id: params[:list_id])
 
     # Handle incoming polymorphic references (from Device/IP pages)
-    if params[:referenceable_type] && params[:referenceable_id]
+    if params[:referenceable_type] && params[:referenceable_id] &&
+       REFERENCEABLE_TYPES.include?(params[:referenceable_type])
       @card.referenceable_type = params[:referenceable_type]
       @card.referenceable_id = params[:referenceable_id]
 
@@ -32,7 +36,7 @@ class CardsController < ApplicationController
             # 2. Close the modal by emptying the frame
             turbo_stream.update("modal", ""),
             # 3. Flash message
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Task created successfully." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Task created successfully." })
           ]
         end
       end
@@ -51,7 +55,7 @@ class CardsController < ApplicationController
         format.turbo_stream do
           streams = [
             turbo_stream.update("modal", ""),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Task updated successfully." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Task updated successfully." })
           ]
 
           # Visual Logic: Did it move to a new column or stay in the same one?
@@ -79,7 +83,7 @@ class CardsController < ApplicationController
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.remove(helpers.dom_id(@card)),
-          turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Task deleted." }),
+          turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Task deleted." }),
           turbo_stream.update("modal", "") # Just in case deleted from within a modal
         ]
       end

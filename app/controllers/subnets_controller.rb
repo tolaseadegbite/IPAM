@@ -1,5 +1,6 @@
 class SubnetsController < ApplicationController
   before_action :set_subnet, only: %i[ show edit update destroy ]
+  before_action :require_admin, only: [ :destroy ]
 
   def index
     records = Subnet.all.order(:name)
@@ -30,7 +31,7 @@ class SubnetsController < ApplicationController
              turbo_stream.prepend("subnets-table", partial: "subnets/subnet", locals: { subnet: @subnet }),
             turbo_stream.prepend("subnets-cards", partial: "subnets/subnet_card", locals: { subnet: @subnet }),
             turbo_stream.update("new_subnet", ""), # Clear the form/modal
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Subnet created successfully." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Subnet created successfully." })
           ]
         end
       end
@@ -47,7 +48,7 @@ class SubnetsController < ApplicationController
           render turbo_stream: [
             turbo_stream.replace(helpers.dom_id(@subnet, :table_row), partial: "subnets/subnet", locals: { subnet: @subnet }),
             turbo_stream.replace(helpers.dom_id(@subnet, :card), partial: "subnets/subnet_card", locals: { subnet: @subnet }),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Subnet updated successfully." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Subnet updated successfully." })
           ]
         end
       end
@@ -64,7 +65,7 @@ class SubnetsController < ApplicationController
         render turbo_stream: [
           turbo_stream.remove(helpers.dom_id(@subnet, :table_row)),
           turbo_stream.remove(helpers.dom_id(@subnet, :card)),
-          turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Subnet deleted." })
+          turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Subnet deleted." })
         ]
       end
     end

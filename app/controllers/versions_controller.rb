@@ -1,4 +1,6 @@
 class VersionsController < ApplicationController
+  before_action :require_admin
+
   def index
     # Start with all versions, sorted newest first
     @versions = PaperTrail::Version.order(created_at: :desc)
