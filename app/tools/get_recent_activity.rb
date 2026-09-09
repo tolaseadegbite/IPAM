@@ -1,10 +1,10 @@
 class GetRecentActivity < RubyLLM::Tool
   desc "Get recent network events and changes within a given time window"
 
-  param :hours, type: "integer", desc: "Number of hours to look back (default: 24)", required: false
+  param :hours, type: "integer", desc: "Number of hours to look back, max 168 (default: 24)", required: false
 
   def execute(hours: 24)
-    since = hours.to_i.hours.ago
+    since = [ hours.to_i, 168 ].min.hours.ago
 
     {
       network_events: NetworkEvent.where("created_at > ?", since).recent.limit(20).map do |e|

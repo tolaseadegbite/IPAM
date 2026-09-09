@@ -5,9 +5,16 @@ class NetworkScanJob < ApplicationJob
     Rails.cache.write("scan_batch_start_time", Time.current)
 
     subnets = Subnet.all.to_a
-    batch_id = Time.current.to_i
+    # Unique per run: second-resolution timestamps collide on rapid double-clicks.
+    batch_id = "#{Time.current.to_i}-#{SecureRandom.hex(4)}"
 
-    Rails.cache.write("scan_batch_#{batch_id}", subnets.count)
+    if subnets.empty?
+      NetworkReconService.broadcast_global_stats
+      Rails.logger.info "[NetworkScanJob] No subnets to scan. Broadcast idle stats."
+      return
+    end
+
+    Rails.cache.write("scan_batch_#{batch_id}", subnets.count, expires_in: 1.hour)
 
     Rails.logger.info "[NetworkScanJob] Spawning #{subnets.count} parallel jobs (Batch #{batch_id})..."
 

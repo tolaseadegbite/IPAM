@@ -18,6 +18,8 @@
     <%= render "shared/empty_state", object: "event" %>
   <% end %>
 
+  <%= render "shared/pagination", pagy: @pagy %>
+
   <div>
     <%= link_to "Back", root_path, class: "btn" %>
   </div>

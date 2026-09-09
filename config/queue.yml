@@ -6,6 +6,10 @@ queues:
   default:
     concurrency_limit: 10
 
+  maintenance:
+    concurrency_limit: 2
+    timeout: 600
+
   workers:
     # Worker Pool #1: Dedicated to monitoring
     - queues: monitoring
@@ -17,6 +21,11 @@ queues:
       threads: 3
       processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
       polling_interval: 0.1
+
+    # Worker Pool #3: Maintenance (audit pruning and similar slow jobs)
+    - queues: maintenance
+      threads: 1
+      polling_interval: 30
 
 # default: &default
 #   dispatchers:

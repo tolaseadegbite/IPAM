@@ -15,6 +15,15 @@ class NetworkReconService
     start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     Rails.logger.info "[NetworkRecon] Starting scan for #{subnet_cidr}..."
 
+    # 0. Guard: without an nmap binary the sweep returns nothing and the
+    # reconcile step below would flip every known host to offline.
+    # Abort loudly instead of corrupting reachability state.
+    unless nmap_available?
+      Rails.logger.error "[NetworkRecon] nmap not found; skipping scan for #{subnet_cidr}. " \
+                         "Install nmap with passwordless sudo to enable scanning."
+      return
+    end
+
     # 1. Execute Nmap (System Call)
     windows_path_raw = "/mnt/c/Program Files (x86)/Nmap/nmap.exe"
     nmap_bin = File.exist?(windows_path_raw) ? "'#{windows_path_raw}'" : "sudo nmap"
@@ -54,6 +63,9 @@ class NetworkReconService
       offline_ids = offline_ips.pluck(:id)
 
       if offline_ids.any?
+        # NOTE: update_all skips PaperTrail deliberately — reachability flips
+        # every scan and per-IP versions would flood the audit log. The
+        # NetworkEvent rows above are the durable record of state changes.
         IpAddress.where(id: offline_ids).update_all(reachability_status: :down)
 
         offline_records_to_broadcast = IpAddress.includes(:device, :subnet).where(id: offline_ids).to_a
@@ -224,6 +236,12 @@ class NetworkReconService
   end
 
   private
+
+  def nmap_available?
+    return true if File.exist?("/mnt/c/Program Files (x86)/Nmap/nmap.exe")
+
+    system("command -v nmap > /dev/null 2>&1")
+  end
 
   def process_host_update(ip_record, host_data, device_records_map)
     updates = {
