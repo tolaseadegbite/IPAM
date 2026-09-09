@@ -104,15 +104,17 @@ class CardsController < ApplicationController
 
     case @asset_type
     when "Device"
-      # Eager load department and branch for the smart label
-      @assets = Device.includes(department: :branch).active.order(:name).map do |d|
+      # Eager load department and branch for the smart label.
+      # Capped: the combobox filters client-side, and unbounded lists
+      # exhaust memory on large inventories.
+      @assets = Device.includes(department: :branch).active.order(:name).limit(500).map do |d|
         [ "#{d.name} (#{d.department.branch.name} - #{d.department.name})", d.id ]
       end
       render partial: "cards/asset_selectors/asset_combobox", locals: { assets: @assets, prompt: "Search by Hostname..." }
 
     when "IpAddress"
-      # Eager load subnet for the smart label
-      @assets = IpAddress.includes(:subnet).order(:address).map do |ip|
+      # Eager load subnet for the smart label (capped, see above).
+      @assets = IpAddress.includes(:subnet).order(:address).limit(500).map do |ip|
         [ "#{ip.address} (#{ip.subnet.name})", ip.id ]
       end
       render partial: "cards/asset_selectors/asset_combobox", locals: { assets: @assets, prompt: "Search by IP Address..." }

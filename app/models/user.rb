@@ -15,8 +15,9 @@ class User < ApplicationRecord
 
   has_many :sessions, dependent: :destroy
   has_many :events, dependent: :destroy
+  has_many :chats, dependent: :destroy
 
-  has_many :assignments
+  has_many :assignments, dependent: :destroy
   has_many :assigned_cards, through: :assignments, source: :card
 
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }

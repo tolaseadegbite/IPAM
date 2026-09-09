@@ -35,7 +35,7 @@ class EmployeesController < ApplicationController
             turbo_stream.remove("no_employees_message"),
 
             turbo_stream.update("new_employee", ""),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Employee created successfully." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Employee created successfully." })
           ]
         end
       end
@@ -54,7 +54,7 @@ class EmployeesController < ApplicationController
             turbo_stream.replace(helpers.dom_id(@employee, :card), partial: "employees/employee_card", locals: { employee: @employee }),
             turbo_stream.update(("name"), partial: "employees/name"),
             turbo_stream.update(("profile"), partial: "employees/profile"),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Employee updated successfully." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Employee updated successfully." })
           ]
         end
       end
@@ -72,7 +72,7 @@ class EmployeesController < ApplicationController
           render turbo_stream: [
             turbo_stream.remove(helpers.dom_id(@employee, :table_row)),
             turbo_stream.remove(helpers.dom_id(@employee, :card)),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Employee deleted." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Employee deleted." })
           ]
         end
       end
@@ -81,7 +81,7 @@ class EmployeesController < ApplicationController
       respond_to do |format|
         format.html { redirect_to employees_path, alert: @employee.errors.full_messages.to_sentence }
         format.turbo_stream do
-          render turbo_stream: turbo_stream.update("flash", partial: "shared/flash", locals: { alert: @employee.errors.full_messages.to_sentence })
+          render turbo_stream: turbo_stream.update("flash_messages", partial: "shared/flash", locals: { alert: @employee.errors.full_messages.to_sentence })
         end
       end
     end

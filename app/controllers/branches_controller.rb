@@ -29,7 +29,7 @@ class BranchesController < ApplicationController
              turbo_stream.prepend("branches-table", partial: "branches/branch", locals: { branch: @branch }),
             turbo_stream.prepend("branches-cards", partial: "branches/branch_card", locals: { branch: @branch }),
             turbo_stream.update("new_branch", ""), # Clear the form/modal
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Branch created successfully." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Branch created successfully." })
           ]
         end
       end
@@ -48,7 +48,7 @@ class BranchesController < ApplicationController
             turbo_stream.replace(helpers.dom_id(@branch, :card), partial: "branches/branch_card", locals: { branch: @branch }),
             turbo_stream.update(("branch_name"), partial: "branches/branch_name", locals: { branch: @branch }),
             turbo_stream.update(("branch_details"), partial: "branches/details", locals: { branch: @branch }),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Branch updated successfully." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Branch updated successfully." })
           ]
         end
       end
@@ -66,7 +66,7 @@ class BranchesController < ApplicationController
           render turbo_stream: [
             turbo_stream.remove(helpers.dom_id(@branch, :table_row)),
             turbo_stream.remove(helpers.dom_id(@branch, :card)),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Branch deleted." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Branch deleted." })
           ]
         end
       end
@@ -75,7 +75,7 @@ class BranchesController < ApplicationController
       respond_to do |format|
         format.html { redirect_to branches_path, alert: @branch.errors.full_messages.to_sentence }
         format.turbo_stream do
-          render turbo_stream: turbo_stream.update("flash", partial: "shared/flash", locals: { alert: @branch.errors.full_messages.to_sentence })
+          render turbo_stream: turbo_stream.update("flash_messages", partial: "shared/flash", locals: { alert: @branch.errors.full_messages.to_sentence })
         end
       end
     end

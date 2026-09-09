@@ -27,7 +27,7 @@ module Admin
               turbo_stream.prepend("users-table", partial: "admin/users/user_row", locals: { user: @user }),
               turbo_stream.prepend("users-cards", partial: "admin/users/user_card", locals: { user: @user }),
               turbo_stream.update("new_user", ""), # Clear modal/form
-              turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "User created successfully." })
+              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "User created successfully." })
             ]
           end
         end
@@ -49,7 +49,7 @@ module Admin
             render turbo_stream: [
               turbo_stream.replace(helpers.dom_id(@user, :table_row), partial: "admin/users/user_row", locals: { user: @user }),
               turbo_stream.replace(helpers.dom_id(@user, :card), partial: "admin/users/user_card", locals: { user: @user }),
-              turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "User updated successfully." })
+              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "User updated successfully." })
             ]
           end
         end
@@ -72,7 +72,7 @@ module Admin
             render turbo_stream: [
               turbo_stream.remove(helpers.dom_id(@user, :table_row)),
               turbo_stream.remove(helpers.dom_id(@user, :card)),
-              turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "User deleted." })
+              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "User deleted." })
             ]
           end
         end
@@ -96,7 +96,7 @@ module Admin
       respond_to do |format|
         format.html { redirect_to admin_users_path, alert: flash[:alert] }
         format.turbo_stream do
-          render turbo_stream: turbo_stream.update("flash", partial: "shared/flash", locals: { alert: flash[:alert] })
+          render turbo_stream: turbo_stream.update("flash_messages", partial: "shared/flash", locals: { alert: flash[:alert] })
         end
       end
     end

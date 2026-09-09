@@ -44,7 +44,7 @@ class DevicesController < ApplicationController
             turbo_stream.prepend(helpers.dom_id(@device.department, :devices), partial: "departments/device_show_card", locals: { device: @device }),
             turbo_stream.remove("no_devices_message"),
             turbo_stream.update("new_device", ""),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device registered." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Device registered." })
           ]
         end
       end
@@ -86,7 +86,7 @@ class DevicesController < ApplicationController
             turbo_stream.update("name_and_serial", partial: "devices/name_and_serial"),
             turbo_stream.update("hardware_details", partial: "devices/hardware_details"),
             turbo_stream.update("network_and_owner_cards", partial: "devices/network_and_owner_cards"),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device updated." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Device updated." })
           ]
         end
       end
@@ -104,7 +104,7 @@ class DevicesController < ApplicationController
           render turbo_stream: [
             turbo_stream.remove(helpers.dom_id(@device, :table_row)),
             turbo_stream.remove(helpers.dom_id(@device, :card)),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Device deleted." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Device deleted." })
           ]
         end
       end
@@ -112,7 +112,7 @@ class DevicesController < ApplicationController
       respond_to do |format|
         format.html { redirect_to devices_path, alert: @device.errors.full_messages.to_sentence }
         format.turbo_stream do
-          render turbo_stream: turbo_stream.update("flash", partial: "shared/flash", locals: { alert: @device.errors.full_messages.to_sentence })
+          render turbo_stream: turbo_stream.update("flash_messages", partial: "shared/flash", locals: { alert: @device.errors.full_messages.to_sentence })
         end
       end
     end

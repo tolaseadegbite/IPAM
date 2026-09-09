@@ -32,88 +32,47 @@
        data-dependent-select-extra-param-value="target_model=device"
        data-dependent-select-frame-id-value="department_options_frame">
 
-    <% if device.department_id %>
-      
-      <!-- IMPORTANT: This sends the value since the selects below are disabled -->
-      <%= form.hidden_field :department_id %>
-
-      <!-- 1. Branch Select (Pre-selected & Disabled) -->
-      <div class="col-span-1">
-        <label class="block font-medium mb-1">Branch</label>
-        <% selected_branch_id = device.department&.branch_id %>
-        <%= select_tag "branch_id", 
-              options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
-              prompt: "Select Branch First",
-              disabled: true,
-              class: "input bg-gray-100 cursor-not-allowed" %>
-      </div>
-
-      <!-- 2. Department Select (Pre-selected & Disabled) -->
-      <div class="col-span-1">
-        <%= form.label :department_id, class: "block font-medium mb-1" %>
-        
-        <!-- We don't strictly need the Turbo Frame here since it's static, but keeping structure is fine -->
-        <%= turbo_frame_tag "department_options_frame" do %>
-          <% 
-             # Load only the relevant departments
-             departments = Department.where(branch_id: selected_branch_id).order(:name)
-          %>
-          <%= form.select :department_id, 
-                options_from_collection_for_select(departments, :id, :name, device.department_id),
-                { prompt: "Select Branch to see Departments" },
-                { 
-                  disabled: true, 
-                  class: "input bg-gray-100 cursor-not-allowed" 
-                } %>
-        <% end %>
-      </div>
-
-    <% else %>
-
-      <!-- STANDARD EDITABLE MODE -->
-      
+    <!-- Branch and department stay editable so devices can move between org units. -->
       <!-- 1. Branch Select -->
-      <div class="col-span-1">
+      <div>
         <label class="block font-medium mb-1">Branch</label>
         <% selected_branch_id = device.department&.branch_id %>
-        <%= select_tag "branch_id", 
-              options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id), 
+        <%= select_tag "branch_id",
+              options_from_collection_for_select(Branch.order(:name), :id, :name, selected_branch_id),
               prompt: "Select Branch First",
               class: "input cursor-pointer",
-              data: { 
-                dependent_select_target: "select", 
-                action: "change->dependent-select#load" 
+              data: {
+                dependent_select_target: "select",
+                action: "change->dependent-select#load"
               } %>
       </div>
 
       <!-- 2. Department Select (Dependent) -->
-      <div class="col-span-1"
-           data-controller="dependent-select"
+      <div data-controller="dependent-select"
            data-dependent-select-url-value="<%= select_options_employees_path %>"
            data-dependent-select-param-value="department_id"
            data-dependent-select-frame-id-value="employee_options_frame">
 
         <%= form.label :department_id, class: "block font-medium mb-1" %>
         <%= turbo_frame_tag "department_options_frame" do %>
-          <% 
+          <%
               departments = if selected_branch_id
                               Department.where(branch_id: selected_branch_id).order(:name)
                             else
                               []
                             end
           %>
-          <%= form.select :department_id, 
+          <%= form.select :department_id,
                 options_from_collection_for_select(departments, :id, :name, device.department_id),
                 { prompt: "Select Branch to see Departments" },
                 { class: "input cursor-pointer",
-                  data: { 
-                    dependent_select_target: "select", 
-                    action: "change->dependent-select#load" 
-                  } 
+                  data: {
+                    dependent_select_target: "select",
+                    action: "change->dependent-select#load"
+                  }
                 } %>
         <% end %>
       </div>
-    <% end %>
 
     <!-- 3. Employee Select (Works for both scenarios) -->
     <div class="col-span-1">
@@ -148,11 +107,11 @@
   <h4 class="font-bold border rounded-lg p-4 pb-3 mb-4">Network Interfaces</h4>
 
   <div id="interfaces-container" class="flex flex-col gap-4">
-    <%# 1. Primary Interface %>
-    <%= render "devices/ip_interface_block", device: device, id: "primary" %>
-    
-    <%# 2. Secondary Interface %>
-    <%= render "devices/ip_interface_block", device: device, id: "secondary" %>
+    <%# One block per assigned IP plus a blank block — no silent drops. %>
+    <% device.ip_addresses.order(:address).each_with_index do |ip, index| %>
+      <%= render "devices/ip_interface_block", device: device, id: "interface-#{index}", assigned_ip: ip %>
+    <% end %>
+    <%= render "devices/ip_interface_block", device: device, id: "interface-new", assigned_ip: nil %>
   </div>
 
   <!-- Actions -->

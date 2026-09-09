@@ -43,7 +43,7 @@ class BoardsController < ApplicationController
         format.turbo_stream do
           render turbo_stream: [
             turbo_stream.prepend("boards-grid", partial: "boards/board", locals: { board: @board }),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Board created successfully." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Board created successfully." })
           ]
         end
       end
@@ -75,7 +75,7 @@ class BoardsController < ApplicationController
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.remove(helpers.dom_id(@board)),
-          turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Board deleted." })
+          turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Board deleted." })
         ]
       end
     end

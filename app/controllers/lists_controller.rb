@@ -19,7 +19,7 @@ class ListsController < ApplicationController
           render turbo_stream: [
             # Append the new list to the board container
             turbo_stream.append("lists-container", partial: "lists/list", locals: { list: @list, cards: [] }),
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Column created." })
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Column created." })
           ]
         end
       end
@@ -48,7 +48,7 @@ class ListsController < ApplicationController
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.remove(helpers.dom_id(@list)),
-          turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Column deleted." })
+          turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Column deleted." })
         ]
       end
     end

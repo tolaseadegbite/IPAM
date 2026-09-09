@@ -1,13 +1,7 @@
-<% 
-  # Determine which IP to show in this specific block on page load
-  # If id == "primary", show the first IP. If "secondary", show the second IP.
-  assigned_ip = if id == "primary"
-                  device.ip_addresses.order(:address).first
-                elsif id == "secondary"
-                  device.ip_addresses.order(:address).second
-                else
-                  nil
-                end
+<%
+  # The assigned IP is passed explicitly so devices with any number of
+  # interfaces render one block each (plus one blank block for a new one).
+  assigned_ip = local_assigns[:assigned_ip]
 %>
 
 <div class="grid grid-cols-1 gap-4 rounded-lg bg-zinc-100 p-4 sm:grid-cols-2 dark:bg-white/5"
