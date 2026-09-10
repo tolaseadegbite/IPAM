@@ -1,0 +1,10 @@
+<%= link_to notifications_path, id: "notification_bell", class: "btn btn--borderless relative !px-2.5",
+      aria: { label: "Notifications" }, title: "Notifications" do %>
+  <%= icon("bell", "h-[18px] w-[18px]") %>
+  <% count = user.notifications.unread.count %>
+  <% if count.positive? %>
+    <span class="absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+      <%= count > 9 ? "9+" : count %>
+    </span>
+  <% end %>
+<% end %>

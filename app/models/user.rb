@@ -16,6 +16,7 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :events, dependent: :destroy
   has_many :chats, dependent: :destroy
+  has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
 
   has_many :assignments, dependent: :destroy
   has_many :assigned_cards, through: :assignments, source: :card

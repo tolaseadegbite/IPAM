@@ -1,0 +1,18 @@
+<div data-controller="palette" class="hidden md:block">
+  <dialog data-palette-target="dialog" class="dialog w-full max-w-lg p-0" style="margin-top: 12dvh;"
+          data-action="click->palette#closeOnClickOutside" aria-label="Command palette">
+    <div class="border-b border-zinc-200 p-3 dark:border-white/10">
+      <input type="text" data-palette-target="input" placeholder="Jump to devices, subnets, pages…"
+             autocomplete="off" role="combobox" aria-expanded="true" aria-controls="palette-results"
+             class="input !border-0 !shadow-none focus-visible:!outline-none"
+             data-action="input->palette#search keydown->palette#navigate">
+    </div>
+    <div id="palette-results" data-palette-target="results" role="listbox"
+         class="max-h-[50dvh] overflow-y-auto p-2"></div>
+    <div class="flex items-center gap-3 border-t border-zinc-200 px-4 py-2 text-[11px] text-zinc-400 dark:border-white/10">
+      <span><kbd class="rounded border border-zinc-300 px-1 font-mono dark:border-white/10">↑↓</kbd> navigate</span>
+      <span><kbd class="rounded border border-zinc-300 px-1 font-mono dark:border-white/10">↵</kbd> open</span>
+      <span><kbd class="rounded border border-zinc-300 px-1 font-mono dark:border-white/10">esc</kbd> close</span>
+    </div>
+  </dialog>
+</div>

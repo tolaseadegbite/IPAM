@@ -41,6 +41,11 @@
 
     <%= render "shared/icon_sprite" %>
 
+    <% if is_dashboard_view %>
+      <%= turbo_stream_from "notifications_#{current_user.id}" %>
+      <%= render "shared/palette" %>
+    <% end %>
+
     <div id="flash_messages">
       <%= render "shared/flash" %>
     </div>

@@ -369,6 +369,10 @@ body {
     @apply flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm font-normal hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:outline-none dark:hover:bg-white/10 dark:focus-visible:bg-white/10;
   }
 
+  .menu__item.is-active {
+    @apply bg-zinc-100 dark:bg-white/10;
+  }
+
   /* ---------- Flash toast ---------- */
 
   .flash {

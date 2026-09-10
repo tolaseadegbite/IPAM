@@ -95,3 +95,5 @@ gem "acts_as_list"
 gem "ruby_llm"
 
 gem "redcarpet"
+
+gem "noticed", "~> 3.0"

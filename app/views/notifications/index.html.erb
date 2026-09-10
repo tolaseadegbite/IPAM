@@ -1,0 +1,16 @@
+<% content_for :title, "Notifications" %>
+
+<% content_for :page_header do %>Notifications<% end %>
+
+<div class="mx-auto flex w-full max-w-3xl flex-col gap-3">
+  <div id="notifications_list" class="flex flex-col gap-3">
+    <% if @notifications.any? %>
+      <%= render partial: "notifications/notification", collection: @notifications, as: :notification %>
+    <% else %>
+      <%= render "shared/empty_state", object: "notification", title: "No notifications.", icon: "bell",
+                 description: "Security findings will show up here in realtime." %>
+    <% end %>
+  </div>
+
+  <%= render "shared/pagination", pagy: @pagy %>
+</div>

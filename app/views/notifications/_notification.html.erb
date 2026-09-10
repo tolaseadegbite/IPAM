@@ -1,0 +1,13 @@
+<div id="<%= dom_id(notification) %>" class="flex items-start gap-3 rounded-lg border border-zinc-200 p-3 dark:border-white/10 <%= "opacity-60" if notification.read? %>">
+  <%= icon("triangle-alert", "mt-0.5 h-4 w-4 shrink-0 text-orange-500") %>
+  <div class="min-w-0 flex-1">
+    <div class="text-sm font-medium break-words"><%= notification.message %></div>
+    <div class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+      <%= time_ago_in_words(notification.created_at) %> ago
+    </div>
+  </div>
+  <% if notification.unread? %>
+    <%= button_to "Mark read", notification_path(notification), method: :patch,
+          class: "shrink-0 cursor-pointer text-xs font-semibold text-orange-600 hover:underline dark:text-orange-400" %>
+  <% end %>
+</div>

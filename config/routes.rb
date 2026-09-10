@@ -101,6 +101,9 @@ Rails.application.routes.draw do
   resources :versions, only: [ :index ]
 
   get "search", to: "search#index"
+  get "palette", to: "palette#index"
+
+  resources :notifications, only: [ :index, :update ]
 
   # --- Root Path ---
   # The dashboard or main inventory list

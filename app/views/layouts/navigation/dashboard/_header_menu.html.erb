@@ -19,7 +19,9 @@
   <div class="flex items-center gap-1.5">
     <%= yield :header_action_buttons %>
 
-    <button type="button" class="btn btn--borderless !px-2.5 hidden dark:inline-flex"
+    <%= render "notifications/bell", user: current_user %>
+
+    <button type="button" class="btn btn--borderless hidden !px-2.5 dark:inline-flex"
             data-action="color-scheme#setLight" title="Switch to light mode">
       <%= icon("sun", "h-[18px] w-[18px]") %>
       <span class="sr-only">Switch to light mode</span>
