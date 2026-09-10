@@ -1,8 +1,16 @@
 <% content_for :title, "New Asset" %>
 
-<%= render "shared/modal" do %>
-  <div data-action="turbo:submit-end->modal#submitEnd">
+<% content_for :page_header do %>New Asset<% end %>
+
+<div class="mx-auto flex w-full max-w-3xl flex-col gap-4">
+  <div>
+    <%= link_to :back, class: "btn shrink-0 !p-2", aria: { label: "Back" } do %>
+      <%= icon("chevron-left", "h-4 w-4") %>
+    <% end %>
+  </div>
+
+  <div class="card p-4 sm:p-6">
     <h1 class="mb-4 text-2xl font-semibold">New Asset</h1>
     <%= render "form", device: @device %>
   </div>
-<% end %>
+</div>

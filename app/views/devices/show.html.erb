@@ -4,7 +4,7 @@
 
 <% content_for :header_action_buttons do %>
   <div class="hidden items-center gap-2 md:flex">
-    <%= link_to "Edit", edit_device_path(@device), class: "btn btn--primary !px-3 !py-1.5 text-sm", data: { turbo_frame: "modal" } %>
+    <%= link_to "Edit", edit_device_path(@device), class: "btn btn--primary !px-3 !py-1.5 text-sm" %>
     <% delete_trigger = button_tag "Delete", type: "button", class: "btn !border-red-200 !px-3 !py-1.5 text-sm !text-red-600 hover:!bg-red-50 dark:!border-red-500/30 dark:!text-red-400 dark:hover:!bg-red-500/10", data: { action: "dialog#showModal" } %>
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{@device.name}'?" do %>
       <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this device. This action cannot be undone.</p>
@@ -17,7 +17,7 @@
 <% end %>
 
 <%= link_to edit_device_path(@device), class: "btn btn--primary fixed right-4 bottom-24 z-30 !rounded-full !p-4 shadow-lg md:hidden",
-            data: { turbo_frame: "modal" }, aria: { label: "Edit device" } do %>
+            aria: { label: "Edit device" } do %>
   <%= icon("square-pen", "h-5 w-5") %>
 <% end %>
 
@@ -32,7 +32,7 @@
       </div>
     </div>
     <div class="flex shrink-0 items-center gap-2 md:hidden">
-      <%= link_to "Edit", edit_device_path(@device), class: "btn btn--primary !px-3 !py-1.5 text-sm", data: { turbo_frame: "modal" } %>
+      <%= link_to "Edit", edit_device_path(@device), class: "btn btn--primary !px-3 !py-1.5 text-sm" %>
     </div>
   </div>
 

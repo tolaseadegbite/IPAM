@@ -22,11 +22,18 @@
 <% end %>
 
 <div class="mx-auto flex w-full max-w-5xl flex-col gap-6">
-  <div class="flex items-center gap-3">
-    <%= link_to :back, class: "btn shrink-0 !p-2", aria: { label: "Back" } do %>
-      <%= icon("chevron-left", "h-4 w-4") %>
-    <% end %>
-    <h1 class="truncate text-2xl font-bold tracking-tight sm:text-3xl"><%= @branch.name %></h1>
+  <div class="flex flex-col gap-1">
+    <nav class="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400" aria-label="Breadcrumb">
+      <%= link_to "Branches", branches_path, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+      <span aria-hidden="true">/</span>
+      <span class="font-medium text-zinc-900 dark:text-zinc-100"><%= @branch.name %></span>
+    </nav>
+    <div class="flex items-center gap-3">
+      <%= link_to :back, class: "btn shrink-0 !p-2", aria: { label: "Back" } do %>
+        <%= icon("chevron-left", "h-4 w-4") %>
+      <% end %>
+      <h1 class="truncate text-2xl font-bold tracking-tight sm:text-3xl"><%= @branch.name %></h1>
+    </div>
   </div>
 
   <div id="branch_details" class="card p-4 sm:p-5">
@@ -39,12 +46,15 @@
       <%= link_to "Add Dept", new_department_path(branch_id: @branch.id), class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "modal" } %>
     </div>
 
-    <% if @branch.departments.any? %>
-      <%= content_tag(:div, id: dom_id(@branch, :departments), class: "grid grid-cols-1 gap-3 md:grid-cols-2") do %>
+    <% if @departments.any? %>
+      <div class="accordion flex flex-col gap-3" id="departments_accordion">
         <% @departments.each do |department| %>
-          <%= render "branches/department_show_card", department: department %>
+          <%= render "branches/department_section",
+                department: department,
+                employees: @employees_by_department[department.id] || [],
+                devices: @devices_by_department[department.id] || [] %>
         <% end %>
-      <% end %>
+      </div>
     <% else %>
       <div id="empty_state">
         <%= render "shared/empty_state", object: "department" %>

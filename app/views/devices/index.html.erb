@@ -3,12 +3,11 @@
 <% content_for :page_header do %>Asset Inventory (<%= @pagy.count %>)<% end %>
 
 <% content_for :header_action_buttons do %>
-  <%= link_to "New Device", new_device_path, class: "btn btn--primary hidden !px-3 !py-1.5 text-sm md:inline-flex",
-              data: { turbo_frame: "modal" } %>
+  <%= link_to "New Device", new_device_path, class: "btn btn--primary hidden !px-3 !py-1.5 text-sm md:inline-flex" %>
 <% end %>
 
 <%= link_to new_device_path, class: "btn btn--primary fixed right-4 bottom-24 z-30 !rounded-full !p-4 shadow-lg md:hidden",
-            data: { turbo_frame: "modal" }, aria: { label: "New device" } do %>
+            aria: { label: "New device" } do %>
   <%= icon("plus", "h-5 w-5") %>
 <% end %>
 

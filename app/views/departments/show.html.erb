@@ -31,36 +31,12 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-    <div>
-      <div class="mb-4 flex items-center justify-between border-b border-zinc-200 pb-2 dark:border-white/10">
-        <h3 class="text-lg font-bold">Employees (<%= @department.employees.count %>)</h3>
-        <%= link_to "Add Employee", new_employee_path(department_id: @department.id), class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "modal" } %>
-      </div>
-      <%= content_tag(:ul, id: dom_id(@department, :employees), class: "flex flex-col gap-2") do %>
-        <% @employees.each do |employee| %>
-          <%= render "departments/employee_show_card", employee: employee %>
-        <% end %>
-      <% end %>
-      <% if @department.employees.empty? %>
-        <p id="no_employees_message" class="mt-2 text-sm text-zinc-500 italic dark:text-zinc-400">No employees assigned.</p>
-      <% end %>
-    </div>
-
-    <div>
-      <div class="mb-4 flex items-center justify-between border-b border-zinc-200 pb-2 dark:border-white/10">
-        <h3 class="text-lg font-bold">Devices (<%= @department.devices.count %>)</h3>
-        <%= link_to "Add Device", new_device_path(department_id: @department.id), class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "modal" } %>
-      </div>
-      <%= content_tag(:ul, id: dom_id(@department, :devices), class: "flex flex-col gap-2") do %>
-        <% @devices.each do |device| %>
-          <%= render "departments/device_show_card", device: device %>
-        <% end %>
-      <% end %>
-      <% if @department.devices.empty? %>
-        <p id="no_devices_message" class="mt-2 text-sm text-zinc-500 italic dark:text-zinc-400">No devices assigned.</p>
-      <% end %>
-    </div>
+  <div class="card p-4 text-sm text-zinc-500 sm:p-5 dark:text-zinc-400">
+    <p>
+      Team members and devices now live on the
+      <%= link_to "#{@department.branch.name} branch page", branch_path(@department.branch), class: "font-medium text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %>
+      — expand the <%= @department.name %> section there.
+    </p>
   </div>
 
   <div>

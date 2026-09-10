@@ -9,6 +9,9 @@ class BranchesController < ApplicationController
 
   def show
     @departments = @branch.departments.order(:name)
+    # Whole hierarchy in three queries for the collapsible tree below.
+    @employees_by_department = Employee.where(department: @departments).order(:first_name).group_by(&:department_id)
+    @devices_by_department = Device.where(department: @departments).includes(:employee).order(:name).group_by(&:department_id)
   end
 
   def new

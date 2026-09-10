@@ -8,8 +8,7 @@ class DepartmentsController < ApplicationController
   end
 
   def show
-    @employees = @department.employees.order(:first_name)
-    @devices = @department.devices.includes(:employee).order(:name)
+    # Members render on the branch page; show keeps header, details, audit.
   end
 
   def new
@@ -31,7 +30,7 @@ class DepartmentsController < ApplicationController
           render turbo_stream: [
              turbo_stream.prepend("departments-table", partial: "departments/department", locals: { department: @department }),
             turbo_stream.prepend("departments-cards", partial: "departments/department_card", locals: { department: @department }),
-            turbo_stream.prepend(helpers.dom_id(@department.branch, :departments), partial: "branches/department_show_card", locals: { department: @department }),
+            turbo_stream.append("departments_accordion", partial: "branches/department_section", locals: { department: @department, employees: [], devices: [] }),
             turbo_stream.update("new_department", ""), # Clear the form/modal
             turbo_stream.update("empty_state", ""), # Clear the empty state
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Department created successfully." })

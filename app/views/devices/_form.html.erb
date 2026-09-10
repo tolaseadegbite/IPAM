@@ -117,6 +117,6 @@
   <!-- Actions -->
   <div class="flex gap-3 mt-4 items-center">
     <%= form.submit "Save Device", class: "btn btn--primary" %>
-    <%= link_to "Cancel", devices_path, class: "text-sm text-zinc-500 hover:underline dark:text-zinc-400", data: { turbo_frame: "_top" } %>
+    <%= link_to "Cancel", device.persisted? ? device_path(device) : devices_path, class: "text-sm text-zinc-500 hover:underline dark:text-zinc-400" %>
   </div>
 <% end %>

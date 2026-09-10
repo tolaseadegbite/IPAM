@@ -1,7 +1,32 @@
 require "test_helper"
 
 class BranchesControllerTest < ActionDispatch::IntegrationTest
-  # test "the truth" do
-  #   assert true
-  # end
+  setup do
+    sign_in_as users(:lazaro_nixon)
+    @branch = branches(:one)
+  end
+
+  test "should show branch hierarchy with collapsed departments" do
+    get branch_url(@branch)
+    assert_response :success
+
+    @branch.departments.each do |department|
+      # Each department renders as a collapsed disclosure with member rows present
+      assert_select "details##{ActionView::RecordIdentifier.dom_id(department)}", count: 1
+      assert_select "details##{ActionView::RecordIdentifier.dom_id(department)}", text: /#{Regexp.escape(department.name)}/
+    end
+  end
+
+  test "should show department members inline" do
+    department = departments(:one)
+    get branch_url(department.branch)
+    assert_response :success
+
+    department.employees.each do |employee|
+      assert_select "details", text: /#{Regexp.escape(employee.full_name)}/
+    end
+    department.devices.each do |device|
+      assert_select "details", text: /#{Regexp.escape(device.name)}/
+    end
+  end
 end
