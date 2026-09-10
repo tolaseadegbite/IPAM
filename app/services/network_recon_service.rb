@@ -262,7 +262,7 @@ class NetworkReconService
             ip_address: host_data[:ip],
             device: known_device,
             message: "Device '#{known_device.name}' claimed #{host_data[:ip]}"
-          )
+          ).tap { |event| TriageService.triage(event) }
 
           # --- SUBNET-AWARE DRIFT ---
           old_ips = IpAddress.where(device_id: known_device.id, subnet_id: ip_record.subnet_id)
@@ -306,7 +306,7 @@ class NetworkReconService
                 ip_address: host_data[:ip],
                 device: current_device,
                 message: "Unknown MAC (#{host_data[:mac]}) seized IP currently assigned to this device."
-              )
+              ).tap { |event| TriageService.triage(event) }
 
               updates[:device_id] = nil
               updates[:status] = :available
