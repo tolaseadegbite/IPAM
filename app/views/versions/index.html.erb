@@ -14,6 +14,40 @@
 <% end %>
 
 <div class="flex w-full flex-col gap-4">
+  <%= render "shared/search_panel", title: "Search & Filter" do %>
+    <%= form_with url: versions_path, method: :get,
+        data: { turbo_frame: "_top", turbo_action: "advance", controller: "debounce",
+                action: "input->debounce#submit change->debounce#submit" } do %>
+      <div class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div>
+          <%= label_tag :event, "Action", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= select_tag :event, options_for_select([ "create", "update", "destroy" ], params[:event]),
+                include_blank: "All actions", class: "input cursor-pointer" %>
+        </div>
+        <div>
+          <%= label_tag :filter_item_type, "Record type", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= select_tag :filter_item_type, options_for_select(VersionsController::ITEM_TYPES, params[:filter_item_type]),
+                include_blank: "All types", class: "input cursor-pointer" %>
+        </div>
+        <div>
+          <%= label_tag :username, "Actor", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= search_field_tag :username, params[:username], placeholder: "Username…", class: "input" %>
+        </div>
+        <div>
+          <%= label_tag :from, "From", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= text_field_tag :from, params[:from], placeholder: "YYYY-MM-DD", class: "input cursor-pointer", data: { controller: "datepicker" } %>
+        </div>
+        <div class="flex items-end gap-2">
+          <div class="flex-1">
+            <%= label_tag :to, "To", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+            <%= text_field_tag :to, params[:to], placeholder: "YYYY-MM-DD", class: "input cursor-pointer", data: { controller: "datepicker" } %>
+          </div>
+          <%= link_to "Clear", versions_path, class: "btn btn--primary mb-px text-xs", data: { action: "click->search-filter#resetAll" } %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
   <%= render "shared/audit_log", records: @versions, hide_footer: true %>
 
   <div class="border-t border-zinc-200 p-4 dark:border-white/10">

@@ -14,7 +14,7 @@
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-3">
       <%= form.submit class: "btn btn--primary" %>
-      <%= link_to "Cancel", "#", class: "text-sm text-zinc-500 hover:underline dark:text-zinc-400", data: { action: "click->modal#close" } %>
+      <%= link_to "Cancel", "#", class: "text-sm text-zinc-500 hover:underline dark:text-zinc-400", data: { action: "click->modal#requestClose" } %>
     </div>
     <% if board.persisted? %>
       <%= link_to "Delete Board", board_path(board), method: :delete, class: "text-xs text-red-500 hover:underline", data: { turbo_confirm: "Are you sure? This will delete all columns and tasks inside this board." } %>

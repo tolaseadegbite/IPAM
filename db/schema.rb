@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_10_010526) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_10_172912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,6 +47,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_010526) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["card_id", "user_id"], name: "index_assignments_on_card_id_and_user_id", unique: true
     t.index ["card_id"], name: "index_assignments_on_card_id"
     t.index ["user_id"], name: "index_assignments_on_user_id"
   end
@@ -65,6 +66,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_010526) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_branches_on_name", unique: true
+  end
+
+  create_table "card_activities", force: :cascade do |t|
+    t.integer "action", default: 0, null: false
+    t.bigint "card_id", null: false
+    t.datetime "created_at", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["action"], name: "index_card_activities_on_action"
+    t.index ["card_id", "created_at"], name: "index_card_activities_on_card_id_and_created_at"
+    t.index ["card_id"], name: "index_card_activities_on_card_id"
+    t.index ["user_id"], name: "index_card_activities_on_user_id"
   end
 
   create_table "cards", force: :cascade do |t|
@@ -318,6 +332,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_010526) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "assignments", "cards"
   add_foreign_key "assignments", "users"
+  add_foreign_key "card_activities", "cards"
+  add_foreign_key "card_activities", "users"
   add_foreign_key "cards", "lists"
   add_foreign_key "chats", "models"
   add_foreign_key "chats", "users"

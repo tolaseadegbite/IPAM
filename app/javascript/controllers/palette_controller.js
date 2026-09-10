@@ -57,8 +57,7 @@ export default class extends Controller {
       this.#activate((this.#activeIndex() - 1 + items.length) % items.length)
     } else if (event.key === "Enter") {
       const active = items[this.#activeIndex()] || items[0]
-      Turbo.visit(active.dataset.url)
-      this.close()
+      this.#follow(active)
     }
   }
 
@@ -76,10 +75,10 @@ export default class extends Controller {
     if (!response.ok) return
     const results = await response.json()
     this.resultsTarget.innerHTML = results.map((result, index) => `
-      <button type="button" data-url="${escapeHtml(result.url)}" data-action="click->palette#visit"
+      <button type="button" data-url="${escapeHtml(result.url)}" ${result.method ? `data-method="${escapeHtml(result.method)}"` : ""} data-action="click->palette#visit"
               data-palette-index="${index}"
               class="palette-item menu__item w-full ${index === 0 ? "is-active" : ""}">
-        <svg class="h-4 w-4 shrink-0 text-zinc-400" aria-hidden="true"><use href="#icon-${escapeHtml(result.icon)}"></use></svg>
+        <svg class="h-4 w-4 shrink-0 text-zinc-400" aria-hidden="true">${result.icon ? `<use href="#icon-${escapeHtml(result.icon)}"></use>` : ""}</svg>
         <span class="min-w-0 flex-1 text-left">
           <span class="block truncate font-medium">${escapeHtml(result.label)}</span>
           ${result.sub ? `<span class="block truncate text-xs text-zinc-500">${escapeHtml(result.sub)}</span>` : ""}
@@ -88,9 +87,22 @@ export default class extends Controller {
   }
 
   visit(event) {
-    const url = event.currentTarget.dataset.url
+    this.#follow(event.currentTarget)
+  }
+
+  // GET results navigate; POST results (e.g. Scan now) submit in place —
+  // the server answers head :ok and updates the page over Turbo Streams.
+  #follow(item) {
     this.close()
-    Turbo.visit(url)
+    if (item.dataset.method === "post") {
+      const token = document.querySelector("meta[name='csrf-token']")?.content
+      fetch(item.dataset.url, {
+        method: "POST",
+        headers: { "X-CSRF-Token": token, Accept: "text/vnd.turbo-stream.html" }
+      })
+    } else {
+      Turbo.visit(item.dataset.url)
+    }
   }
 
   #items() {

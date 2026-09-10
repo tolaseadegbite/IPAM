@@ -12,33 +12,38 @@
   <%= icon("plus", "h-5 w-5") %>
 <% end %>
 
-<%= turbo_frame_tag :branches_table do %>
-  <div class="relative hidden overflow-x-auto rounded-xl border border-zinc-200 bg-white md:block dark:border-white/10 dark:bg-zinc-900">
-    <table class="table w-full">
-      <thead class="bg-zinc-50 dark:bg-white/5">
-        <tr>
-          <th class="p-3"><%= sort_link(@search, :name, "Branch") %></th>
-          <th class="p-3"><%= sort_link(@search, :location, "Location") %></th>
-          <th class="p-3"><%= sort_link(@search, :contact_phone, "Phone") %></th>
-          <th class="p-3 text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="branches-table">
-        <% if @branches.empty? %>
-          <tr><td colspan="4" class="p-8 text-center text-sm text-zinc-500 dark:text-zinc-400">No branches found.</td></tr>
-        <% else %>
-          <%= render @branches %>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
+<%= render "search_form" %>
 
-  <div id="branches-cards" class="flex flex-col gap-4 md:hidden">
-    <% if @branches.empty? %>
-      <%= render "shared/empty_state", object: "branch" %>
-    <% else %>
-      <%= render partial: "branches/branch_card", collection: @branches, as: :branch %>
-    <% end %>
+<%= turbo_frame_tag :branches_table do %>
+  <%
+    # Reject blanks (cleared forms submit empty q values; sort links add
+    # only q[s]) so the summary below reflects truly active filters.
+    dq = params[:q]&.to_unsafe_h&.reject { |_, v| v.blank? } || {}
+    without = ->(key) { branches_path(q: dq.except(key.to_s)) }
+    branch_pills = []
+    branch_pills << { label: "Name", value: dq["name_cont"], url: without.(:name_cont), names: "q[name_cont]" } if dq["name_cont"].present?
+    branch_pills << { label: "Location", value: dq["location_cont"], url: without.(:location_cont), names: "q[location_cont]" } if dq["location_cont"].present?
+  %>
+  <% if branch_pills.any? %>
+    <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">Found <strong class="font-semibold text-zinc-900 dark:text-zinc-100"><%= @pagy.count %></strong> <%= "branch".pluralize(@pagy.count) %> matching your filters.</p>
+    <%= render "shared/active_filters", pills: branch_pills, clear_url: branches_path %>
+  <% end %>
+  <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-900">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 px-4 py-2.5 dark:border-white/10">
+      <span class="text-[13px] font-semibold tabular-nums"><%= @pagy.count %> branches</span>
+      <div class="flex items-center gap-1 text-[13px]">
+        <span class="font-medium text-zinc-500 dark:text-zinc-400">Sort:</span>
+        <%= sort_link(@search, :name, "Name", class: "rounded-md px-2 py-1 font-semibold hover:underline") %>
+        <%= sort_link(@search, :location, "Location", class: "rounded-md px-2 py-1 font-semibold hover:underline") %>
+      </div>
+    </div>
+    <div id="branches-list" class="divide-y divide-zinc-200 dark:divide-white/10">
+      <% if @branches.empty? %>
+        <div class="p-4"><%= render "shared/empty_state", object: "branch" %></div>
+      <% else %>
+        <%= render partial: "branches/branch", collection: @branches, as: :branch %>
+      <% end %>
+    </div>
   </div>
 
   <%= render "shared/pagination", pagy: @pagy %>

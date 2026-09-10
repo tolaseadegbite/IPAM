@@ -9,7 +9,14 @@ class SubnetsController < ApplicationController
   end
 
   def show
-    @pagy, @pool_ips = pagy(@subnet.ip_addresses.includes(:device).order(:address), limit: 96)
+    pool = @subnet.ip_addresses.includes(:device).order(:address)
+    pool = pool.where.not(device_id: nil) if params[:pool] == "assigned"
+    pool = pool.free if params[:pool] == "free"
+    if params[:addr].present?
+      query = "%#{params[:addr].gsub(/[%_]/, "")}%"
+      pool = pool.where("host(address) ILIKE ?", query)
+    end
+    @pagy, @pool_ips = pagy(pool, limit: 96)
   end
 
   def new
@@ -28,8 +35,7 @@ class SubnetsController < ApplicationController
         format.html { redirect_to subnets_path, notice: "Subnet created successfully." }
         format.turbo_stream do
           render turbo_stream: [
-             turbo_stream.prepend("subnets-table", partial: "subnets/subnet", locals: { subnet: @subnet }),
-            turbo_stream.prepend("subnets-cards", partial: "subnets/subnet_card", locals: { subnet: @subnet }),
+             turbo_stream.prepend("subnets-list", partial: "subnets/subnet", locals: { subnet: @subnet }),
             turbo_stream.update("new_subnet", ""), # Clear the form/modal
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Subnet created successfully." })
           ]
@@ -46,8 +52,7 @@ class SubnetsController < ApplicationController
         format.html { redirect_to subnets_path, notice: "Subnet updated successfully." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.replace(helpers.dom_id(@subnet, :table_row), partial: "subnets/subnet", locals: { subnet: @subnet }),
-            turbo_stream.replace(helpers.dom_id(@subnet, :card), partial: "subnets/subnet_card", locals: { subnet: @subnet }),
+            turbo_stream.replace(@subnet, partial: "subnets/subnet", locals: { subnet: @subnet }),
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Subnet updated successfully." })
           ]
         end
@@ -63,8 +68,7 @@ class SubnetsController < ApplicationController
       format.html { redirect_to subnets_path, notice: "Subnet deleted." }
       format.turbo_stream do
         render turbo_stream: [
-          turbo_stream.remove(helpers.dom_id(@subnet, :table_row)),
-          turbo_stream.remove(helpers.dom_id(@subnet, :card)),
+          turbo_stream.remove(@subnet),
           turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Subnet deleted." })
         ]
       end

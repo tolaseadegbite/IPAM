@@ -17,6 +17,14 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "should not show matching summary for blank filters" do
+    # Cleared forms submit empty q values; the summary must only reflect
+    # truly active filters.
+    get branches_url(q: { name_cont: "" })
+    assert_response :success
+    assert_select "p", text: /matching your filters/, count: 0
+  end
+
   test "should show department members inline" do
     department = departments(:one)
     get branch_url(department.branch)

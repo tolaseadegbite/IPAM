@@ -1,7 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
+import { snapshotDialog, confirmDiscardIfDirty } from "controllers/dirty_confirm"
 
 export default class extends Controller {
   static targets = [ "content" ]
+
+  #snapshot = null
+  #onCancel = null
 
   connect() {
     // Listen for a "dialog:close" event on the window.
@@ -11,6 +15,20 @@ export default class extends Controller {
 
   showModal() {
     this.contentTarget.showModal()
+    this.#snapshot = snapshotDialog(this.contentTarget)
+    this.#onCancel = (event) => {
+      event.preventDefault()
+      this.requestClose()
+    }
+    this.contentTarget.addEventListener("cancel", this.#onCancel)
+  }
+
+  disconnect() {
+    this.contentTarget.removeEventListener("cancel", this.#onCancel)
+  }
+
+  requestClose() {
+    confirmDiscardIfDirty(this.contentTarget, this.#snapshot || new Map(), () => this.close())
   }
 
   close() {
@@ -22,7 +40,7 @@ export default class extends Controller {
 
   closeOnClickOutside({ target }) {
     if (target.nodeName === "DIALOG") {
-      this.close()
+      this.requestClose()
     }
   }
 }

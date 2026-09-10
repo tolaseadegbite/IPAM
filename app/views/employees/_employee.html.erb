@@ -1,33 +1,29 @@
-<tr id="<%= dom_id(employee, :table_row) %>">
-  <td class="p-3 font-semibold"><%= link_to employee.full_name, employee, class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></td>
-  <td class="p-3 text-sm">
-    <%= employee.department.name %>
-    <span class="block text-xs"><%= link_to employee.department.branch.name, branch_path(employee.department.branch), class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></span>
-  </td>
-  <td class="p-3">
-    <%
-      status_badge = case employee.status
-        when "active" then "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300"
-        when "on_leave" then "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
-        when "terminated" then "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300"
-        else "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
-        end
-    %>
-    <span class="<%= status_badge %> rounded-md px-2 py-0.5 text-sm font-medium"><%= employee.status.humanize %></span>
-  </td>
-  <td class="p-3">
-    <div class="flex items-center justify-end gap-3">
-      <%= link_to "Edit", edit_employee_path(employee),
-                  class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400",
-                  data: { turbo_frame: "modal" } %>
-      <% delete_trigger = button_tag "Delete", type: "button", class: "cursor-pointer text-sm font-medium text-red-600 hover:underline dark:text-red-400", data: { action: "dialog#showModal" } %>
-      <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{employee.full_name}'?" do %>
-        <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this employee. This action cannot be undone.</p>
-        <div class="flex items-center justify-end gap-2">
-          <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
-          <%= button_to "Continue", employee, method: :delete, class: "btn btn--negative" %>
-        </div>
-      <% end %>
-    </div>
-  </td>
-</tr>
+<%# Unified employee row — the only employee list item at every width.
+    Locals: employee. %>
+<%
+  status_color = case employee.status
+    when "active" then "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300"
+    when "on_leave" then "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
+    when "terminated" then "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300"
+    else "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+    end
+%>
+<div id="<%= dom_id(employee) %>" class="flex min-h-16 items-center gap-3 px-4 py-3">
+  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-sm font-bold dark:bg-zinc-700">
+    <%= employee.first_name.first %><%= employee.last_name.first %>
+  </span>
+  <span class="min-w-0 flex-1">
+    <span class="block truncate text-[14.5px] font-semibold">
+      <%= link_to employee.full_name, employee, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+    </span>
+    <span class="mt-0.5 block truncate text-[13px] text-zinc-500 dark:text-zinc-400">
+      <%= employee.department.name %> · <%= employee.department.branch.name %>
+    </span>
+  </span>
+  <%= render "shared/status_badge", color: status_color, label: employee.status.humanize %>
+  <span class="flex shrink-0 items-center">
+    <%= render "shared/row_actions", record: employee, show_path: employee,
+          edit_path: edit_employee_path(employee), delete_path: employee,
+          record_name: employee.full_name %>
+  </span>
+</div>

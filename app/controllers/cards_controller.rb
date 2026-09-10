@@ -19,8 +19,9 @@ class CardsController < ApplicationController
   end
 
   def edit
-    # Fetch the history logs, most recent first
-    @versions = @card.versions.order(created_at: :desc)
+    # Activity timeline, most recent first (names snapshotted at write
+    # time, so rendering is a single query with no lookups).
+    @activities = @card.activities.includes(:user).recent
   end
 
   def create
@@ -91,12 +92,12 @@ class CardsController < ApplicationController
   end
 
   def move
-    @card.update(
-      list_id: params[:list_id],
-      position: params[:position]
-    )
-    # The Board broadcasts_refreshes (Morphing) handles the remote sync
-    head :ok
+    if @card.update(list_id: params[:list_id], position: params[:position])
+      # The Board broadcasts_refreshes (Morphing) handles the remote sync
+      head :ok
+    else
+      render json: { errors: @card.errors.full_messages.to_sentence }, status: :unprocessable_entity
+    end
   end
 
   def select_assets
@@ -107,7 +108,9 @@ class CardsController < ApplicationController
       # Eager load department and branch for the smart label.
       # Capped: the combobox filters client-side, and unbounded lists
       # exhaust memory on large inventories.
-      @assets = Device.includes(department: :branch).active.order(:name).limit(500).map do |d|
+      # NOTE: intentionally unscoped by status — maintenance tasks are
+      # often *about* non-active devices (in repair, retired, lost).
+      @assets = Device.includes(department: :branch).order(:name).limit(500).map do |d|
         [ "#{d.name} (#{d.department.branch.name} - #{d.department.name})", d.id ]
       end
       render partial: "cards/asset_selectors/asset_combobox", locals: { assets: @assets, prompt: "Search by Hostname..." }

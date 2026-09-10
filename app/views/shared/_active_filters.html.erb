@@ -1,0 +1,23 @@
+<%# Dismissible active-filter pills (trellixe pattern). Locals: pills:
+   array of { label:, value:, url:, names: (optional space-separated
+   input names for in-place clearing) }, clear_url:. Pills live inside
+   the results Turbo Frame while the form lives outside it — the links
+   clear the matching fields and resubmit in place (panel stays open),
+   falling back to plain navigation without JS. %>
+<% if pills.any? %>
+  <div class="mb-4 flex flex-wrap items-center gap-2" data-controller="search-filter">
+    <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Active filters:</span>
+    <% pills.each do |pill| %>
+      <span class="badge gap-1.5 border-zinc-300 pr-1.5 dark:border-white/10">
+        <span class="text-zinc-500 dark:text-zinc-400"><%= pill[:label] %>:</span>
+        <strong class="max-w-40 truncate font-semibold"><%= pill[:value] %></strong>
+        <%= link_to pill[:url], class: "text-zinc-400 hover:text-red-500", aria: { label: "Remove #{pill[:label]} filter" },
+              data: pill[:names].present? ? { action: "click->search-filter#removeFilter", search_filter_names_param: pill[:names] } : {} do %>
+          <%= icon("x", "h-3 w-3") %>
+        <% end %>
+      </span>
+    <% end %>
+    <%= link_to "Clear all", clear_url, class: "text-xs font-medium text-red-600 hover:underline dark:text-red-400",
+          data: { action: "click->search-filter#resetAll" } %>
+  </div>
+<% end %>

@@ -28,8 +28,7 @@ class DepartmentsController < ApplicationController
         format.html { redirect_to departments_path, notice: "Department created successfully." }
         format.turbo_stream do
           render turbo_stream: [
-             turbo_stream.prepend("departments-table", partial: "departments/department", locals: { department: @department }),
-            turbo_stream.prepend("departments-cards", partial: "departments/department_card", locals: { department: @department }),
+             turbo_stream.prepend("departments-list", partial: "departments/department", locals: { department: @department }),
             turbo_stream.append("departments_accordion", partial: "branches/department_section", locals: { department: @department, employees: [], devices: [] }),
             turbo_stream.update("new_department", ""), # Clear the form/modal
             turbo_stream.update("empty_state", ""), # Clear the empty state
@@ -48,8 +47,7 @@ class DepartmentsController < ApplicationController
         format.html { redirect_to departments_path, notice: "Department updated successfully." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.replace(helpers.dom_id(@department, :table_row), partial: "departments/department", locals: { department: @department }),
-            turbo_stream.replace(helpers.dom_id(@department, :card), partial: "departments/department_card", locals: { department: @department }),
+            turbo_stream.replace(@department, partial: "departments/department", locals: { department: @department }),
             turbo_stream.update(("department_details"), partial: "departments/department_details", locals: { department: @department }),
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Department updated successfully." })
           ]
@@ -67,8 +65,7 @@ class DepartmentsController < ApplicationController
         format.html { redirect_to departments_path, notice: "Department deleted." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.remove(helpers.dom_id(@department, :table_row)),
-            turbo_stream.remove(helpers.dom_id(@department, :card)),
+            turbo_stream.remove(@department),
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Department deleted." })
           ]
         end

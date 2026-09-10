@@ -4,6 +4,7 @@ CI.run do
   step "Setup", "bin/setup --skip-server"
 
   step "Style: Ruby", "bin/rubocop"
+  step "Style: JavaScript syntax", 'for f in app/javascript/controllers/*.js app/javascript/application.js; do node --check "$f" || exit 1; done'
 
   step "Security: Gem audit", "bin/bundler-audit"
   step "Security: Importmap vulnerability audit", "bin/importmap audit"

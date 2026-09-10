@@ -1,68 +1,47 @@
-<tr id="<%= dom_id(device, :table_row) %>">
-  <td class="p-3">
-    <div class="font-semibold"><%= link_to (device.name.presence || "—"), device, class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></div>
-    <div class="text-xs text-zinc-500 dark:text-zinc-400"><%= device.device_type&.humanize.presence || "—" %></div>
-  </td>
-
-  <td class="p-3">
-    <% if device.ip_addresses.any? %>
-      <div class="flex flex-col gap-1">
-        <% device.ip_addresses.each do |ip| %>
-          <div class="flex items-center gap-1.5 font-mono text-sm">
-            <%= link_to ip.address, ip, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
-            <span class="h-1.5 w-1.5 rounded-full <%= ip.reachability_status_up? ? "bg-green-500" : "bg-red-500" %>"
-                  title="<%= ip.reachability_status_up? ? "Online" : "Offline" %>"></span>
-          </div>
-        <% end %>
-      </div>
-    <% else %>
-      <span class="text-xs text-zinc-400 italic">Unassigned</span>
-    <% end %>
-  </td>
-  <td class="p-3 font-mono text-sm text-green-600 dark:text-green-400">
-    <%= device&.mac_address.presence || "—" %>
-  </td>
-  <td class="p-3 text-sm">
-    <%= link_to device.employee&.full_name.presence || "Owner: —", device.employee, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
-    <div class="text-xs text-zinc-500 dark:text-zinc-400">
-      <span class="font-semibold">Department:</span>
-      <% if device.department %>
-        <%= device.department.branch.name %> (<%= device.department.name %>)
-      <% else %>
-        —
-      <% end %>
-    </div>
-  </td>
-  <td class="p-3">
-    <%
-      status_badge = case device.status
-        when "active" then "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300"
-        when "in_storage", "in_repair" then "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
-        when "retired", "lost" then "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300"
-        else "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
-        end
-    %>
-    <span class="<%= status_badge %> rounded-md px-2 py-0.5 text-xs font-medium"><%= device.status&.humanize || "—" %></span>
-  </td>
-  <td class="p-3">
-    <% if device.critical? %>
-      <span class="rounded-md bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800 dark:bg-orange-500/15 dark:text-orange-300">Yes</span>
-    <% else %>
-      <span class="text-xs text-zinc-400">No</span>
-    <% end %>
-  </td>
-  <td class="p-3">
-    <div class="flex items-center justify-end gap-3">
-      <%= link_to "Edit", edit_device_path(device),
-                  class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400" %>
-      <% delete_trigger = button_tag "Delete", type: "button", class: "cursor-pointer text-sm font-medium text-red-600 hover:underline dark:text-red-400", data: { action: "dialog#showModal" } %>
-      <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{device.name}'?" do %>
-        <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this device. This action cannot be undone.</p>
-        <div class="flex items-center justify-end gap-2">
-          <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
-          <%= button_to "Continue", device, method: :delete, class: "btn btn--negative" %>
-        </div>
-      <% end %>
-    </div>
-  </td>
-</tr>
+<%# Unified device row — the only device list item at every width.
+    Locals: device. Lives in the divided list; secondary meta hides
+    progressively (sm:, md:) instead of duplicating markup. %>
+<%
+  ips = device.ip_addresses.to_a
+  reachable = ips.any?(&:reachability_status_up?)
+  row_dot = if ips.empty?
+              "bg-zinc-300 dark:bg-zinc-600"
+            elsif reachable then "bg-green-500"
+            else "bg-red-500"
+            end
+  status_color = case device.status
+    when "active" then "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300"
+    when "in_storage", "in_repair" then "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
+    when "retired", "lost" then "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300"
+    else "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+    end
+%>
+<div id="<%= dom_id(device) %>" class="flex min-h-16 items-center gap-3 px-4 py-3">
+  <span class="h-2 w-2 shrink-0 rounded-full <%= row_dot %>"
+        title="<%= ips.empty? ? "No IP assigned" : (reachable ? "Online" : "Offline") %>"></span>
+  <span class="min-w-0 flex-1">
+    <span class="block truncate text-[14.5px] font-semibold">
+      <%= link_to (device.name.presence || "—"), device, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+    </span>
+    <span class="mt-0.5 block truncate text-[13px] text-zinc-500 dark:text-zinc-400">
+      <span class="font-mono"><%= ips.first&.address || "Unassigned" %></span>
+      <% if ips.size > 1 %><span class="tabular-nums"> (+<%= ips.size - 1 %>)</span><% end %>
+      · <%= device.device_type&.humanize %>
+    </span>
+  </span>
+  <span class="hidden shrink-0 font-mono text-[13px] text-green-600 sm:block dark:text-green-400">
+    <%= device.mac_address.presence || "—" %>
+  </span>
+  <span class="hidden min-w-0 max-w-44 shrink-0 truncate text-[13px] text-zinc-500 md:block dark:text-zinc-400">
+    <%= device.employee&.full_name || "Unassigned" %>
+  </span>
+  <%= render "shared/status_badge", color: status_color, label: device.status&.humanize || "—" %>
+  <% if device.critical? %>
+    <span class="hidden shrink-0 rounded-md bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800 sm:block dark:bg-orange-500/15 dark:text-orange-300">Critical</span>
+  <% end %>
+  <span class="flex shrink-0 items-center">
+    <%= render "shared/row_actions", record: device, show_path: device,
+          edit_path: edit_device_path(device), delete_path: device,
+          record_name: device.name, modal: false %>
+  </span>
+</div>

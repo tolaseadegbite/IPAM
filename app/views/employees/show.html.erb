@@ -10,7 +10,7 @@
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{@employee.full_name}'?" do %>
       <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this employee. This action cannot be undone.</p>
       <div class="flex items-center justify-end gap-2">
-        <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
+        <button type="button" class="btn" data-action="click->dialog#requestClose">Cancel</button>
         <%= button_to "Continue", @employee, method: :delete, data: { turbo: false }, class: "btn btn--negative" %>
       </div>
     <% end %>
@@ -23,11 +23,37 @@
 <% end %>
 
 <div class="mx-auto flex w-full max-w-4xl flex-col gap-6">
-  <div class="flex items-center gap-3">
-    <%= link_to :back, class: "btn shrink-0 !p-2", aria: { label: "Back" } do %>
-      <%= icon("chevron-left", "h-4 w-4") %>
-    <% end %>
-    <h1 class="truncate text-2xl font-bold tracking-tight sm:text-3xl"><%= @employee.full_name %></h1>
+  <div class="flex flex-col gap-3">
+    <nav class="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400" aria-label="Breadcrumb">
+      <%= link_to "Employees", employees_path, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+      <span aria-hidden="true">/</span>
+      <span class="truncate font-medium text-zinc-900 dark:text-zinc-100"><%= @employee.full_name %></span>
+    </nav>
+    <div class="flex items-center gap-3">
+      <%= link_to :back, class: "btn shrink-0 !p-2", aria: { label: "Back" } do %>
+        <%= icon("chevron-left", "h-4 w-4") %>
+      <% end %>
+      <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-base font-bold dark:bg-zinc-700">
+        <%= @employee.first_name.first %><%= @employee.last_name.first %>
+      </span>
+      <div class="min-w-0 flex-1">
+        <h1 class="truncate text-2xl font-bold tracking-tight sm:text-3xl"><%= @employee.full_name %></h1>
+        <div class="mt-0.5 truncate text-sm text-zinc-500 dark:text-zinc-400">
+          <%= link_to @employee.department.name, @employee.department, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+          ·
+          <%= link_to @employee.department.branch.name, @employee.department.branch, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+        </div>
+      </div>
+      <%
+        emp_badge = case @employee.status
+          when "active" then "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300"
+          when "on_leave" then "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
+          when "terminated" then "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300"
+          else "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+          end
+      %>
+      <%= render "shared/status_badge", color: emp_badge, label: @employee.status.humanize %>
+    </div>
   </div>
 
   <div class="grid grid-cols-1 gap-4 md:grid-cols-3">

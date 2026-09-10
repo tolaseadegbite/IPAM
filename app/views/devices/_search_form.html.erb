@@ -1,15 +1,10 @@
-<div data-controller="search-filter" data-action="click@window->search-filter#closeOnClickOutside">
-  <button type="button" class="btn mb-4" data-action="search-filter#toggle">
-    <%= icon("search", "h-4 w-4") %>
-    <span>Search &amp; Filter</span>
-  </button>
-
-  <div class="card mb-4 hidden p-4" data-search-filter-target="filters">
+<%= render "shared/search_panel" do %>
     <%= search_form_for @search,
         data: {
           turbo_frame: "devices_table",
           turbo_action: "advance",
-          controller: "debounce"
+          controller: "debounce",
+          action: "input->debounce#submit change->debounce#submit"
         } do |f| %>
       <div class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <div>
@@ -58,9 +53,8 @@
         </div>
 
         <div class="flex gap-2">
-          <%= link_to "Clear", devices_path, class: "btn btn--secondary", data: { turbo_frame: "devices_table", action: "click->search-filter#clear" } %>
+          <%= link_to "Clear", devices_path, class: "btn btn--primary", data: { action: "click->search-filter#resetAll" } %>
         </div>
       </div>
     <% end %>
-  </div>
-</div>
+<% end %>

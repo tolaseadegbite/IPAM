@@ -22,9 +22,9 @@
 
     <div class="col-span-1">
       <label class="mb-1 block font-medium">Board</label>
-      <% 
+      <%
          current_list = List.find_by(id: card.list_id)
-         selected_board_id = current_list&.board_id || Board.first&.id
+         selected_board_id = current_list&.board_id
       %>
       
       <%= select_tag "board_id", 
@@ -120,7 +120,7 @@
   <div class="flex justify-between items-center">
     <div class="flex gap-3 items-center">
       <%= form.submit "Save Task", class: "btn btn--primary" %>
-      <%= link_to "Cancel", "#", class: "text-sm text-zinc-500 hover:underline dark:text-zinc-400", data: { action: "click->modal#close" } %>
+      <%= link_to "Cancel", "#", class: "text-sm text-zinc-500 hover:underline dark:text-zinc-400", data: { action: "click->modal#requestClose" } %>
     </div>
     
     <% if card.persisted? %>

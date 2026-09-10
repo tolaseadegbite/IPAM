@@ -6,9 +6,59 @@
 <%= render "search_form" %>
 
 <%= turbo_frame_tag "ip_addresses" do %>
-  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-    <%= render @ip_addresses %>
-  </div>
+  <%
+    # Reject blanks (cleared forms submit empty q values) so pills below
+    # reflect truly active filters.
+    dq = params[:q]&.to_unsafe_h&.reject { |_, v| v.blank? } || {}
+    without = ->(key) { ip_addresses_path(q: dq.except(key.to_s)) }
+    ip_pills = []
+      ip_pills << { label: "IP", value: dq["address_string_cont"], url: without.(:address_string_cont), names: "q[address_string_cont]" } if dq["address_string_cont"].present?
+      if dq["subnet_id_eq"].present? && (sname = Subnet.find_by(id: dq["subnet_id_eq"])&.name)
+        ip_pills << { label: "Subnet", value: sname, url: without.(:subnet_id_eq), names: "q[subnet_id_eq]" }
+      end
+      if dq["device_department_branch_id_eq"].present? && (bname = Branch.find_by(id: dq["device_department_branch_id_eq"])&.name)
+        ip_pills << { label: "Branch", value: bname, url: without.(:device_department_branch_id_eq), names: "q[device_department_branch_id_eq]" }
+      end
+      if dq["device_department_id_eq"].present? && (dname = Department.find_by(id: dq["device_department_id_eq"])&.name)
+        ip_pills << { label: "Department", value: dname, url: without.(:device_department_id_eq), names: "q[device_department_id_eq]" }
+      end
+      if dq["status_eq"].present?
+        ip_pills << { label: "Status", value: IpAddress.statuses.key(dq["status_eq"].to_i)&.humanize || dq["status_eq"], url: without.(:status_eq), names: "q[status_eq]" }
+      end
+      if dq["reachability_status_eq"].present?
+        ip_pills << { label: "Reachability", value: IpAddress.reachability_statuses.key(dq["reachability_status_eq"].to_i)&.humanize || dq["reachability_status_eq"], url: without.(:reachability_status_eq), names: "q[reachability_status_eq]" }
+      end
+      if dq["rogue_only"] == "true"
+        ip_pills << { label: "Security", value: "Rogue only", url: without.(:rogue_only), names: "q[rogue_only]" }
+      end
+    %>
+  <%= render "shared/active_filters", pills: ip_pills, clear_url: ip_addresses_path %>
+  <% if @ip_addresses.empty? %>
+    <% if params.dig(:q, :rogue_only) == "true" %>
+      <% rogue_empty_action = capture do %>
+        <p class="text-xs text-zinc-500 dark:text-zinc-400">
+          Last scan
+          <span data-controller="timeago" data-timeago-date-value="<%= (Rails.cache.read("last_network_scan_completed_at") || Time.current).iso8601 %>">
+            just now
+          </span>
+          · <%= link_to "View all IPs", ip_addresses_path, class: "font-medium text-orange-600 hover:underline dark:text-orange-400",
+                data: { action: "click->search-filter#resetAll" } %>
+        </p>
+      <% end %>
+      <div data-controller="search-filter">
+        <%= render "shared/empty_state", object: "IP address", title: "No rogue devices",
+              icon: "circle-check",
+              description: "Every responding host is inventoried.",
+              action: rogue_empty_action %>
+      </div>
+    <% else %>
+      <%= render "shared/empty_state", object: "IP address" %>
+    <% end %>
+  <% else %>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <%= render @ip_addresses %>
+    </div>
+  <% end %>
 
   <%= turbo_stream.update "ip_addresses_count" do %>
     (<%= @pagy.count %>)

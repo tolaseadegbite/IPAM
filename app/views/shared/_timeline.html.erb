@@ -1,0 +1,72 @@
+<%# Unified activity timeline. Locals: activities (CardActivity, newest
+   first, user preloaded), show_task: (default false) prefixes each row
+   with the task title for cross-task feeds (board activity). %>
+<% show_task = local_assigns.fetch(:show_task, false) %>
+<% if activities.any? %>
+  <div class="flex max-h-[300px] flex-col gap-4 overflow-y-auto">
+    <% activities.group_by { |activity| activity.created_at.to_date }.each do |date, day_items| %>
+      <div>
+        <p class="label-mono mb-2">
+          <%= date == Date.current ? "Today" : date == Date.yesterday ? "Yesterday" : date.strftime("%b %-d, %Y") %>
+        </p>
+        <div class="flex flex-col gap-3">
+          <% day_items.each do |activity| %>
+            <%
+              dot = case activity.action
+                    when "created" then "bg-green-500"
+                    when "moved" then "bg-sky-400"
+                    when "reprioritized" then "bg-amber-400"
+                    when "assigned" then "bg-orange-500"
+                    else "bg-zinc-300 dark:bg-zinc-600"
+                    end
+              meta = activity.metadata || {}
+            %>
+            <div class="flex gap-2.5">
+              <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full <%= dot %>" aria-hidden="true"></span>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm leading-snug">
+                  <span class="avatar mr-1 inline-flex !h-5 !w-5 align-middle text-[10px]"><%= activity.actor_name.first.upcase %></span>
+                  <strong class="font-semibold"><%= activity.actor_name %></strong>
+                  <% case activity.action %>
+                  <% when "created" %>
+                    created this task
+                    <% if meta["priority"].present? || meta["list"].present? %>
+                      <span class="text-zinc-500 dark:text-zinc-400">· <%= [ meta["priority"], meta["list"] ].compact_blank.join(" · ") %></span>
+                    <% end %>
+                  <% when "moved" %>
+                    moved
+                    <% if meta["from_list"].present? %><span class="font-medium"><%= meta["from_list"] %></span> →<% end %>
+                    <strong class="font-semibold"><%= meta["to_list"] || "another column" %></strong>
+                  <% when "reprioritized" %>
+                    changed priority
+                    <% if meta["from"].present? %><span class="text-zinc-500 line-through dark:text-zinc-400"><%= meta["from"] %></span> →<% end %>
+                    <strong class="font-semibold"><%= meta["to"] %></strong>
+                  <% when "assigned" %>
+                    assigned <strong class="font-semibold"><%= meta["assignee_name"] || "someone" %></strong>
+                  <% when "unassigned" %>
+                    removed <strong class="font-semibold"><%= meta["assignee_name"] || "someone" %></strong>
+                  <% when "linked" %>
+                    linked <strong class="font-semibold"><%= meta["asset"] || "an asset" %></strong>
+                  <% when "edited" %>
+                    edited <%= (meta["field"] || "details").downcase %>
+                    <% if meta["to"].present? %>
+                      <span class="mt-0.5 block font-mono text-xs text-zinc-500 dark:text-zinc-400">→ <%= truncate(meta["to"].to_s, length: 90) %></span>
+                    <% end %>
+                  <% end %>
+                </p>
+                <% if show_task && meta["task_title"].present? %>
+                  <p class="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400"><%= meta["task_title"] %></p>
+                <% end %>
+                <p class="mt-0.5 font-mono text-[11px] text-zinc-400 dark:text-zinc-500" title="<%= activity.created_at.strftime("%b %d, %Y %H:%M") %>">
+                  <%= time_ago_in_words(activity.created_at) %> ago
+                </p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <%= render "shared/empty_state", object: "activity", title: "No activity yet." %>
+<% end %>

@@ -24,8 +24,7 @@ module Admin
           format.html { redirect_to admin_users_path, notice: "User created successfully." }
           format.turbo_stream do
             render turbo_stream: [
-              turbo_stream.prepend("users-table", partial: "admin/users/user_row", locals: { user: @user }),
-              turbo_stream.prepend("users-cards", partial: "admin/users/user_card", locals: { user: @user }),
+              turbo_stream.prepend("users-list", partial: "admin/users/user_row", locals: { user: @user }),
               turbo_stream.update("new_user", ""), # Clear modal/form
               turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "User created successfully." })
             ]
@@ -47,8 +46,7 @@ module Admin
           format.html { redirect_to admin_users_path, notice: "User updated successfully." }
           format.turbo_stream do
             render turbo_stream: [
-              turbo_stream.replace(helpers.dom_id(@user, :table_row), partial: "admin/users/user_row", locals: { user: @user }),
-              turbo_stream.replace(helpers.dom_id(@user, :card), partial: "admin/users/user_card", locals: { user: @user }),
+              turbo_stream.replace(@user, partial: "admin/users/user_row", locals: { user: @user }),
               turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "User updated successfully." })
             ]
           end
@@ -70,8 +68,7 @@ module Admin
           format.html { redirect_to admin_users_path, notice: "User deleted." }
           format.turbo_stream do
             render turbo_stream: [
-              turbo_stream.remove(helpers.dom_id(@user, :table_row)),
-              turbo_stream.remove(helpers.dom_id(@user, :card)),
+              turbo_stream.remove(@user),
               turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "User deleted." })
             ]
           end

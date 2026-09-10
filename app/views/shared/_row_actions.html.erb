@@ -1,0 +1,36 @@
+<%# Shared row actions: view eye-button + ellipsis popover menu (Edit +
+   delete-confirm). Used by every unified row so actions never drift.
+   Locals: record:, show_path:, edit_path:, delete_path:, record_name:,
+   modal: (default true; false for full-page edit flows like devices). %>
+<% modal = local_assigns.fetch(:modal, true) %>
+<span class="flex shrink-0 items-center gap-1">
+  <% if local_assigns[:show_path].present? %>
+    <%= link_to show_path, class: "btn btn--icon btn--plain border-0 !p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100",
+                data: { turbo_frame: "_top" }, aria: { label: "View #{record_name}" } do %>
+      <%= icon("eye", "h-[18px] w-[18px]") %>
+    <% end %>
+  <% end %>
+  <span data-controller="popover" data-popover-placement-value="bottom-end"
+        data-action="click@window->popover#clickOutside" class="relative">
+    <button type="button" class="btn btn--icon btn--plain border-0 !p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+            data-popover-target="trigger" popovertarget="popover-<%= dom_id(record, :menu) %>" aria-haspopup="true" aria-label="Actions for <%= record_name %>">
+      <%= icon("ellipsis", "h-[18px] w-[18px]") %>
+    </button>
+    <%= tag.div popover: "manual", id: "popover-#{dom_id(record, :menu)}", class: "popover w-36 p-1.5",
+          data: { popover_target: "content" } do %>
+      <div class="menu" data-controller="menu" data-action="keydown->menu#navigate" role="menu">
+        <%= link_to "Edit", edit_path, class: "menu__item w-full",
+              data: modal ? { turbo_frame: "modal", menu_target: "item" } : { menu_target: "item" }, role: "menuitem" %>
+        <% delete_trigger = button_tag "Delete", type: "button", class: "menu__item w-full !text-red-600 dark:!text-red-400",
+              data: { action: "dialog#showModal", menu_target: "item" }, role: "menuitem" %>
+        <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{record_name}'?" do %>
+          <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this record. This action cannot be undone.</p>
+          <div class="flex items-center justify-end gap-2">
+            <button type="button" class="btn" data-action="click->dialog#requestClose">Cancel</button>
+            <%= button_to "Continue", delete_path, method: :delete, class: "btn btn--negative" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </span>
+</span>

@@ -9,7 +9,7 @@
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{@device.name}'?" do %>
       <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this device. This action cannot be undone.</p>
       <div class="flex items-center justify-end gap-2">
-        <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
+        <button type="button" class="btn" data-action="click->dialog#requestClose">Cancel</button>
         <%= button_to "Continue", @device, method: :delete, data: { turbo: false }, class: "btn btn--negative" %>
       </div>
     <% end %>
@@ -21,18 +21,30 @@
   <%= icon("square-pen", "h-5 w-5") %>
 <% end %>
 
-<div class="flex flex-col gap-6">
-  <div class="flex items-center justify-between gap-3">
-    <div class="flex min-w-0 items-center gap-3">
+<div class="mx-auto flex w-full max-w-5xl flex-col gap-6">
+  <div class="flex flex-col gap-3">
+    <nav class="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400" aria-label="Breadcrumb">
+      <%= link_to "Devices", devices_path, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+      <span aria-hidden="true">/</span>
+      <span class="truncate font-medium text-zinc-900 dark:text-zinc-100"><%= @device.name %></span>
+    </nav>
+    <div class="flex items-center gap-3">
       <%= link_to :back, class: "btn shrink-0 !p-2", aria: { label: "Back" } do %>
         <%= icon("chevron-left", "h-4 w-4") %>
       <% end %>
-      <div id="name_and_serial" class="min-w-0">
+      <div id="name_and_serial" class="min-w-0 flex-1">
         <%= render "devices/name_and_serial" %>
       </div>
-    </div>
-    <div class="flex shrink-0 items-center gap-2 md:hidden">
-      <%= link_to "Edit", edit_device_path(@device), class: "btn btn--primary !px-3 !py-1.5 text-sm" %>
+      <%
+        online = @device.ip_addresses.any?(&:reachability_status_up?)
+        device_dot = if @device.ip_addresses.empty?
+                       "bg-zinc-300 dark:bg-zinc-600"
+                     elsif online then "bg-green-500"
+                     else "bg-red-500"
+                     end
+      %>
+      <span class="h-2.5 w-2.5 shrink-0 rounded-full <%= device_dot %>"
+            title="<%= @device.ip_addresses.empty? ? "No IP assigned" : (online ? "Online" : "Offline") %>"></span>
     </div>
   </div>
 

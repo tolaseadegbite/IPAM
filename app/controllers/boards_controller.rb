@@ -21,6 +21,14 @@ class BoardsController < ApplicationController
 
     @lists = @board.lists.order(position: :asc)
 
+    # Board-wide activity feed (latest first). Snapshot metadata keeps
+    # this to one query regardless of renames or deletions.
+    @board_activities = CardActivity.joins(:card)
+                                    .where(cards: { list_id: @board.lists.select(:id) })
+                                    .includes(:user)
+                                    .recent
+                                    .limit(15)
+
     render :show, locals: { board: @board, search: @search, filtered_cards: @filtered_cards }
   end
 

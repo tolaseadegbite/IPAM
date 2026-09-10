@@ -13,33 +13,22 @@
 <% end %>
 
 <%= turbo_frame_tag :users_table do %>
-  <div class="relative hidden overflow-x-auto rounded-xl border border-zinc-200 bg-white md:block dark:border-white/10 dark:bg-zinc-900">
-    <table class="table w-full">
-      <thead class="bg-zinc-50 dark:bg-white/5">
-        <tr>
-          <th class="p-3"><%= sort_link(@search, :username, "User") %></th>
-          <th class="p-3"><%= sort_link(@search, :email, "Email") %></th>
-          <th class="p-3">Role</th>
-          <th class="p-3">Status</th>
-          <th class="p-3 text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="users-table">
-        <% if @users.empty? %>
-          <tr><td colspan="5" class="p-8 text-center text-sm text-zinc-500 dark:text-zinc-400">No users found.</td></tr>
-        <% else %>
-          <%= render partial: "admin/users/user_row", collection: @users, as: :user %>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-
-  <div id="users-cards" class="flex flex-col gap-4 md:hidden">
-    <% if @users.empty? %>
-      <%= render "shared/empty_state", object: "user" %>
-    <% else %>
-      <%= render partial: "admin/users/user_card", collection: @users, as: :user %>
-    <% end %>
+  <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-900">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 px-4 py-2.5 dark:border-white/10">
+      <span class="text-[13px] font-semibold tabular-nums"><%= @pagy.count %> users</span>
+      <div class="flex items-center gap-1 text-[13px]">
+        <span class="font-medium text-zinc-500 dark:text-zinc-400">Sort:</span>
+        <%= sort_link(@search, :username, "Name", class: "rounded-md px-2 py-1 font-semibold hover:underline") %>
+        <%= sort_link(@search, :email, "Email", class: "rounded-md px-2 py-1 font-semibold hover:underline") %>
+      </div>
+    </div>
+    <div id="users-list" class="divide-y divide-zinc-200 dark:divide-white/10">
+      <% if @users.empty? %>
+        <div class="p-4"><%= render "shared/empty_state", object: "user" %></div>
+      <% else %>
+        <%= render partial: "admin/users/user_row", collection: @users, as: :user %>
+      <% end %>
+    </div>
   </div>
 
   <%= render "shared/pagination", pagy: @pagy %>

@@ -1,6 +1,7 @@
 <% dept_employees = employees %>
 <% dept_devices = devices %>
-<details class="card px-4" id="<%= dom_id(department) %>">
+<details class="card scroll-mb-28 px-4" id="<%= dom_id(department) %>"
+         data-controller="disclosure" data-action="toggle->disclosure#opened">
   <summary class="flex cursor-pointer list-none items-center gap-3 py-3 no-underline hover:no-underline! [&::-webkit-details-marker]:hidden">
     <div class="min-w-0 flex-1">
       <div class="truncate font-semibold">
@@ -17,10 +18,10 @@
           class: "shrink-0 text-xs font-medium text-orange-600 hover:underline dark:text-orange-400" %>
   </summary>
   <div class="grid grid-cols-1 gap-4 border-t border-zinc-200 py-4 md:grid-cols-2 dark:border-white/10">
-    <div>
-      <h4 class="label-mono mb-2">Employees</h4>
-      <% if dept_employees.any? %>
-        <ul class="flex flex-col gap-2">
+              <div>
+                <h4 class="label-mono mb-2">Employees</h4>
+                <% if dept_employees.any? %>
+                <ul id="<%= dom_id(department, :employees) %>" class="flex flex-col gap-2">
           <% dept_employees.each do |employee| %>
             <%= render "departments/employee_show_card", employee: employee %>
           <% end %>
@@ -32,7 +33,7 @@
     <div>
       <h4 class="label-mono mb-2">Devices</h4>
       <% if dept_devices.any? %>
-        <ul class="flex flex-col gap-2">
+        <ul id="<%= dom_id(department, :devices) %>" class="flex flex-col gap-2">
           <% dept_devices.each do |device| %>
             <%= render "departments/device_show_card", device: device %>
           <% end %>

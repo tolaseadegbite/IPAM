@@ -1,8 +1,8 @@
-<div class="card mb-6 p-4">
+<%= render "shared/search_panel", title: "Search & Filter" do %>
   <%= search_form_for search, url: board_path(board),
       method: :get,
       data: {
-        turbo_frame: "_top",
+        turbo_frame: "board_results",
         turbo_action: "advance",
         controller: "debounce",
         action: "input->debounce#submit change->debounce#submit"
@@ -20,15 +20,15 @@
       </div>
       <div>
         <%= f.label :created_at_gteq, "Created After", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
-        <%= f.date_field :created_at_gteq, class: "input cursor-pointer" %>
+        <%= f.text_field :created_at_gteq, class: "input cursor-pointer", placeholder: "YYYY-MM-DD", data: { controller: "datepicker" } %>
       </div>
       <div class="flex items-end gap-2">
         <div class="flex-1">
           <%= f.label :created_at_lteq, "Created Before", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
-          <%= f.date_field :created_at_lteq, class: "input cursor-pointer" %>
+          <%= f.text_field :created_at_lteq, class: "input cursor-pointer", placeholder: "YYYY-MM-DD", data: { controller: "datepicker" } %>
         </div>
-        <%= link_to "Reset", board_path(board), class: "btn mb-px text-xs" %>
+        <%= link_to "Clear", board_path(board), class: "btn btn--primary mb-px text-xs", data: { action: "click->search-filter#resetAll" } %>
       </div>
     </div>
   <% end %>
-</div>
+<% end %>

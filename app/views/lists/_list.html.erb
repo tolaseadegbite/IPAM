@@ -1,20 +1,25 @@
 <div id="<%= dom_id list %>" data-list-id="<%= list.id %>"
-     class="flex max-h-full w-80 shrink-0 flex-col rounded-xl border border-zinc-200 bg-zinc-100 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+     class="kanban-column flex max-h-full w-80 shrink-0 flex-col rounded-xl border border-zinc-200 bg-zinc-100 shadow-sm dark:border-white/10 dark:bg-zinc-900">
 
-  <div class="list-handle flex cursor-grab items-center justify-between gap-2 rounded-t-xl border-b border-zinc-200 bg-zinc-200/60 p-3 text-sm font-bold dark:border-white/10 dark:bg-white/5">
+  <div class="list-handle flex cursor-grab touch-none items-center justify-between gap-2 rounded-t-xl border-b border-zinc-200 bg-zinc-200/60 p-3 text-sm font-bold select-none dark:border-white/10 dark:bg-white/5">
     <div class="flex min-w-0 items-center gap-2">
       <span class="cursor-grab text-zinc-400 select-none" title="Drag to reorder">⋮⋮</span>
-      <%= link_to list.name, edit_list_path(list), data: { turbo_frame: "modal" }, class: "truncate hover:text-orange-500" %>
+      <%= link_to list.name, edit_list_path(list), data: { turbo_frame: "modal" }, draggable: false, class: "truncate hover:text-orange-500" %>
     </div>
     <div class="flex shrink-0 items-center gap-2">
-      <span class="rounded-full bg-zinc-900 px-2 py-0.5 text-xs text-white dark:bg-zinc-100 dark:text-zinc-900">
-        <%= list.cards.size %>
+      <span class="rounded-full bg-zinc-900 px-2 py-0.5 text-xs text-white dark:bg-zinc-100 dark:text-zinc-900" title="<%= "Showing #{cards.size} of #{list.cards.size} tasks" if local_assigns.fetch(:filtered, false) %>">
+        <%= local_assigns.fetch(:filtered, false) ? "#{cards.size} of #{list.cards.size}" : list.cards.size %>
       </span>
-      <%= button_to list_path(list), method: :delete,
-            class: "cursor-pointer border-0 bg-transparent text-zinc-400 hover:text-red-600",
-            data: { turbo_confirm: "Delete this column and all its tasks?" },
-            aria: { label: "Delete column" } do %>
+      <% delete_trigger = button_tag type: "button", draggable: false, class: "cursor-pointer border-0 bg-transparent p-0 text-zinc-400 hover:text-red-600",
+            data: { action: "dialog#showModal" }, aria: { label: "Delete column" } do %>
         <%= icon("trash-2", "h-4 w-4") %>
+      <% end %>
+      <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{list.name}'?" do %>
+        <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this column and all its tasks. This action cannot be undone.</p>
+        <div class="flex items-center justify-end gap-2">
+          <button type="button" class="btn" data-action="click->dialog#requestClose">Cancel</button>
+          <%= button_to "Continue", list_path(list), method: :delete, class: "btn btn--negative" %>
+        </div>
       <% end %>
     </div>
   </div>
@@ -33,9 +38,23 @@
     <% end %>
   </div>
 
-  <div class="border-t border-zinc-200 p-2 dark:border-white/10">
-    <%= link_to new_card_path(list_id: list.id), class: "btn w-full !border-0 text-xs", data: { turbo_frame: "modal" } do %>
+  <div class="flex items-center gap-1 border-t border-zinc-200 p-2 dark:border-white/10">
+    <button type="button" class="btn shrink-0 !border-0 !px-2 text-xs"
+            data-action="click->kanban-list#nudge"
+            data-kanban-list-id-param="<%= list.id %>"
+            data-kanban-list-direction-param="backward"
+            aria-label="Move column left">
+      <%= icon("chevron-left", "h-4 w-4") %>
+    </button>
+    <%= link_to new_card_path(list_id: list.id), class: "btn min-w-0 flex-1 !border-0 text-xs", data: { turbo_frame: "modal" } do %>
       <%= icon("plus", "h-4 w-4") %> Add Task
     <% end %>
+    <button type="button" class="btn shrink-0 !border-0 !px-2 text-xs"
+            data-action="click->kanban-list#nudge"
+            data-kanban-list-id-param="<%= list.id %>"
+            data-kanban-list-direction-param="forward"
+            aria-label="Move column right">
+      <%= icon("chevron-right", "h-4 w-4") %>
+    </button>
   </div>
 </div>

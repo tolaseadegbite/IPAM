@@ -27,8 +27,7 @@ class EmployeesController < ApplicationController
         format.html { redirect_to employees_path, notice: "Employee created successfully." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.prepend("employees-table", partial: "employees/employee", locals: { employee: @employee }),
-            turbo_stream.prepend("employees-cards", partial: "employees/employee_card", locals: { employee: @employee }),
+            turbo_stream.prepend("employees-list", partial: "employees/employee", locals: { employee: @employee }),
 
             turbo_stream.prepend(helpers.dom_id(@employee.department, :employees), partial: "departments/employee_show_card", locals: { employee: @employee }),
 
@@ -50,8 +49,7 @@ class EmployeesController < ApplicationController
         format.html { redirect_to employees_path, notice: "Employee updated successfully." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.replace(helpers.dom_id(@employee, :table_row), partial: "employees/employee", locals: { employee: @employee }),
-            turbo_stream.replace(helpers.dom_id(@employee, :card), partial: "employees/employee_card", locals: { employee: @employee }),
+            turbo_stream.replace(@employee, partial: "employees/employee", locals: { employee: @employee }),
             turbo_stream.update(("name"), partial: "employees/name"),
             turbo_stream.update(("profile"), partial: "employees/profile"),
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Employee updated successfully." })
@@ -70,8 +68,7 @@ class EmployeesController < ApplicationController
         format.html { redirect_to employees_path, notice: "Employee deleted." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.remove(helpers.dom_id(@employee, :table_row)),
-            turbo_stream.remove(helpers.dom_id(@employee, :card)),
+            turbo_stream.remove(@employee),
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Employee deleted." })
           ]
         end

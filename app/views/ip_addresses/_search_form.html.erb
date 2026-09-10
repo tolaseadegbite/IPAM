@@ -1,21 +1,11 @@
-<div class=""
-  data-controller="search-filter"
-  data-action="click@window->search-filter#closeOnClickOutside">
-
-  <%# Button to toggle the visibility of the filters %>
-  <button type="button" class="btn mb-4" data-action="search-filter#toggle">
-    <%= icon("search", "h-4 w-4") %>
-    <span>Search & Filter</span>
-  </button>
-
-  <div class="card mb-4 hidden p-4" data-search-filter-target="filters">
+<%= render "shared/search_panel" do %>
     <%# ADD 'turbo_frame: "ip_addresses"' BACK %>
     <%= search_form_for @search, 
         data: { 
           turbo_frame: "ip_addresses", 
           turbo_action: "advance",
           controller: "debounce",
-          action: "input->debounce#submit" 
+          action: "input->debounce#submit change->debounce#submit" 
         } do |f| %>
       
       <div class="grid grid-cols-1 items-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -103,7 +93,7 @@
           <label class="mb-1 block text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Security Filter</label>
 
           <div class="flex items-center justify-between gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 dark:border-white/10 dark:bg-zinc-900">
-            <%= label_tag :rogue_only, "Rogue devices?", class: "text-sm font-medium me-2 cursor-pointer" %>
+            <%= f.label :rogue_only, "Rogue devices?", class: "text-sm font-medium me-2 cursor-pointer" %>
             <%= f.check_box :rogue_only, 
                   class: "switch cursor-pointer", 
                   role: "switch",
@@ -118,16 +108,10 @@
           <%#= f.submit "Filter", class: "btn btn--primary w-full",
                 data: { action: "click->search-filter#preventClose" } %>
           
-          <%= link_to "Clear", ip_addresses_path, 
-                class: "btn btn--primary", 
-                data: { 
-                  # Clear can target the frame because it's a simple GET, 
-                  # but using _top or stream is safer for header updates.
-                  # Let's keep it simple and consistent with the form logic:
-                  action: "click->search-filter#clear click->search-filter#preventClose" 
-                } %>
+          <%= link_to "Clear", ip_addresses_path,
+                class: "btn btn--primary",
+                data: { action: "click->search-filter#resetAll" } %>
         </div>
       </div>
     <% end %>
-  </div>
-</div>
+<% end %>

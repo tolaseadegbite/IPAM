@@ -12,34 +12,38 @@
   <%= icon("plus", "h-5 w-5") %>
 <% end %>
 
-<%= turbo_frame_tag :subnets_table do %>
-  <div class="relative hidden overflow-x-auto rounded-xl border border-zinc-200 bg-white md:block dark:border-white/10 dark:bg-zinc-900">
-    <table class="table w-full">
-      <thead class="bg-zinc-50 dark:bg-white/5">
-        <tr>
-          <th class="p-3"><%= sort_link(@search, :name, "Subnet") %></th>
-          <th class="p-3"><%= sort_link(@search, :network_address, "Network / CIDR") %></th>
-          <th class="p-3"><%= sort_link(@search, :gateway, "Gateway") %></th>
-          <th class="p-3"><%= sort_link(@search, :vlan_id, "VLAN") %></th>
-          <th class="p-3 text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="subnets-table">
-        <% if @subnets.empty? %>
-          <tr><td colspan="5" class="p-8 text-center text-sm text-zinc-500 dark:text-zinc-400">No subnets found.</td></tr>
-        <% else %>
-          <%= render @subnets %>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
+<%= render "search_form" %>
 
-  <div id="subnets-cards" class="flex flex-col gap-4 md:hidden">
-    <% if @subnets.empty? %>
-      <%= render "shared/empty_state", object: "subnet" %>
-    <% else %>
-      <%= render partial: "subnets/subnet_card", collection: @subnets, as: :subnet %>
-    <% end %>
+<%= turbo_frame_tag :subnets_table do %>
+  <%
+    # Reject blanks (cleared forms submit empty q values; sort links add
+    # only q[s]) so the summary below reflects truly active filters.
+    dq = params[:q]&.to_unsafe_h&.reject { |_, v| v.blank? } || {}
+    without = ->(key) { subnets_path(q: dq.except(key.to_s)) }
+    subnet_pills = []
+    subnet_pills << { label: "Name", value: dq["name_cont"], url: without.(:name_cont), names: "q[name_cont]" } if dq["name_cont"].present?
+    subnet_pills << { label: "VLAN", value: dq["vlan_id_eq"], url: without.(:vlan_id_eq), names: "q[vlan_id_eq]" } if dq["vlan_id_eq"].present?
+  %>
+  <% if subnet_pills.any? %>
+    <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">Found <strong class="font-semibold text-zinc-900 dark:text-zinc-100"><%= @pagy.count %></strong> <%= "subnet".pluralize(@pagy.count) %> matching your filters.</p>
+    <%= render "shared/active_filters", pills: subnet_pills, clear_url: subnets_path %>
+  <% end %>
+  <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-900">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 px-4 py-2.5 dark:border-white/10">
+      <span class="text-[13px] font-semibold tabular-nums"><%= @pagy.count %> subnets</span>
+      <div class="flex items-center gap-1 text-[13px]">
+        <span class="font-medium text-zinc-500 dark:text-zinc-400">Sort:</span>
+        <%= sort_link(@search, :name, "Name", class: "rounded-md px-2 py-1 font-semibold hover:underline") %>
+        <%= sort_link(@search, :vlan_id, "VLAN", class: "rounded-md px-2 py-1 font-semibold hover:underline") %>
+      </div>
+    </div>
+    <div id="subnets-list" class="divide-y divide-zinc-200 dark:divide-white/10">
+      <% if @subnets.empty? %>
+        <div class="p-4"><%= render "shared/empty_state", object: "subnet" %></div>
+      <% else %>
+        <%= render partial: "subnets/subnet", collection: @subnets, as: :subnet %>
+      <% end %>
+    </div>
   </div>
 
   <%= render "shared/pagination", pagy: @pagy %>

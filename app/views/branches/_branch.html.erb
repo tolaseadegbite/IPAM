@@ -1,20 +1,19 @@
-<tr id="<%= dom_id(branch, :table_row) %>">
-  <td class="p-3 font-semibold"><%= link_to branch.name, branch, class: "text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %></td>
-  <td class="p-3 text-sm"><%= branch.location.present? ? branch.location : "—" %></td>
-  <td class="p-3 font-mono text-sm"><%= branch.contact_phone.present? ? branch.contact_phone : "—" %></td>
-  <td class="p-3">
-    <div class="flex items-center justify-end gap-3">
-      <%= link_to "Edit", edit_branch_path(branch),
-                  class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400",
-                  data: { turbo_frame: "modal" } %>
-      <% delete_trigger = button_tag "Delete", type: "button", class: "cursor-pointer text-sm font-medium text-red-600 hover:underline dark:text-red-400", data: { action: "dialog#showModal" } %>
-      <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{branch.name}'?" do %>
-        <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this branch. This action cannot be undone.</p>
-        <div class="flex items-center justify-end gap-2">
-          <button type="button" class="btn" data-action="click->dialog#close">Cancel</button>
-          <%= button_to "Continue", branch, method: :delete, class: "btn btn--negative" %>
-        </div>
+<%# Unified branch row — the only branch list item at every width.
+    Locals: branch. %>
+<div id="<%= dom_id(branch) %>" class="flex min-h-16 items-center gap-3 px-4 py-3">
+  <span class="min-w-0 flex-1">
+    <span class="block truncate text-[14.5px] font-semibold">
+      <%= link_to branch.name, branch, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+    </span>
+    <span class="mt-0.5 block truncate text-[13px] text-zinc-500 dark:text-zinc-400">
+      <%= branch.location.presence || "—" %>
+      <% if branch.contact_phone.present? %>
+        <span class="font-mono"> · <%= branch.contact_phone %></span>
       <% end %>
-    </div>
-  </td>
-</tr>
+    </span>
+  </span>
+  <span class="flex shrink-0 items-center">
+    <%= render "shared/row_actions", record: branch, show_path: branch,
+          edit_path: edit_branch_path(branch), delete_path: branch, record_name: branch.name %>
+  </span>
+</div>

@@ -39,8 +39,7 @@ class DevicesController < ApplicationController
         format.html { redirect_to devices_path, notice: "Device registered." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.prepend("devices-table", partial: "devices/device", locals: { device: @device }),
-            turbo_stream.prepend("devices-cards", partial: "devices/device_card", locals: { device: @device }),
+            turbo_stream.prepend("devices-list", partial: "devices/device", locals: { device: @device }),
             turbo_stream.prepend(helpers.dom_id(@device.department, :devices), partial: "departments/device_show_card", locals: { device: @device }),
             turbo_stream.remove("no_devices_message"),
             turbo_stream.update("new_device", ""),
@@ -81,8 +80,7 @@ class DevicesController < ApplicationController
         format.html { redirect_to devices_path, notice: "Device updated successfully." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.replace(helpers.dom_id(@device, :table_row), partial: "devices/device", locals: { device: @device }),
-            turbo_stream.replace(helpers.dom_id(@device, :card), partial: "devices/device_card", locals: { device: @device }),
+            turbo_stream.replace(@device, partial: "devices/device", locals: { device: @device }),
             turbo_stream.update("name_and_serial", partial: "devices/name_and_serial"),
             turbo_stream.update("hardware_details", partial: "devices/hardware_details"),
             turbo_stream.update("network_and_owner_cards", partial: "devices/network_and_owner_cards"),
@@ -102,8 +100,7 @@ class DevicesController < ApplicationController
         format.html { redirect_to devices_path, notice: "Device deleted." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.remove(helpers.dom_id(@device, :table_row)),
-            turbo_stream.remove(helpers.dom_id(@device, :card)),
+            turbo_stream.remove(@device),
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Device deleted." })
           ]
         end

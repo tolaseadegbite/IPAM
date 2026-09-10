@@ -15,32 +15,40 @@
 <%= render "search_form" %>
 
 <%= turbo_frame_tag :employees_table do %>
-  <div class="relative hidden overflow-x-auto rounded-xl border border-zinc-200 bg-white md:block dark:border-white/10 dark:bg-zinc-900">
-    <table class="table w-full">
-      <thead class="bg-zinc-50 dark:bg-white/5">
-        <tr>
-          <th class="p-3"><%= sort_link(@search, :full_name, "Employee") %></th>
-          <th class="p-3"><%= sort_link(@search, :department_name, "Department") %></th>
-          <th class="p-3"><%= sort_link(@search, :status, "Status") %></th>
-          <th class="p-3 text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="employees-table">
-        <% if @employees.empty? %>
-          <tr><td colspan="4" class="p-8 text-center text-sm text-zinc-500 dark:text-zinc-400">No employees found.</td></tr>
-        <% else %>
-          <%= render @employees %>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-
-  <div id="employees-cards" class="flex flex-col gap-4 md:hidden">
-    <% if @employees.empty? %>
-      <%= render "shared/empty_state", object: "employee" %>
-    <% else %>
-      <%= render partial: "employees/employee_card", collection: @employees, as: :employee %>
-    <% end %>
+  <%
+    # Reject blanks (cleared forms submit empty q values; sort links add
+    # only q[s]) so the summary below reflects truly active filters.
+    dq = params[:q]&.to_unsafe_h&.reject { |_, v| v.blank? } || {}
+    without = ->(key) { employees_path(q: dq.except(key.to_s)) }
+    employee_pills = []
+    employee_pills << { label: "Name", value: dq["full_name_cont"], url: without.(:full_name_cont), names: "q[full_name_cont]" } if dq["full_name_cont"].present?
+    if dq["department_branch_id_eq"].present? && (bname = Branch.find_by(id: dq["department_branch_id_eq"])&.name)
+      employee_pills << { label: "Branch", value: bname, url: without.(:department_branch_id_eq), names: "q[department_branch_id_eq]" }
+    end
+    if dq["status_eq"].present?
+      employee_pills << { label: "Status", value: Employee.statuses.key(dq["status_eq"].to_i)&.humanize || dq["status_eq"], url: without.(:status_eq), names: "q[status_eq]" }
+    end
+  %>
+  <% if employee_pills.any? %>
+    <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">Found <strong class="font-semibold text-zinc-900 dark:text-zinc-100"><%= @pagy.count %></strong> <%= "employee".pluralize(@pagy.count) %> matching your filters.</p>
+    <%= render "shared/active_filters", pills: employee_pills, clear_url: employees_path %>
+  <% end %>
+  <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-900">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 px-4 py-2.5 dark:border-white/10">
+      <span class="text-[13px] font-semibold tabular-nums"><%= @pagy.count %> employees</span>
+      <div class="flex items-center gap-1 text-[13px]">
+        <span class="font-medium text-zinc-500 dark:text-zinc-400">Sort:</span>
+        <%= sort_link(@search, :full_name, "Name", class: "rounded-md px-2 py-1 font-semibold hover:underline") %>
+        <%= sort_link(@search, :status, "Status", class: "rounded-md px-2 py-1 font-semibold hover:underline") %>
+      </div>
+    </div>
+    <div id="employees-list" class="divide-y divide-zinc-200 dark:divide-white/10">
+      <% if @employees.empty? %>
+        <div class="p-4"><%= render "shared/empty_state", object: "employee" %></div>
+      <% else %>
+        <%= render partial: "employees/employee", collection: @employees, as: :employee %>
+      <% end %>
+    </div>
   </div>
 
   <%= render "shared/pagination", pagy: @pagy %>

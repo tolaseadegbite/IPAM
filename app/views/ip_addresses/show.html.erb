@@ -19,10 +19,23 @@
 <% end %>
 
 <div class="mx-auto flex w-full max-w-2xl flex-col gap-4">
-  <div>
-    <%= link_to :back, class: "btn mb-2 inline-flex !px-3 !py-1.5 text-sm" do %>
-      <%= icon("chevron-left", "h-4 w-4") %> Back to List
-    <% end %>
+  <div class="flex flex-col gap-3">
+    <nav class="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400" aria-label="Breadcrumb">
+      <%= link_to "IP Addresses", ip_addresses_path, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+      <span aria-hidden="true">/</span>
+      <span class="font-mono font-medium text-zinc-900 dark:text-zinc-100"><%= @ip_address.address %></span>
+    </nav>
+    <div class="card flex flex-wrap items-center gap-x-4 gap-y-2 p-4">
+      <% if @ip_address.reachability_status_up? %>
+        <span class="flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-bold uppercase dark:bg-green-500/15 dark:text-green-300">
+          <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500"></span> Online
+        </span>
+      <% else %>
+        <span class="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-bold uppercase dark:bg-zinc-800 dark:text-zinc-300">Offline</span>
+      <% end %>
+      <span class="font-mono text-xl font-bold"><%= @ip_address.address %></span>
+      <span class="text-sm text-zinc-500 dark:text-zinc-400"><%= link_to @ip_address.subnet.name, @ip_address.subnet, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %></span>
+    </div>
   </div>
 
   <div id="details">

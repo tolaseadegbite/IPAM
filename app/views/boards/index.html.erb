@@ -3,7 +3,12 @@
 <% content_for :page_header do %>Operations Boards<% end %>
 
 <% content_for :header_action_buttons do %>
-  <%= link_to "New Board", new_board_path, class: "btn btn--primary !px-3 !py-1.5 text-sm", data: { turbo_frame: "modal" } %>
+  <%= link_to "New Board", new_board_path, class: "btn btn--primary hidden !px-3 !py-1.5 text-sm md:inline-flex", data: { turbo_frame: "modal" } %>
+<% end %>
+
+<%= link_to new_board_path, class: "btn btn--primary fixed right-4 bottom-24 z-30 !rounded-full !p-4 shadow-lg md:hidden",
+            data: { turbo_frame: "modal" }, aria: { label: "New board" } do %>
+  <%= icon("plus", "h-5 w-5") %>
 <% end %>
 
 <div id="boards-grid" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -11,7 +16,8 @@
 </div>
 
 <% if @boards.empty? %>
-  <div id="empty_state" class="mt-4 rounded-lg border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 italic dark:border-white/10 dark:text-zinc-400">
-    No boards created yet. Click "New Board" to get started.
+  <div id="empty_state" class="mt-4">
+    <%= render "shared/empty_state", object: "board", title: "No boards created yet.",
+          description: "Click \"New Board\" to get started." %>
   </div>
 <% end %>

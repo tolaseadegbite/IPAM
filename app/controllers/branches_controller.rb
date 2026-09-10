@@ -29,8 +29,7 @@ class BranchesController < ApplicationController
         format.html { redirect_to branches_path, notice: "Branch created successfully." }
         format.turbo_stream do
           render turbo_stream: [
-             turbo_stream.prepend("branches-table", partial: "branches/branch", locals: { branch: @branch }),
-            turbo_stream.prepend("branches-cards", partial: "branches/branch_card", locals: { branch: @branch }),
+             turbo_stream.prepend("branches-list", partial: "branches/branch", locals: { branch: @branch }),
             turbo_stream.update("new_branch", ""), # Clear the form/modal
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Branch created successfully." })
           ]
@@ -47,8 +46,7 @@ class BranchesController < ApplicationController
         format.html { redirect_to branches_path, notice: "Branch updated successfully." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.replace(helpers.dom_id(@branch, :table_row), partial: "branches/branch", locals: { branch: @branch }),
-            turbo_stream.replace(helpers.dom_id(@branch, :card), partial: "branches/branch_card", locals: { branch: @branch }),
+            turbo_stream.replace(@branch, partial: "branches/branch", locals: { branch: @branch }),
             turbo_stream.update(("branch_name"), partial: "branches/branch_name", locals: { branch: @branch }),
             turbo_stream.update(("branch_details"), partial: "branches/details", locals: { branch: @branch }),
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Branch updated successfully." })
@@ -67,8 +65,7 @@ class BranchesController < ApplicationController
         format.html { redirect_to branches_path, notice: "Branch deleted." }
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.remove(helpers.dom_id(@branch, :table_row)),
-            turbo_stream.remove(helpers.dom_id(@branch, :card)),
+            turbo_stream.remove(@branch),
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Branch deleted." })
           ]
         end

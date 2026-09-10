@@ -39,6 +39,9 @@ jobs:
       - name: Scan for security vulnerabilities in JavaScript dependencies
         run: bin/importmap audit
 
+      - name: Check Stimulus controllers parse
+        run: for f in app/javascript/controllers/*.js app/javascript/application.js; do node --check "$f"; done
+
   lint:
     runs-on: ubuntu-latest
     env:

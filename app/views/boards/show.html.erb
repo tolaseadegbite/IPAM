@@ -18,11 +18,47 @@
 
   <%= render "search_form", board: @board, search: @search %>
 
-  <div id="lists-container" class="flex h-full items-start gap-4 overflow-x-auto pb-4"
-       data-controller="kanban-list"
-       data-kanban-list-url-value="<%= move_list_path(":id") %>">
-    <% @lists.each do |list| %>
-      <%= render partial: "lists/list", locals: { list: list, cards: filtered_cards[list.id] || [] } %>
+  <%= turbo_frame_tag "board_results" do %>
+    <%
+      # Reject blanks (cleared forms submit empty q values) so the pills
+      # below reflect truly active filters.
+      dq = params[:q]&.to_unsafe_h&.reject { |_, v| v.blank? } || {}
+      without = ->(key) { board_path(@board, q: dq.except(key.to_s)) }
+      kw = "title_or_description_or_referenceable_of_Device_type_name_or_referenceable_of_IpAddress_type_address_string_cont"
+      board_pills = []
+      board_pills << { label: "Search", value: dq[kw], url: without.(kw), names: "q[#{kw}]" } if dq[kw].present?
+      if dq["priority_eq"].present?
+        board_pills << { label: "Priority", value: Card.priorities.key(dq["priority_eq"].to_i)&.humanize || dq["priority_eq"], url: without.(:priority_eq), names: "q[priority_eq]" }
+      end
+      board_pills << { label: "After", value: dq["created_at_gteq"], url: without.(:created_at_gteq), names: "q[created_at_gteq]" } if dq["created_at_gteq"].present?
+      board_pills << { label: "Before", value: dq["created_at_lteq"], url: without.(:created_at_lteq), names: "q[created_at_lteq]" } if dq["created_at_lteq"].present?
+    %>
+    <% if board_pills.any? %>
+      <%= render "shared/active_filters", pills: board_pills, clear_url: board_path(@board) %>
     <% end %>
-  </div>
+
+    <div id="lists-container" class="flex h-full items-start gap-4 overflow-x-auto pb-4"
+         data-controller="kanban-list"
+         data-kanban-list-url-value="<%= move_list_path(":id") %>"
+         data-action="pointerdown->kanban-list#grab pointermove->kanban-list#drag pointerup->kanban-list#drop pointercancel->kanban-list#cancel mousedown->kanban-list#grab mousemove->kanban-list#drag mouseup->kanban-list#drop">
+      <% @lists.each do |list| %>
+        <%= render partial: "lists/list", locals: { list: list, cards: filtered_cards[list.id] || [], filtered: dq.any? } %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <details class="card scroll-mb-28" data-controller="disclosure" data-action="toggle->disclosure#opened">
+    <summary class="flex cursor-pointer list-none items-center gap-2 p-4 font-semibold [&::-webkit-details-marker]:hidden">
+      <%= icon("history", "h-4 w-4 text-zinc-400") %>
+      Recent activity
+      <span class="badge badge--number badge--secondary"><%= @board_activities.size %></span>
+    </summary>
+    <div class="border-t border-zinc-200 p-4 dark:border-white/10">
+      <%= render "shared/timeline", activities: @board_activities, show_task: true %>
+    </div>
+  </details>
+
+  <%# Mobile clearance: the fixed bottom nav would otherwise cover the
+     feed's tail when expanded. Layout space, not scroll math. %>
+  <div class="h-10 lg:hidden" aria-hidden="true"></div>
 </div>

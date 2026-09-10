@@ -21,7 +21,7 @@ class DashboardAttentionQueueTest < ApplicationSystemTestCase
     assert_selector "#attention-ip-#{ghost.id}", text: "Reclaim"
 
     within "#attention-ip-#{ghost.id}" do
-      click_on "Reclaim"
+      click_button "Reclaim"
     end
 
     assert_no_selector "#attention-ip-#{ghost.id}"

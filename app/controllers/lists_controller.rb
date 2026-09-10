@@ -18,7 +18,7 @@ class ListsController < ApplicationController
         format.turbo_stream do
           render turbo_stream: [
             # Append the new list to the board container
-            turbo_stream.append("lists-container", partial: "lists/list", locals: { list: @list, cards: [] }),
+            turbo_stream.append("lists-container", partial: "lists/list", locals: { list: @list, cards: [], filtered: false }),
             turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Column created." })
           ]
         end
@@ -55,7 +55,12 @@ class ListsController < ApplicationController
   end
 
   def move
-    @list.insert_at(params[:position].to_i)
+    position = params[:position].to_i
+    unless position.positive?
+      return render json: { errors: "Position must be greater than 0." }, status: :unprocessable_entity
+    end
+
+    @list.insert_at(position)
     @list.board.touch # Trigger morph refresh
     head :ok
   end

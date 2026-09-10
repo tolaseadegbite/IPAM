@@ -1,0 +1,15 @@
+<%# Shared collapsible filter shell. Yields the ransack form so every
+   index shares one toggle button, one panel, and one Turbo wiring
+   contract. Pass an optional title: for the toggle button.
+   Toggle-only: the panel opens/closes via the button alone so
+   in-place actions (Clear all, pill dismiss) never collapse it. %>
+<div data-controller="search-filter">
+  <button type="button" class="btn mb-4" data-action="search-filter#toggle">
+    <%= icon("search", "h-4 w-4") %>
+    <span><%= local_assigns.fetch(:title, "Search & Filter") %></span>
+  </button>
+
+  <div class="card mb-4 hidden p-4" data-search-filter-target="filters">
+    <%= yield %>
+  </div>
+</div>

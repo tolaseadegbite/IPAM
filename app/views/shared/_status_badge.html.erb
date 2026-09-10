@@ -1,0 +1,6 @@
+<%# Shared status pill. Pass full color classes + label so every
+   table row and mobile card renders identical badges.
+   Example: render "shared/status_badge",
+     color: "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300",
+     label: "Active" %>
+<span class="<%= color %> rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap"><%= label %></span>

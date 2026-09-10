@@ -14,35 +14,58 @@
 <%= render "search_form" %>
 
 <%= turbo_frame_tag :devices_table do %>
-  <div class="relative hidden overflow-x-auto rounded-xl border border-zinc-200 bg-white md:block dark:border-white/10 dark:bg-zinc-900">
-    <table class="table w-full">
-      <thead class="bg-zinc-50 dark:bg-white/5">
-        <tr>
-          <th class="p-3"><%= sort_link(@search, :name, "Device") %></th>
-          <th class="p-3"><%= sort_link(@search, :ip_address_address, "IP Address") %></th>
-          <th class="p-3"><%= sort_link(@search, :mac_address, "MAC") %></th>
-          <th class="p-3"><%= sort_link(@search, :employee_full_name, "Assigned To") %></th>
-          <th class="p-3"><%= sort_link(@search, :status, "Status") %></th>
-          <th class="p-3"><%= sort_link(@search, :critical, "Critical?") %></th>
-          <th class="p-3 text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="devices-table">
-        <% if @devices.empty? %>
-          <tr><td colspan="7" class="p-8 text-center text-sm text-zinc-500 dark:text-zinc-400">No devices found.</td></tr>
+  <%
+    # Reject blanks (cleared forms submit empty q values; sort links add
+    # only q[s]) so the summary below reflects truly active filters.
+    dq = params[:q]&.to_unsafe_h&.reject { |_, v| v.blank? } || {}
+    without = ->(key) { devices_path(q: dq.except(key.to_s)) }
+    device_pills = []
+      device_pills << { label: "Keyword", value: dq["name_cont"], url: without.(:name_cont), names: "q[name_cont]" } if dq["name_cont"].present?
+      if dq["department_branch_id_eq"].present? && (bname = Branch.find_by(id: dq["department_branch_id_eq"])&.name)
+        device_pills << { label: "Branch", value: bname, url: without.(:department_branch_id_eq), names: "q[department_branch_id_eq]" }
+      end
+      device_pills << { label: "IP", value: dq["ip_addresses_address_string_cont"], url: without.(:ip_addresses_address_string_cont), names: "q[ip_addresses_address_string_cont]" } if dq["ip_addresses_address_string_cont"].present?
+      device_pills << { label: "MAC", value: dq["mac_address_cont"], url: without.(:mac_address_cont), names: "q[mac_address_cont]" } if dq["mac_address_cont"].present?
+      if dq["critical_eq"].present?
+        device_pills << { label: "Critical", value: dq["critical_eq"] == "true" ? "Yes" : "No", url: without.(:critical_eq), names: "q[critical_eq]" }
+      end
+      if dq["device_type_eq"].present?
+        device_pills << { label: "Type", value: Device.device_types.key(dq["device_type_eq"].to_i)&.humanize || dq["device_type_eq"], url: without.(:device_type_eq), names: "q[device_type_eq]" }
+      end
+      if dq["status_eq"].present?
+        device_pills << { label: "Status", value: Device.statuses.key(dq["status_eq"].to_i)&.humanize || dq["status_eq"], url: without.(:status_eq), names: "q[status_eq]" }
+      end
+    %>
+  <% if device_pills.any? %>
+    <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">Found <strong class="font-semibold text-zinc-900 dark:text-zinc-100"><%= @pagy.count %></strong> <%= "device".pluralize(@pagy.count) %> matching your filters.</p>
+    <%= render "shared/active_filters", pills: device_pills, clear_url: devices_path %>
+  <% end %>
+  <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-900">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 px-4 py-2.5 dark:border-white/10">
+      <span class="text-[13px] font-semibold tabular-nums"><%= @pagy.count %> devices</span>
+      <div class="flex items-center gap-1 text-[13px]">
+        <span class="font-medium text-zinc-500 dark:text-zinc-400">Sort:</span>
+        <%= sort_link(@search, :name, "Name", class: "rounded-md px-2 py-1 font-semibold hover:underline") %>
+        <%= sort_link(@search, :status, "Status", class: "rounded-md px-2 py-1 font-semibold hover:underline") %>
+      </div>
+    </div>
+    <div id="devices-list" class="divide-y divide-zinc-200 dark:divide-white/10">
+      <% if @devices.empty? %>
+        <div class="p-4" data-controller="search-filter">
+        <% if params.dig(:q, :critical_eq) == "true" %>
+          <%= render "shared/empty_state", object: "device", title: "No critical devices",
+                icon: "circle-check",
+                description: "Nothing needs special watch.",
+                action: link_to("View all devices", devices_path, class: "font-medium text-orange-600 hover:underline dark:text-orange-400",
+                  data: { action: "click->search-filter#resetAll" }) %>
         <% else %>
-          <%= render @devices %>
+          <%= render "shared/empty_state", object: "device" %>
         <% end %>
-      </tbody>
-    </table>
-  </div>
-
-  <div id="devices-cards" class="flex flex-col gap-4 md:hidden">
-    <% if @devices.empty? %>
-      <%= render "shared/empty_state", object: "device" %>
-    <% else %>
-      <%= render partial: "devices/device_card", collection: @devices, as: :device %>
-    <% end %>
+        </div>
+      <% else %>
+        <%= render partial: "devices/device", collection: @devices, as: :device %>
+      <% end %>
+    </div>
   </div>
 
   <%= render "shared/pagination", pagy: @pagy %>

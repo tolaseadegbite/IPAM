@@ -1,7 +1,3 @@
-<div class="mb-4">
-  <h3 class="font-bold text-lg">Audit Log</h3>
-</div>
-
 <div class="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-white/10 dark:bg-zinc-900">
   <table class="table w-full text-left text-sm">
     <thead class="bg-zinc-50 font-semibold dark:bg-white/5">
@@ -22,7 +18,7 @@
           
           <td class="p-3 font-medium">
             <% if version.whodunnit.present? && (user = User.find_by(id: version.whodunnit)) %>
-              <%= link_to user.username, "#", class: "text-sky-500 hover:underline" %>
+              <span><%= user.username %></span>
             <% else %>
               <span class="text-orange-600"><%= version.whodunnit || "System" %></span>
             <% end %>
@@ -57,8 +53,41 @@
               <% ip_obj = version.item || version.reify rescue nil %>
               <div class="mb-2 flex items-center gap-2 border-b border-zinc-200 pb-2 dark:border-white/10">
                 <span class="rounded border border-zinc-200 px-1 text-xs font-bold tracking-wide text-zinc-500 uppercase dark:border-white/10 dark:text-zinc-400">IP</span>
-                <span class="text-xs font-mono font-semibold text-blue-600">
-                  <%= ip_obj&.address || "Unknown IP" %>
+                <span class="text-xs font-mono font-semibold">
+                  <% if ip_obj %><%= link_to ip_obj.address, ip_obj, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %><% else %>Unknown IP<% end %>
+                </span>
+              </div>
+            <% end %>
+
+            <%# --- CONTEXT HEADER: BRANCH --- %>
+            <% if version.item_type == "Branch" %>
+              <% branch_obj = version.item || version.reify rescue nil %>
+              <div class="mb-2 flex items-center gap-2 border-b border-zinc-200 pb-2 dark:border-white/10">
+                <span class="rounded-md border border-zinc-200 px-1 text-xs font-bold tracking-wide text-zinc-500 uppercase dark:border-white/10 dark:text-zinc-400">BRANCH</span>
+                <span class="text-xs font-semibold">
+                  <% if branch_obj %><%= link_to branch_obj.name, branch_obj, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %><% else %>Unknown Branch<% end %>
+                </span>
+              </div>
+            <% end %>
+
+            <%# --- CONTEXT HEADER: SUBNET --- %>
+            <% if version.item_type == "Subnet" %>
+              <% subnet_obj = version.item || version.reify rescue nil %>
+              <div class="mb-2 flex items-center gap-2 border-b border-zinc-200 pb-2 dark:border-white/10">
+                <span class="rounded-md border border-zinc-200 px-1 text-xs font-bold tracking-wide text-zinc-500 uppercase dark:border-white/10 dark:text-zinc-400">SUBNET</span>
+                <span class="text-xs font-semibold">
+                  <% if subnet_obj %><%= link_to subnet_obj.name, subnet_obj, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %><% else %>Unknown Subnet<% end %>
+                </span>
+              </div>
+            <% end %>
+
+            <%# --- CONTEXT HEADER: USER --- %>
+            <% if version.item_type == "User" %>
+              <% user_obj = version.item || version.reify rescue nil %>
+              <div class="mb-2 flex items-center gap-2 border-b border-zinc-200 pb-2 dark:border-white/10">
+                <span class="rounded-md border border-zinc-200 px-1 text-xs font-bold tracking-wide text-zinc-500 uppercase dark:border-white/10 dark:text-zinc-400">USER</span>
+                <span class="text-xs font-semibold">
+                  <% if user_obj %><%= link_to user_obj.username, edit_admin_user_path(user_obj), class: "hover:text-orange-500", data: { turbo_frame: "_top" } %><% else %>Unknown User<% end %>
                 </span>
               </div>
             <% end %>
@@ -69,7 +98,7 @@
               <div class="mb-2 flex items-center gap-2 border-b border-zinc-200 pb-2 dark:border-white/10">
                 <span class="rounded-md border border-zinc-200 px-1 text-xs font-bold tracking-wide text-zinc-500 uppercase dark:border-white/10 dark:text-zinc-400">DEPT</span>
                 <span class="text-xs font-semibold">
-                  <%= dept_obj&.name || "Unknown Dept" %>
+                  <% if dept_obj %><%= link_to dept_obj.name, dept_obj, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %><% else %>Unknown Dept<% end %>
                 </span>
               </div>
             <% end %>
@@ -80,7 +109,7 @@
               <div class="mb-2 flex items-center gap-2 border-b border-zinc-200 pb-2 dark:border-white/10">
                 <span class="rounded-md border border-zinc-200 px-1 text-xs font-bold tracking-wide text-zinc-500 uppercase dark:border-white/10 dark:text-zinc-400">EMP</span>
                 <span class="text-xs font-semibold">
-                  <%= emp_obj&.full_name || "Unknown Employee" %>
+                  <% if emp_obj %><%= link_to emp_obj.full_name, emp_obj, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %><% else %>Unknown Employee<% end %>
                 </span>
               </div>
             <% end %>
@@ -91,7 +120,7 @@
               <div class="mb-2 flex items-center gap-2 border-b border-zinc-200 pb-2 dark:border-white/10">
                 <span class="rounded-md border border-zinc-200 px-1 text-xs font-bold tracking-wide text-zinc-500 uppercase dark:border-white/10 dark:text-zinc-400">DEV</span>
                 <span class="text-xs font-semibold">
-                  <%= dev_obj&.name || "Unknown Device" %>
+                  <% if dev_obj %><%= link_to dev_obj.name, dev_obj, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %><% else %>Unknown Device<% end %>
                 </span>
               </div>
             <% end %>

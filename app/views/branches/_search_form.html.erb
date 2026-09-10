@@ -1,0 +1,23 @@
+<%= render "shared/search_panel" do %>
+    <%= search_form_for @search,
+        data: {
+          controller: "debounce",
+          turbo_frame: "branches_table",
+          turbo_action: "advance",
+          action: "input->debounce#submit change->debounce#submit"
+        } do |f| %>
+      <div class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <%= f.label :name_cont, "Branch Name", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.search_field :name_cont, placeholder: "Search…", class: "input" %>
+        </div>
+        <div>
+          <%= f.label :location_cont, "Location", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.search_field :location_cont, placeholder: "Search location…", class: "input" %>
+        </div>
+        <div class="flex gap-2">
+          <%= link_to "Clear", branches_path, class: "btn btn--primary", data: { action: "click->search-filter#resetAll" } %>
+        </div>
+      </div>
+    <% end %>
+<% end %>

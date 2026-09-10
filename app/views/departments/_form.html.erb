@@ -22,6 +22,6 @@
 
   <div class="mt-4 flex items-center gap-3">
     <%= form.submit class: "btn btn--primary" %>
-    <%= link_to "Cancel", departments_path, class: "text-sm text-zinc-500 hover:underline dark:text-zinc-400", data: { turbo_frame: "_top" } %>
+    <button type="button" class="cursor-pointer text-sm text-zinc-500 hover:underline dark:text-zinc-400" data-action="click->modal#requestClose">Cancel</button>
   </div>
 <% end %>

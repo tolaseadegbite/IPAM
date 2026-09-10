@@ -93,6 +93,6 @@
 
   <div class="flex items-center gap-3">
     <%= form.submit "Update IP", class: "btn btn--primary" %>
-    <%= link_to "Cancel", ip_addresses_path, class: "text-sm text-zinc-500 hover:underline dark:text-zinc-400", data: { turbo_frame: "modal" } %>
+    <button type="button" class="cursor-pointer text-sm text-zinc-500 hover:underline dark:text-zinc-400" data-action="click->modal#requestClose">Cancel</button>
   </div>
 <% end %>

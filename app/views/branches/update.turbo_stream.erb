@@ -1,5 +1,3 @@
-<%= turbo_stream.replace dom_id(@branch, :table_row), partial: "branches/branch", locals: { branch: @branch } %>
-
-<%= turbo_stream.replace dom_id(@branch, :card), partial: "branches/branch_card", locals: { branch: @branch } %>
+<%= turbo_stream.replace @branch, partial: "branches/branch", locals: { branch: @branch } %>
 
 <%= turbo_stream.update "flash_messages", partial: "shared/flash", locals: { notice: flash.now[:notice], alert: flash.now[:alert] } %>

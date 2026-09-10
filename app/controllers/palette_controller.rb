@@ -8,7 +8,8 @@ class PaletteController < ApplicationController
     { icon: "kanban", label: "Go to Operations", keywords: "operations boards tasks kanban", url: :boards_path },
     { icon: "message-square-text", label: "New NAT chat", keywords: "assistant chat nat", url: :new_chat_path },
     { icon: "monitor", label: "New Device", keywords: "new device create onboard", url: :new_device_path },
-    { icon: "bell", label: "Go to Notifications", keywords: "notifications alerts bell", url: :notifications_path }
+    { icon: "bell", label: "Go to Notifications", keywords: "notifications alerts bell", url: :notifications_path },
+    { icon: "radar", label: "Scan now", keywords: "scan network sweep refresh discover", url: :scan_dashboard_path, method: :post }
   ].freeze
 
   RESULT_LIMIT = 5

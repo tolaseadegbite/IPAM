@@ -6,8 +6,40 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains/jetbrains-mono-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains/jetbrains-mono-latin-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains/jetbrains-mono-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains/jetbrains-mono-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
 
@@ -23,6 +55,42 @@
   .label-mono {
     @apply font-mono text-[11px] font-semibold tracking-[0.08em] text-zinc-500 uppercase dark:text-zinc-400;
   }
+}
+
+/* ---------- Flatpickr dark mode (CDN theme is light-only) ---------- */
+
+.dark .flatpickr-calendar {
+  background-color: var(--color-zinc-900);
+  border-color: rgb(255 255 255 / 0.1);
+  box-shadow: 0 10px 25px rgb(0 0 0 / 0.5);
+}
+
+.dark .flatpickr-months .flatpickr-month,
+.dark .flatpickr-current-month .flatpickr-monthDropdown-months,
+.dark span.flatpickr-weekday,
+.dark .flatpickr-day {
+  color: var(--color-zinc-100);
+  fill: var(--color-zinc-100);
+}
+
+.dark .flatpickr-day:hover,
+.dark .flatpickr-day:focus {
+  background-color: rgb(255 255 255 / 0.1);
+  border-color: transparent;
+}
+
+.dark .flatpickr-day.selected {
+  background-color: var(--color-orange-500);
+  border-color: transparent;
+}
+
+.dark .flatpickr-day.flatpickr-disabled {
+  color: var(--color-zinc-600);
+}
+
+.dark .flatpickr-time input,
+.dark .flatpickr-time .flatpickr-am-pm {
+  color: var(--color-zinc-100);
 }
 
 /* ---------- Base ---------- */
@@ -256,6 +324,19 @@ body {
   .dialog__close {
     @apply absolute top-3 right-3;
   }
+
+  /* Command-palette docking: top-docked panel on desktop, native
+     bottom-sheet behavior below (the mobile .dialog rules apply). */
+  @media (width >= 64rem) {
+    .dialog--docked {
+      margin-top: 12dvh;
+    }
+  }
+
+  /* Mobile bottom-sheet must win over `m-auto` / `max-w-*` utilities
+     (utilities layer beats components at equal specificity). The
+     higher-specificity `dialog.dialog` selector below in utilities
+     guarantees full-bleed sheets on !desktop, including the palette. */
 
   /* ---------- Sheet (drawer) ---------- */
 
@@ -547,6 +628,44 @@ body {
   .accordion summary::-webkit-details-marker {
     display: none;
   }
+
+  /* ---------- Kanban motion (Trello-style column drag) ---------- */
+
+  .kanban-column {
+    transition: transform 170ms ease-out, box-shadow 170ms ease-out;
+  }
+
+  .kanban-column.is-dragging {
+    /* Inline transform (pointer follow + tilt) is driven per move, so
+       only the shadow transitions here — never fight the pointer. */
+    transition: box-shadow 170ms ease-out;
+    box-shadow: 0 24px 48px rgb(0 0 0 / 0.45);
+    cursor: grabbing;
+  }
+
+  .kanban-drop-placeholder {
+    animation: kanban-placeholder-pulse 1.4s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kanban-column,
+    .kanban-column.is-dragging {
+      transition: none;
+    }
+    .kanban-drop-placeholder {
+      animation: none;
+    }
+  }
+}
+
+@keyframes kanban-placeholder-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
 }
 
 @keyframes ml-appear-then-fade {
@@ -574,4 +693,17 @@ body {
 .flash--extended {
   animation-name: ml-appear-then-fade-extended;
   animation-duration: 12s;
+}
+
+/* ---------- Mobile dialog full-bleed (utilities layer wins) ---------- */
+
+@layer utilities {
+  @media (width < 64rem) {
+    dialog.dialog {
+      margin: 0;
+      margin-top: auto;
+      width: 100%;
+      max-width: 100%;
+    }
+  }
 }

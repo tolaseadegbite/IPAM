@@ -9,17 +9,17 @@
 <div id="<%= dom_id card %>" data-id="<%= card.id %>" class="card cursor-grab p-3 shadow-sm transition-shadow hover:shadow-md <%= border_color %>">
 
   <div class="mb-1 text-sm font-medium">
-    <%= link_to card.title, edit_card_path(card), data: { turbo_frame: "modal" }, class: "hover:text-orange-500" %>
+    <%= link_to card.title, edit_card_path(card), data: { turbo_frame: "modal" }, draggable: false, class: "hover:text-orange-500" %>
   </div>
 
   <% if card.referenceable %>
     <div class="mb-2 flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 p-1.5 text-xs dark:border-white/10 dark:bg-white/5">
       <% if card.referenceable.is_a?(Device) %>
         <%= icon("monitor", "h-3.5 w-3.5 shrink-0 text-zinc-400") %>
-        <%= link_to card.referenceable.name, device_path(card.referenceable), class: "truncate hover:underline", data: { turbo_frame: "_top" } %>
+        <%= link_to card.referenceable.name, device_path(card.referenceable), draggable: false, class: "truncate hover:underline", data: { turbo_frame: "_top" } %>
       <% elsif card.referenceable.is_a?(IpAddress) %>
         <%= icon("globe", "h-3.5 w-3.5 shrink-0 text-zinc-400") %>
-        <%= link_to card.referenceable.address, ip_address_path(card.referenceable), class: "truncate font-mono hover:underline", data: { turbo_frame: "_top" } %>
+        <%= link_to card.referenceable.address, ip_address_path(card.referenceable), draggable: false, class: "truncate font-mono hover:underline", data: { turbo_frame: "_top" } %>
       <% end %>
     </div>
   <% end %>
