@@ -1,5 +1,5 @@
 class IpAddressesController < ApplicationController
-  before_action :set_ip_address, only: %i[ show edit update ]
+  before_action :set_ip_address, only: %i[ show edit update reclaim ]
 
   def index
     records = IpAddress.includes(:subnet, device: :employee).order(:address)
@@ -29,6 +29,29 @@ class IpAddressesController < ApplicationController
       end
     else
       render :edit, status: :unprocessable_entity
+    end
+  end
+
+  # One-click reclaim from the dashboard attention queue. Releases the
+  # device and frees the address, then dismisses the queue row.
+  def reclaim
+    if @ip_address.update(status: :available, device_id: nil)
+      respond_to do |format|
+        format.html { redirect_to dashboard_path, notice: "IP #{@ip_address.address} reclaimed." }
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.remove(params[:row_id]),
+            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "IP #{@ip_address.address} reclaimed." })
+          ]
+        end
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to dashboard_path, alert: @ip_address.errors.full_messages.to_sentence }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.update("flash_messages", partial: "shared/flash", locals: { alert: @ip_address.errors.full_messages.to_sentence }), status: :unprocessable_entity
+        end
+      end
     end
   end
 

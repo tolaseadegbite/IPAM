@@ -78,6 +78,9 @@ Rails.application.routes.draw do
   resources :subnets
 
   resources :ip_addresses, only: %i[index show edit update] do
+    member do
+      patch :reclaim
+    end
     collection do
       get :select_options # New endpoint
     end

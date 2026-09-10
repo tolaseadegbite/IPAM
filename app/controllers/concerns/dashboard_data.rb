@@ -48,7 +48,8 @@ module DashboardData
         title: event.message.to_s.truncate(70),
         subtitle: [ event.ip_address, event.device&.name ].compact.join(" · "),
         path: event.device ? routes.device_path(event.device) : nil,
-        age: event.created_at
+        age: event.created_at,
+        row_id: "attention-event-#{event.id}"
       }
     end
 
@@ -62,7 +63,9 @@ module DashboardData
         title: "#{device.name} is offline",
         subtitle: ips.first ? "Critical · #{ips.first.address}" : "Critical · no IP assigned",
         path: routes.device_path(device),
-        age: ips.filter_map(&:last_seen_at).max
+        age: ips.filter_map(&:last_seen_at).max,
+        row_id: "attention-device-#{device.id}",
+        action: { label: "Open task", path: routes.new_card_path(referenceable_type: "Device", referenceable_id: device.id), modal: true }
       }
     end
 
@@ -73,7 +76,9 @@ module DashboardData
         title: "Rogue device at #{ip.address}",
         subtitle: ip.subnet&.name,
         path: routes.ip_address_path(ip),
-        age: ip.last_seen_at
+        age: ip.last_seen_at,
+        row_id: "attention-ip-#{ip.id}",
+        action: { label: "Register", path: routes.edit_ip_address_path(ip), modal: true }
       }
     end
 
@@ -84,7 +89,9 @@ module DashboardData
         title: "Reclaim #{ip.device&.name || ip.address}",
         subtitle: ip.last_seen_at ? "Unseen #{time_ago.time_ago_in_words(ip.last_seen_at)}" : "Ghost asset",
         path: routes.ip_address_path(ip),
-        age: ip.last_seen_at
+        age: ip.last_seen_at,
+        row_id: "attention-ip-#{ip.id}",
+        action: { label: "Reclaim", path: routes.reclaim_ip_address_path(ip), method: :patch }
       }
     end
 
@@ -96,7 +103,8 @@ module DashboardData
         subtitle: card.list&.name,
         path: routes.edit_card_path(card),
         modal: true,
-        age: card.created_at
+        age: card.created_at,
+        row_id: "attention-card-#{card.id}"
       }
     end
 
