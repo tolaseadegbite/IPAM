@@ -1,4 +1,5 @@
-<div data-controller="palette">
+<div data-controller="palette"
+     data-palette-go-to-value="<%= { e: employees_path, k: boards_path, u: ip_addresses_path, y: dashboard_path }.to_json %>">
   <dialog data-palette-target="dialog" class="dialog dialog--docked w-full max-w-lg p-0"
           data-action="click->palette#closeOnClickOutside" aria-label="Command palette">
     <div class="border-b border-zinc-200 p-3 dark:border-white/10">
@@ -9,10 +10,11 @@
     </div>
     <div id="palette-results" data-palette-target="results" role="listbox"
          class="max-h-[50dvh] overflow-y-auto p-2"></div>
-    <div class="flex items-center gap-3 border-t border-zinc-200 px-4 py-2 text-[11px] text-zinc-400 dark:border-white/10">
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-zinc-200 px-4 py-2 text-[11px] text-zinc-400 dark:border-white/10">
       <span><kbd class="rounded border border-zinc-300 px-1 font-mono dark:border-white/10">↑↓</kbd> navigate</span>
       <span><kbd class="rounded border border-zinc-300 px-1 font-mono dark:border-white/10">↵</kbd> open</span>
       <span><kbd class="rounded border border-zinc-300 px-1 font-mono dark:border-white/10">esc</kbd> close</span>
+      <span class="ms-auto hidden sm:inline"><kbd class="rounded border border-zinc-300 px-1 font-mono dark:border-white/10">Ctrl+Shift+E</kbd> employees</span>
     </div>
   </dialog>
 </div>

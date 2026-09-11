@@ -481,18 +481,18 @@ body {
     @apply bg-red-600 text-white dark:bg-red-500 dark:text-zinc-950;
   }
 
-  /* ---------- Sidebar nav (always dark NOC panel) ---------- */
+  /* ---------- Sidebar nav (follows the color scheme) ---------- */
 
   .sidebar-label {
     @apply px-3 pt-4 pb-1 text-[11px] font-semibold tracking-wider text-zinc-500 uppercase;
   }
 
   .sidebar-link {
-    @apply flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-orange-500;
+    @apply flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-orange-500 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-white;
   }
 
   .sidebar-link[aria-current="page"] {
-    @apply bg-white/10 text-white;
+    @apply bg-zinc-900 text-white dark:bg-white/10 dark:text-white;
   }
 
   /* ---------- Chat messages ---------- */

@@ -9,8 +9,15 @@ const escapeHtml = (value) =>
 
 // Cmd/Ctrl+K command palette: fuzzy-navigates inventory plus static
 // commands. Desktop only; mobile uses the bottom tab bar.
+//
+// Direct hotkeys: Ctrl/Cmd+Shift+letter jumps straight to a top
+// destination with no palette. Only mapped letters are intercepted
+// (everything else passes through untouched), and never while typing
+// in a field or while the palette itself is open. Destinations come
+// from the server (goTo value) so they track route changes.
 export default class extends Controller {
   static targets = ["dialog", "input", "results"]
+  static values = { goTo: Object }
 
   #debouncedSearch = null
   #boundKeydown = null
@@ -62,10 +69,27 @@ export default class extends Controller {
   }
 
   #onKeydown(event) {
-    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+    if ((event.metaKey || event.ctrlKey) && !event.shiftKey && event.key.toLowerCase() === "k") {
       event.preventDefault()
       this.open()
+      return
     }
+
+    if (!(event.metaKey || event.ctrlKey) || !event.shiftKey || event.altKey) return
+    if (this.dialogTarget.open) return
+    if (this.#typing(event)) return
+
+    const url = this.goToValue[event.key.toLowerCase()]
+    if (url) {
+      event.preventDefault()
+      Turbo.visit(url)
+    }
+  }
+
+  #typing(event) {
+    const target = event.target
+    return target instanceof HTMLElement &&
+      (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
   }
 
   async #search(query) {
@@ -74,7 +98,13 @@ export default class extends Controller {
     })
     if (!response.ok) return
     const results = await response.json()
-    this.resultsTarget.innerHTML = results.map((result, index) => `
+    let lastSection = null
+    this.resultsTarget.innerHTML = results.map((result, index) => {
+      const header = result.section && result.section !== lastSection
+        ? `<div class="menu__header text-zinc-500" role="presentation">${escapeHtml(result.section)}</div>`
+        : ""
+      lastSection = result.section || lastSection
+      return `${header}
       <button type="button" data-url="${escapeHtml(result.url)}" ${result.method ? `data-method="${escapeHtml(result.method)}"` : ""} data-action="click->palette#visit"
               data-palette-index="${index}"
               class="palette-item menu__item w-full ${index === 0 ? "is-active" : ""}">
@@ -83,7 +113,8 @@ export default class extends Controller {
           <span class="block truncate font-medium">${escapeHtml(result.label)}</span>
           ${result.sub ? `<span class="block truncate text-xs text-zinc-500">${escapeHtml(result.sub)}</span>` : ""}
         </span>
-      </button>`).join("")
+      </button>`
+    }).join("")
   }
 
   visit(event) {
