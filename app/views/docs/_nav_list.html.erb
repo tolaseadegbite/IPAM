@@ -1,0 +1,6 @@
+<% DocsController::PAGES.each do |slug, title| %>
+  <%= link_to doc_page_path(slug), class: "sidebar-link min-w-0",
+        aria: (@slug == slug ? { current: "page" } : {}) do %>
+    <span class="truncate"><%= title %></span>
+  <% end %>
+<% end %>

@@ -86,6 +86,14 @@
       <span>History</span>
     <% end %>
   </div>
+
+  <div class="sidebar-label">Help</div>
+  <div class="flex flex-col gap-0.5">
+    <%= link_to docs_path, class: "sidebar-link", aria: active_for("docs") do %>
+      <%= icon("globe", "h-[18px] w-[18px]") %>
+      <span>Docs</span>
+    <% end %>
+  </div>
 </nav>
 
 <%= render "layouts/navigation/dashboard/sidebar_bottom_menu" %>

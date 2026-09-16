@@ -103,6 +103,9 @@ Rails.application.routes.draw do
   get "search", to: "search#index"
   get "palette", to: "palette#index"
 
+  get "docs", to: "docs#index"
+  get "docs/:page", to: "docs#show", as: :doc_page
+
   resources :notifications, only: [ :index, :update ]
 
   # --- Root Path ---

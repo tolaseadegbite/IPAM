@@ -1,0 +1,39 @@
+<% content_for :title, @title %>
+<% content_for :page_header do %>Docs<% end %>
+
+<div class="grid items-start gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
+  <nav class="card min-w-0 p-3 lg:sticky lg:top-20" aria-label="Documentation">
+    <details class="lg:hidden">
+      <summary class="sidebar-link list-none cursor-pointer [&::-webkit-details-marker]:hidden">
+        <%= icon("chevron-down", "h-4 w-4 opacity-60") %>
+        <span>Guides</span>
+      </summary>
+      <div class="mt-1 flex flex-col gap-1">
+        <%= render "nav_list" %>
+      </div>
+    </details>
+    <div class="hidden lg:block">
+      <div class="label-mono mb-2 px-2">Guides</div>
+      <div class="flex flex-col gap-1">
+        <%= render "nav_list" %>
+      </div>
+    </div>
+  </nav>
+
+  <article class="card min-w-0 p-4 sm:p-6">
+    <h1 class="text-2xl font-bold tracking-tight"><%= @title %></h1>
+    <div class="docs-article mt-2"><%= render_markdown(@body) %></div>
+    <div class="mt-8 flex items-center justify-between gap-3 border-t border-zinc-200 pt-4 dark:border-white/10">
+      <div>
+        <% if @prev_slug %>
+          <%= link_to "← #{DocsController::PAGES.fetch(@prev_slug)}", doc_page_path(@prev_slug), class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400" %>
+        <% end %>
+      </div>
+      <div>
+        <% if @next_slug %>
+          <%= link_to "#{DocsController::PAGES.fetch(@next_slug)} →", doc_page_path(@next_slug), class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400" %>
+        <% end %>
+      </div>
+    </div>
+  </article>
+</div>

@@ -585,6 +585,87 @@ body {
     @apply border border-zinc-200 px-2 py-1 dark:border-white/10;
   }
 
+  /* ---------- Docs article typography ---------- */
+
+  .docs-article {
+    @apply text-[15px] leading-relaxed break-words text-zinc-700 dark:text-zinc-300;
+  }
+
+  .docs-article h2,
+  .docs-article h3 {
+    @apply mt-6 mb-2 font-bold tracking-tight text-zinc-900 dark:text-zinc-100;
+  }
+
+  .docs-article h2 {
+    @apply border-b border-zinc-200 pb-2 text-xl dark:border-white/10;
+  }
+
+  .docs-article h3 {
+    @apply text-base;
+  }
+
+  .docs-article p {
+    @apply my-3;
+  }
+
+  .docs-article ul,
+  .docs-article ol {
+    @apply my-3 space-y-1.5 ps-6;
+  }
+
+  .docs-article ul {
+    @apply list-disc;
+  }
+
+  .docs-article ol {
+    @apply list-decimal;
+  }
+
+  .docs-article li::marker {
+    @apply text-zinc-400 dark:text-zinc-500;
+  }
+
+  .docs-article a {
+    @apply font-medium text-orange-600 underline decoration-orange-300 underline-offset-2 hover:text-orange-500 dark:text-orange-400 dark:decoration-orange-500/40;
+  }
+
+  .docs-article code {
+    @apply rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-[13px] text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100;
+  }
+
+  .docs-article pre {
+    @apply my-4 overflow-x-auto rounded-lg bg-zinc-950 p-4 text-sm text-zinc-100 dark:bg-black;
+  }
+
+  .docs-article pre code {
+    @apply bg-transparent p-0;
+  }
+
+  .docs-article table {
+    @apply my-4 w-full text-left text-sm;
+  }
+
+  .docs-article th,
+  .docs-article td {
+    @apply border border-zinc-200 px-3 py-2 align-top dark:border-white/10;
+  }
+
+  .docs-article th {
+    @apply bg-zinc-50 font-semibold dark:bg-white/5;
+  }
+
+  .docs-article blockquote {
+    @apply my-3 border-l-2 border-orange-500 ps-4 text-zinc-600 italic dark:text-zinc-400;
+  }
+
+  .docs-article hr {
+    @apply my-6 border-zinc-200 dark:border-white/10;
+  }
+
+  .docs-article strong {
+    @apply font-semibold text-zinc-900 dark:text-zinc-100;
+  }
+
   .message__footer {
     @apply text-[11px] text-zinc-400 dark:text-zinc-500;
   }
