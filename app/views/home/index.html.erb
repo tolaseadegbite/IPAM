@@ -24,6 +24,40 @@
     </div>
   </div>
 
+  <div class="card p-4 sm:p-5">
+    <h2 class="mb-1 text-base font-bold">API tokens</h2>
+    <p class="mb-3 text-sm text-zinc-500 dark:text-zinc-400">Read-only access for scripts and integrations. Tokens authenticate with an <span class="font-mono">Authorization: Bearer</span> header.</p>
+    <% if flash[:api_token_secret].present? %>
+      <div class="mb-3 rounded-lg border border-orange-500/40 bg-orange-500/10 p-3">
+        <p class="text-sm font-semibold">Copy your new token — it won't be shown again:</p>
+        <p class="mt-1 font-mono text-sm break-all select-all"><%= flash[:api_token_secret] %></p>
+      </div>
+    <% end %>
+    <% if @api_tokens.any? %>
+      <ul class="mb-3 divide-y divide-zinc-200 dark:divide-white/10">
+        <% @api_tokens.each do |token| %>
+          <li class="flex items-center justify-between gap-2 py-2 text-sm">
+            <div class="min-w-0">
+              <span class="font-semibold"><%= token.name %></span>
+              <span class="font-mono text-xs text-zinc-500 dark:text-zinc-400">· <%= token.prefix %>…</span>
+              <span class="block text-xs text-zinc-500 dark:text-zinc-400">
+                Last used <%= token.last_used_at ? "#{time_ago_in_words(token.last_used_at)} ago" : "never" %><%= token.expired? ? " · expired" : "" %>
+              </span>
+            </div>
+            <%= button_to "Revoke", api_token_path(token), method: :delete, class: "btn !px-3 !py-1.5 text-sm",
+                  form: { data: { turbo_confirm: "Revoke the '#{token.name}' token?" } } %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="mb-3 text-sm text-zinc-500 italic dark:text-zinc-400">No tokens yet.</p>
+    <% end %>
+    <%= form_with model: ApiToken.new, url: api_tokens_path, class: "flex gap-2" do |form| %>
+      <%= form.text_field :name, required: true, placeholder: "e.g. nightly rogue digest", class: "input flex-1" %>
+      <%= form.submit "Generate", class: "btn btn--primary shrink-0" %>
+    <% end %>
+  </div>
+
   <div class="card flex flex-row flex-wrap items-center gap-3 p-4 sm:p-5">
     <%# Dev-only impersonation shortcut, parked for now (LAN devices reach
         this server). Uncomment for local testing; the controller still
