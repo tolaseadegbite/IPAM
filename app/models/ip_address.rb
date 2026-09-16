@@ -44,7 +44,7 @@ class IpAddress < ApplicationRecord
 
   # Ransack
   def self.ransackable_attributes(auth_object = nil)
-    %w[address_string status reachability_status subnet_id created_at updated_at]
+    %w[address_string status reachability_status subnet_id device_id created_at updated_at]
   end
 
   def self.ransackable_associations(auth_object = nil)

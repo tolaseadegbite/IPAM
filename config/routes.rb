@@ -14,8 +14,9 @@ Rails.application.routes.draw do
 
   get  "sign_in", to: "sessions#new"
   post "sign_in", to: "sessions#create"
-  get  "account", to: "home#index"
+  get "account", to: "home#index"
   resources :sessions, only: [ :index, :destroy ]
+  resources :api_tokens, only: %i[create destroy]
   resource  :password, only: [ :edit, :update ]
   namespace :identity do
     resource :email,              only: [ :edit, :update ]
@@ -107,6 +108,14 @@ Rails.application.routes.draw do
   get "docs/:page", to: "docs#show", as: :doc_page
 
   resources :notifications, only: [ :index, :update ]
+
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      resources :subnets, only: %i[index show]
+      resources :ip_addresses, only: %i[index show]
+      resources :devices, only: %i[index show]
+    end
+  end
 
   # --- Root Path ---
   # The dashboard or main inventory list
