@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-- **Rails 8.1.1** (Ruby 3.4.5) — Mainline network inventory (branches, devices, subnets, IPs, ops boards)
+- **Rails 8.1.3** (Ruby 4.0.7) — Mainline network inventory (branches, devices, subnets, IPs, ops boards)
 - **Database:** PostgreSQL (primary) + SQLite3 (SolidQueue/SolidCache/SolidCable in dev)
 - **Frontend:** Hotwire (Turbo + Stimulus), Importmap-rails, Tailwind CSS v4 (via tailwindcss-rails, class-based dark mode), Propshaft
 - **Auth:** Session-based via signed cookies (authentication-zero gem), `Current` object pattern
