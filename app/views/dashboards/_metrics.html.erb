@@ -141,7 +141,8 @@
         <div class="flex flex-col gap-3">
           <% top_subnets.each do |subnet| %>
             <%
-              raw_percent = (subnet.used_ips.to_f / subnet.total_ips * 100)
+              total = subnet.total_ips.to_i
+              raw_percent = total.zero? ? 0 : (subnet.used_ips.to_f / total * 100)
               percent = (subnet.used_ips > 0 && raw_percent < 1) ? 1 : raw_percent.to_i
               bar_color = if percent > 90 then "bg-red-500"
                           elsif percent > 70 then "bg-amber-400"
