@@ -11,9 +11,27 @@
       <% end %>
       <%= tag.div popover: "manual", class: "popover", style: "width: 12rem;", data: { popover_target: "content" } do %>
         <div class="menu" data-controller="menu" data-action="keydown->menu#navigate" role="menu">
-          <button type="button" class="menu__item" data-action="popover#hide color-scheme#setLight" data-menu-target="item" role="menuitem">Light</button>
-          <button type="button" class="menu__item" data-action="popover#hide color-scheme#setDark" data-menu-target="item" role="menuitem">Dark</button>
-          <button type="button" class="menu__item" data-action="popover#hide color-scheme#setSystem" data-menu-target="item" role="menuitem">System</button>
+          <button type="button" class="menu__item" data-action="popover#hide color-scheme#setLight" data-appearance-option="light" data-menu-target="item" role="menuitem">NOC Light</button>
+          <button type="button" class="menu__item" data-action="popover#hide color-scheme#setDark" data-appearance-option="dark" data-menu-target="item" role="menuitem">NOC Dark</button>
+          <button type="button" class="menu__item" data-action="popover#hide color-scheme#setSystem" data-appearance-option="system" data-menu-target="item" role="menuitem">System</button>
+          <div class="my-1 border-t border-zinc-200 dark:border-white/10" role="separator"></div>
+          <% [["Osaka Jade", "osaka-jade", ["#111c18", "#509475", "#c1c497"]],
+              ["Solitude", "solitude", ["#101315", "#798186", "#cacccc"]],
+              ["Giants", "giants", ["#27241f", "#97786d", "#e1d5c2"]],
+              ["Retro 82", "retro-82", ["#05182e", "#faa968", "#f6dcac"]],
+              ["Miasma", "miasma", ["#222222", "#78824b", "#c2c2b0"]],
+              ["Tokyo Night", "tokyo-night", ["#1a1b26", "#7aa2f7", "#a9b1d6"]],
+              ["Matte Black", "matte-black", ["#121212", "#e68e0d", "#bebebe"]],
+              ["Gruvbox", "gruvbox", ["#282828", "#7daea3", "#d4be98"]],
+              ["Everforest", "everforest", ["#2d353b", "#7fbbb3", "#d3c6aa"]]].each do |label, key, (bg, accent, fg)| %>
+            <button type="button" class="menu__item" data-action="popover#hide color-scheme#setTheme" data-color-scheme-theme-param="<%= key %>" data-menu-target="item" role="menuitem">
+              <span class="inline-flex items-center gap-1" aria-hidden="true">
+                <span class="h-2.5 w-2.5 rounded-full border border-white/20" style="background-color: <%= bg %>;"></span>
+                <span class="h-2.5 w-2.5 rounded-full" style="background-color: <%= accent %>;"></span>
+                <span class="h-2.5 w-2.5 rounded-full" style="background-color: <%= fg %>;"></span>
+              </span><%= label %>
+            </button>
+          <% end %>
         </div>
       <% end %>
     </div>

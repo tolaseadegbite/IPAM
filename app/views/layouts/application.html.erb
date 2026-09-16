@@ -13,9 +13,15 @@
     <%# Apply theme before first paint to avoid flashing the wrong mode %>
     <script>
       try {
-        var scheme = localStorage.getItem("color_scheme") || "<%= cookies[:color_scheme].presence || "system" %>";
-        if (scheme === "light" || (scheme === "system" && window.matchMedia("(prefers-color-scheme: light)").matches)) {
-          document.documentElement.classList.remove("dark");
+        var theme = localStorage.getItem("theme") || "<%= cookies[:theme].presence || "" %>";
+        if (theme) {
+          // Themed sessions are always dark; the palette rides on .dark.
+          document.documentElement.dataset.theme = theme;
+        } else {
+          var scheme = localStorage.getItem("color_scheme") || "<%= cookies[:color_scheme].presence || "system" %>";
+          if (scheme === "light" || (scheme === "system" && window.matchMedia("(prefers-color-scheme: light)").matches)) {
+            document.documentElement.classList.remove("dark");
+          }
         }
       } catch (e) {}
     </script>
