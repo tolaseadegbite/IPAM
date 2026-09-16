@@ -188,7 +188,7 @@
               <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full <%= dot %>"></span>
               <%= icon(item[:icon], "mt-0.5 h-4 w-4 shrink-0 text-zinc-400") %>
               <div class="min-w-0 flex-1">
-                <div class="truncate text-sm font-semibold">
+                <div class="truncate text-sm font-semibold" title="<%= item[:full_title] || item[:title] %>">
                   <% if item[:path] %>
                     <%= link_to item[:title], item[:path], class: "hover:text-orange-500",
                                 data: item[:modal] ? { turbo_frame: "modal" } : { turbo_frame: "_top" } %>
@@ -196,7 +196,7 @@
                     <%= item[:title] %>
                   <% end %>
                 </div>
-                <div class="truncate text-xs text-zinc-500 dark:text-zinc-400">
+                <div class="truncate text-xs text-zinc-500 dark:text-zinc-400" title="<%= item[:subtitle] %>">
                   <%= item[:subtitle] %>
                   <% if item[:age] %> · <%= time_ago_in_words(item[:age]) %> ago<% end %>
                 </div>
