@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Nightly rogue digest: prints every reachable-but-unassigned IP as Markdown.
+# Pipe to mail from cron. Requires a Mainline API token with zero privileges
+# beyond reading (generate one on your Account page):
+#
+#   MAINLINE_HOST=http://localhost:3000 MAINLINE_API_TOKEN=xxxx \
+#     script/rogue_digest | mail -s "Nightly rogue digest" noc@example.com
+#
+# Add to crontab (every weekday at 07:00):
+#   0 7 * * 1-5  MAINLINE_HOST=http://localhost:3000 MAINLINE_API_TOKEN=xxxx /path/to/ipam/script/rogue_digest | mail -s "Nightly rogue digest" noc@example.com
+
+require "json"
+require "net/http"
+require "time"
+require "uri"
+
+host = ENV.fetch("MAINLINE_HOST", "http://localhost:3000")
+token = ENV.fetch("MAINLINE_API_TOKEN") do
+  abort "Set MAINLINE_API_TOKEN to a Mainline API token (Account page)."
+end
+
+uri = URI.join(host, "/api/v1/ip_addresses?q%5Brogue_only%5D=true")
+request = Net::HTTP::Get.new(uri)
+request["Authorization"] = "Bearer #{token}"
+request["Accept"] = "application/json"
+
+response = Net::HTTP.start(uri.hostname, uri.port, open_timeout: 10, read_timeout: 30) do |http|
+  http.request(request)
+end
+abort "API error: HTTP #{response.code} #{response.body[0, 200]}" unless response.is_a?(Net::HTTPSuccess)
+
+body = JSON.parse(response.body)
+rogues = body.fetch("data", [])
+
+puts "# Rogue digest — #{Time.now.strftime("%Y-%m-%d")}"
+puts
+if rogues.empty?
+  puts "All clear: no rogue devices on the network."
+else
+  puts "#{rogues.size} rogue device(s) need attention:"
+  puts
+  puts "| IP | Subnet | Last seen |"
+  puts "| --- | --- | --- |"
+  rogues.each do |rogue|
+    seen = rogue["last_seen_at"] ? Time.parse(rogue["last_seen_at"]).strftime("%Y-%m-%d %H:%M") : "unknown"
+    puts "| #{rogue["address"]} | #{rogue["subnet_id"]} | #{seen} |"
+  end
+  puts
+  puts "Register or investigate each address in Mainline."
+end

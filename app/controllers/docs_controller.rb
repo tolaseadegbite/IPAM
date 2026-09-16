@@ -10,6 +10,7 @@ class DocsController < ApplicationController
     "boards" => "Boards & Tasks",
     "assistant" => "NAT Assistant",
     "search" => "Search",
+    "api" => "API Reference",
     "notifications" => "Notifications",
     "account" => "Account & Security",
     "admin" => "Administration",

@@ -27,6 +27,18 @@ Mainline (IPAM) replaces spreadsheet IP tracking with a live source of truth: su
 
 ![Osaka Jade theme](docs/screenshots/themes.png)
 
+## API
+
+Read-only JSON API (`/api/v1`) for scripts and integrations: subnets, IP addresses (with rogue/status filters), and devices. Tokens are self-served on the Account page and authenticate via `Authorization: Bearer`:
+
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:3000/api/v1/subnets
+curl -G -H "Authorization: Bearer YOUR_TOKEN" http://localhost:3000/api/v1/ip_addresses \
+  --data-urlencode "q[rogue_only]=true"
+```
+
+See [API Reference](docs/api.md) (also built into the app at `/docs/api`) and the `script/rogue_digest` nightly-digest example.
+
 ## Tech stack
 
 | Layer | Choice |
