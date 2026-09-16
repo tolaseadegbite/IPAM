@@ -6,7 +6,7 @@
       <%= button_tag type: "button", class: "sidebar-link w-full", data: { action: "click->popover#toggle", popover_target: "trigger" }, aria: { haspopup: "true" } do %>
         <%= icon("sun", "hidden h-[18px] w-[18px] dark:block") %>
         <%= icon("moon", "h-[18px] w-[18px] dark:hidden") %>
-        <span class="flex-1 text-left">Theme</span>
+        <span class="flex-1 text-left cursor-pointer">Theme</span>
         <%= icon("chevron-right", "h-4 w-4 opacity-60") %>
       <% end %>
       <%= tag.div popover: "manual", class: "popover", style: "width: 12rem;", data: { popover_target: "content" } do %>
