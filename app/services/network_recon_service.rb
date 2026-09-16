@@ -15,12 +15,12 @@ class NetworkReconService
     start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     Rails.logger.info "[NetworkRecon] Starting scan for #{subnet_cidr}..."
 
-    # 0. Guard: without an nmap binary the sweep returns nothing and the
+    # 0. Guard: without a working nmap the sweep returns nothing and the
     # reconcile step below would flip every known host to offline.
     # Abort loudly instead of corrupting reachability state.
     unless nmap_available?
-      Rails.logger.error "[NetworkRecon] nmap not found; skipping scan for #{subnet_cidr}. " \
-                         "Install nmap with passwordless sudo to enable scanning."
+      Rails.logger.error "[NetworkRecon] nmap unavailable; skipping scan for #{subnet_cidr}. " \
+                         "Install nmap with passwordless sudo (NOPASSWD) to enable scanning."
       return
     end
 
@@ -240,7 +240,14 @@ class NetworkReconService
   def nmap_available?
     return true if File.exist?("/mnt/c/Program Files (x86)/Nmap/nmap.exe")
 
-    system("command -v nmap > /dev/null 2>&1")
+    system("command -v nmap > /dev/null 2>&1") && sudo_available?
+  end
+
+  # `sudo nmap` runs non-interactively: without NOPASSWD sudo fails with
+  # no tty, the sweep comes back empty, and every known host would flip
+  # offline. Probe the exact privilege the scan needs and refuse instead.
+  def sudo_available?
+    system("sudo -n nmap --version > /dev/null 2>&1")
   end
 
   def process_host_update(ip_record, host_data, device_records_map)
