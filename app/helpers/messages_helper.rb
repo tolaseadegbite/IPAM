@@ -30,12 +30,25 @@ module MessagesHelper
       superscript: true
     })
 
-    sanitize markdown.render(text)
+    sanitize markdown.render(text), tags: MARKDOWN_ALLOWED_TAGS
   end
 
   private
 
+  MARKDOWN_ALLOWED_TAGS = (
+    ActionView::Base.sanitized_allowed_tags.to_a +
+    %w[table thead tbody tfoot tr th td]
+  ).freeze
+
+  # Linkify IPs/device names in prose only: code spans and fenced blocks
+  # keep literal text, otherwise generated [...](...) links show verbatim
+  # inside rendered code.
   def linkify_entities(text)
+    segments = text.split(/(```.*?```|`[^`\n]*`)/m)
+    segments.map.with_index { |segment, index| index.odd? ? segment : linkify_prose(segment) }.join
+  end
+
+  def linkify_prose(text)
     ip_ids = IpAddress.pluck(:address, :id).to_h { |addr, id| [ addr.to_s, id ] }
     text = text.gsub(/\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/) do |match|
       ip_ids[match] ? "[#{match}](/ip_addresses/#{ip_ids[match]})" : match
