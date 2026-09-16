@@ -90,6 +90,9 @@ Rails.application.configure do
   config.hosts << "192.168.30.244"
   config.hosts << "192.168.13.185"
   config.hosts << "127.0.0.1"
+  # Local subnets (wired + wifi). Range match instead of fixed IPs so
+  # DHCP reassignments don't lock out other systems on the network.
+  config.hosts << /\A(172\.12\.242|172\.15\.242|192\.168\.1)\.\d+\z/
 
   # 2. Update default URLs to your NEW primary IP
   config.action_mailer.default_url_options = { host: "192.168.30.244", port: 3000 }
