@@ -695,6 +695,492 @@ body {
   animation-duration: 12s;
 }
 
+/* ---------- Omarchy theme palettes ---------- */
+/* Chart dataset colors. Ruby builders emit `--chart-*` keys and
+ * chart_controller.js resolves them against the live theme, so charts
+ * follow theme switches without a reload. Stock values = current look. */
+:root {
+  --chart-info: #0ea5e9;
+  --chart-drift: #f59e0b;
+  --chart-outage: #ef4444;
+  --chart-security: #f97316;
+  --chart-cat-0: #0ea5e9;
+  --chart-cat-1: #22c55e;
+  --chart-cat-2: #f59e0b;
+  --chart-cat-3: #f97316;
+  --chart-cat-4: #64748b;
+  --chart-cat-5: #14b8a6;
+  --chart-active: #0ea5e9;
+  --chart-reserved: #eab308;
+  --chart-available: #22c55e;
+  --chart-blacklisted: #ef4444;
+}
+
+/* Tailwind v4 utilities resolve to var(--color-*), so overriding the
+ * variables under html.dark[data-theme] re-skins the app with no view
+ * changes. Light mode is untouched: every theme below is dark-only. */
+
+/* Osaka Jade — jade greens on near-black. accent #509475 */
+html.dark[data-theme="osaka-jade"] {
+  --color-zinc-950: #090f0d;
+  --color-zinc-900: #0c1512;
+  --color-zinc-800: #111c18;
+  --color-zinc-700: #23372b;
+  --color-zinc-600: #32473b;
+  --color-zinc-500: #5b6e5f;
+  --color-zinc-400: #81b8a8;
+  --color-zinc-300: #c1c497;
+  --color-zinc-200: #d6d5bc;
+  --color-zinc-100: #f7e8b2;
+  --color-orange-600: color-mix(in srgb, #509475, black 18%);
+  --color-orange-500: #509475;
+  --color-orange-400: color-mix(in srgb, #509475, white 25%);
+  --color-orange-300: color-mix(in srgb, #509475, white 45%);
+  --color-red-800: color-mix(in srgb, #ff5345, black 35%);
+  --color-red-600: #ff5345;
+  --color-red-500: #ff5345;
+  --color-red-400: #db9f9c;
+  --color-red-300: color-mix(in srgb, #db9f9c, white 25%);
+  --color-green-800: color-mix(in srgb, #549e6a, black 35%);
+  --color-green-600: #549e6a;
+  --color-green-500: #549e6a;
+  --color-green-400: #63b07a;
+  --color-green-300: color-mix(in srgb, #63b07a, white 25%);
+  --color-amber-800: color-mix(in srgb, #a2734b, black 35%);
+  --color-amber-600: #a2734b;
+  --color-amber-500: #e5c736;
+  --color-amber-400: color-mix(in srgb, #e5c736, white 20%);
+  --color-amber-300: color-mix(in srgb, #e5c736, white 40%);
+  --color-sky-600: color-mix(in srgb, #2dd5b7, black 25%);
+  --color-sky-500: #2dd5b7;
+  --color-sky-400: #8cd3cb;
+  --color-sky-300: color-mix(in srgb, #8cd3cb, white 25%);
+  --chart-info: #2dd5b7;
+  --chart-drift: #e5c736;
+  --chart-outage: #ff5345;
+  --chart-security: #d2689c;
+  --chart-cat-0: #2dd5b7;
+  --chart-cat-1: #63b07a;
+  --chart-cat-2: #e5c736;
+  --chart-cat-3: #509475;
+  --chart-cat-4: #53685b;
+  --chart-cat-5: #75bbb3;
+  --chart-active: #acd4cf;
+  --chart-reserved: #e5c736;
+  --chart-available: #63b07a;
+  --chart-blacklisted: #ff5345;
+}
+
+/* Solitude — monochrome grays, embers for danger. accent #798186 */
+html.dark[data-theme="solitude"] {
+  --color-zinc-950: #080a0b;
+  --color-zinc-900: #0c0e10;
+  --color-zinc-800: #101315;
+  --color-zinc-700: #343d41;
+  --color-zinc-600: #4b4e55;
+  --color-zinc-500: #6b6e73;
+  --color-zinc-400: #798186;
+  --color-zinc-300: #a5aeb4;
+  --color-zinc-200: #cacccc;
+  --color-zinc-100: #d9dbdc;
+  --color-orange-600: color-mix(in srgb, #798186, black 18%);
+  --color-orange-500: #798186;
+  --color-orange-400: #a8adb0;
+  --color-orange-300: #d9dbdc;
+  --color-red-800: color-mix(in srgb, #de6145, black 35%);
+  --color-red-600: #de6145;
+  --color-red-500: #de6145;
+  --color-red-400: color-mix(in srgb, #de6145, white 25%);
+  --color-red-300: color-mix(in srgb, #de6145, white 45%);
+  --color-green-800: color-mix(in srgb, #9fa5a9, black 35%);
+  --color-green-600: #5d6367;
+  --color-green-500: #9fa5a9;
+  --color-green-400: #c9c2b4;
+  --color-green-300: color-mix(in srgb, #c9c2b4, white 25%);
+  --color-amber-800: color-mix(in srgb, #9a9a9a, black 35%);
+  --color-amber-600: #9a9a9a;
+  --color-amber-500: #c9c2b4;
+  --color-amber-400: #d9dbdc;
+  --color-amber-300: color-mix(in srgb, #d9dbdc, white 20%);
+  --color-sky-600: #5d6367;
+  --color-sky-500: #798186;
+  --color-sky-400: #a8adb0;
+  --color-sky-300: color-mix(in srgb, #a8adb0, white 25%);
+  --chart-info: #a8adb0;
+  --chart-drift: #c9c2b4;
+  --chart-outage: #de6145;
+  --chart-security: #798186;
+  --chart-cat-0: #a8adb0;
+  --chart-cat-1: #9fa5a9;
+  --chart-cat-2: #c9c2b4;
+  --chart-cat-3: #798186;
+  --chart-cat-4: #4b4e55;
+  --chart-cat-5: #5d6367;
+  --chart-active: #798186;
+  --chart-reserved: #c9c2b4;
+  --chart-available: #9fa5a9;
+  --chart-blacklisted: #de6145;
+}
+
+/* Giants (custom) — warm desert tones. accent #97786d */
+html.dark[data-theme="giants"] {
+  --color-zinc-950: #141210;
+  --color-zinc-900: #1d1b17;
+  --color-zinc-800: #27241f;
+  --color-zinc-700: #3d3a35;
+  --color-zinc-600: #4f4840;
+  --color-zinc-500: #8a857a;
+  --color-zinc-400: #a9a092;
+  --color-zinc-300: #e1d5c2;
+  --color-zinc-200: #e6dbcb;
+  --color-zinc-100: #e9e0d1;
+  --color-orange-600: color-mix(in srgb, #97786d, black 18%);
+  --color-orange-500: #97786d;
+  --color-orange-400: #b28b7e;
+  --color-orange-300: color-mix(in srgb, #b28b7e, white 30%);
+  --color-red-800: color-mix(in srgb, #b3826a, black 35%);
+  --color-red-600: #b3826a;
+  --color-red-500: #b3826a;
+  --color-red-400: #bea78c;
+  --color-red-300: color-mix(in srgb, #bea78c, white 25%);
+  --color-green-800: color-mix(in srgb, #cac4a2, black 35%);
+  --color-green-600: #cac4a2;
+  --color-green-500: #cac4a2;
+  --color-green-400: #e2dbae;
+  --color-green-300: color-mix(in srgb, #e2dbae, white 25%);
+  --color-amber-800: #7a6c5b;
+  --color-amber-600: #9f8771;
+  --color-amber-500: #fff1be;
+  --color-amber-400: #fff1be;
+  --color-amber-300: #fff1be;
+  --color-sky-600: color-mix(in srgb, #d9dfb2, black 30%);
+  --color-sky-500: #d9dfb2;
+  --color-sky-400: #f0f7c0;
+  --color-sky-300: #f0f7c0;
+  --chart-info: #d9dfb2;
+  --chart-drift: #fff1be;
+  --chart-outage: #b3826a;
+  --chart-security: #c6a48e;
+  --chart-cat-0: #d9dfb2;
+  --chart-cat-1: #e2dbae;
+  --chart-cat-2: #fff1be;
+  --chart-cat-3: #97786d;
+  --chart-cat-4: #8a857a;
+  --chart-cat-5: #f0f7c0;
+  --chart-active: #b28b7e;
+  --chart-reserved: #fff1be;
+  --chart-available: #e2dbae;
+  --chart-blacklisted: #b3826a;
+}
+
+/* Retro 82 — deep-sea blue with sunset orange. accent #faa968 */
+html.dark[data-theme="retro-82"] {
+  --color-zinc-950: #020c17;
+  --color-zinc-900: #031222;
+  --color-zinc-800: #05182e;
+  --color-zinc-700: #0a2540;
+  --color-zinc-600: #134e5a;
+  --color-zinc-500: #34717b;
+  --color-zinc-400: #3f8f8a;
+  --color-zinc-300: #a7c9c6;
+  --color-zinc-200: #f6dcac;
+  --color-zinc-100: #f6dcac;
+  --color-orange-600: color-mix(in srgb, #faa968, black 18%);
+  --color-orange-500: #faa968;
+  --color-orange-400: #faa968;
+  --color-orange-300: color-mix(in srgb, #faa968, white 30%);
+  --color-red-800: color-mix(in srgb, #f85525, black 35%);
+  --color-red-600: #f85525;
+  --color-red-500: #f85525;
+  --color-red-400: color-mix(in srgb, #f85525, white 25%);
+  --color-red-300: color-mix(in srgb, #f85525, white 45%);
+  --color-green-800: color-mix(in srgb, #028391, black 35%);
+  --color-green-600: #028391;
+  --color-green-500: #028391;
+  --color-green-400: #8cbfb8;
+  --color-green-300: color-mix(in srgb, #8cbfb8, white 25%);
+  --color-amber-800: #743d1e;
+  --color-amber-600: #e97b3c;
+  --color-amber-500: #e97b3c;
+  --color-amber-400: color-mix(in srgb, #e97b3c, white 20%);
+  --color-amber-300: color-mix(in srgb, #e97b3c, white 40%);
+  --color-sky-600: color-mix(in srgb, #8cbfb8, black 25%);
+  --color-sky-500: #8cbfb8;
+  --color-sky-400: color-mix(in srgb, #8cbfb8, white 20%);
+  --color-sky-300: color-mix(in srgb, #8cbfb8, white 40%);
+  --chart-info: #8cbfb8;
+  --chart-drift: #e97b3c;
+  --chart-outage: #f85525;
+  --chart-security: #faa968;
+  --chart-cat-0: #8cbfb8;
+  --chart-cat-1: #028391;
+  --chart-cat-2: #e97b3c;
+  --chart-cat-3: #faa968;
+  --chart-cat-4: #2a6b78;
+  --chart-cat-5: #3f8f8a;
+  --chart-active: #8cbfb8;
+  --chart-reserved: #e97b3c;
+  --chart-available: #028391;
+  --chart-blacklisted: #f85525;
+}
+
+/* Miasma — murky olive-grays. accent #78824b */
+html.dark[data-theme="miasma"] {
+  --color-zinc-950: #121212;
+  --color-zinc-900: #191919;
+  --color-zinc-800: #222222;
+  --color-zinc-700: #2c2c2c;
+  --color-zinc-600: #555555;
+  --color-zinc-500: #6b6b6a;
+  --color-zinc-400: #8a8a7e;
+  --color-zinc-300: #c2c2b0;
+  --color-zinc-200: #c2c2b0;
+  --color-zinc-100: #c2c2b0;
+  --color-orange-600: color-mix(in srgb, #78824b, black 18%);
+  --color-orange-500: #78824b;
+  --color-orange-400: #c9a554;
+  --color-orange-300: color-mix(in srgb, #c9a554, white 25%);
+  --color-red-800: color-mix(in srgb, #685742, black 35%);
+  --color-red-600: #685742;
+  --color-red-500: #685742;
+  --color-red-400: #b36d43;
+  --color-red-300: color-mix(in srgb, #b36d43, white 25%);
+  --color-green-800: color-mix(in srgb, #5f875f, black 35%);
+  --color-green-600: #5f875f;
+  --color-green-500: #5f875f;
+  --color-green-400: color-mix(in srgb, #5f875f, white 25%);
+  --color-green-300: color-mix(in srgb, #5f875f, white 45%);
+  --color-amber-800: #463121;
+  --color-amber-600: #8d6242;
+  --color-amber-500: #b36d43;
+  --color-amber-400: #c9a554;
+  --color-amber-300: color-mix(in srgb, #c9a554, white 25%);
+  --color-sky-600: color-mix(in srgb, #c9a554, black 25%);
+  --color-sky-500: #c9a554;
+  --color-sky-400: color-mix(in srgb, #c9a554, white 20%);
+  --color-sky-300: color-mix(in srgb, #c9a554, white 40%);
+  --chart-info: #c9a554;
+  --chart-drift: #b36d43;
+  --chart-outage: #685742;
+  --chart-security: #bb7744;
+  --chart-cat-0: #c9a554;
+  --chart-cat-1: #5f875f;
+  --chart-cat-2: #b36d43;
+  --chart-cat-3: #78824b;
+  --chart-cat-4: #666666;
+  --chart-cat-5: #8d6242;
+  --chart-active: #78824b;
+  --chart-reserved: #b36d43;
+  --chart-available: #5f875f;
+  --chart-blacklisted: #685742;
+}
+
+/* Tokyo Night — blue accent on deep indigo. accent #7aa2f7 */
+html.dark[data-theme="tokyo-night"] {
+  --color-zinc-950: #0e0e14;
+  --color-zinc-900: #13141c;
+  --color-zinc-800: #1a1b26;
+  --color-zinc-700: #24283b;
+  --color-zinc-600: #292e42;
+  --color-zinc-500: #61688b;
+  --color-zinc-400: #707aa4;
+  --color-zinc-300: #a9b1d6;
+  --color-zinc-200: #b4bee6;
+  --color-zinc-100: #c0caf5;
+  --color-orange-600: color-mix(in srgb, #7aa2f7, black 18%);
+  --color-orange-500: #7aa2f7;
+  --color-orange-400: #7da6ff;
+  --color-orange-300: color-mix(in srgb, #7da6ff, white 25%);
+  --color-red-800: color-mix(in srgb, #f7768e, black 35%);
+  --color-red-600: #f7768e;
+  --color-red-500: #f7768e;
+  --color-red-400: #ff7a93;
+  --color-red-300: color-mix(in srgb, #ff7a93, white 25%);
+  --color-green-800: color-mix(in srgb, #9ece6a, black 35%);
+  --color-green-600: #9ece6a;
+  --color-green-500: #9ece6a;
+  --color-green-400: #b9f27c;
+  --color-green-300: color-mix(in srgb, #b9f27c, white 25%);
+  --color-amber-800: color-mix(in srgb, #e0af68, black 35%);
+  --color-amber-600: #e0af68;
+  --color-amber-500: #e0af68;
+  --color-amber-400: #ff9e64;
+  --color-amber-300: color-mix(in srgb, #ff9e64, white 25%);
+  --color-sky-600: color-mix(in srgb, #449dab, black 25%);
+  --color-sky-500: #449dab;
+  --color-sky-400: #0db9d7;
+  --color-sky-300: color-mix(in srgb, #0db9d7, white 25%);
+  --chart-info: #0db9d7;
+  --chart-drift: #ff9e64;
+  --chart-outage: #ff7a93;
+  --chart-security: #bb9af7;
+  --chart-cat-0: #0db9d7;
+  --chart-cat-1: #b9f27c;
+  --chart-cat-2: #ff9e64;
+  --chart-cat-3: #7aa2f7;
+  --chart-cat-4: #414868;
+  --chart-cat-5: #ad8ee6;
+  --chart-active: #7da6ff;
+  --chart-reserved: #ff9e64;
+  --chart-available: #b9f27c;
+  --chart-blacklisted: #ff7a93;
+}
+
+/* Matte Black — monochrome + ember reds. accent #e68e0d.
+ * NOTE: the author swapped hues (yellow=#b91c1c red, green=#FFC107
+ * amber). Mapped literally so the app matches terminal rendering. */
+html.dark[data-theme="matte-black"] {
+  --color-zinc-950: #090909;
+  --color-zinc-900: #0d0d0d;
+  --color-zinc-800: #121212;
+  --color-zinc-700: #1e1e1e;
+  --color-zinc-600: #333333;
+  --color-zinc-500: #6a6a6a;
+  --color-zinc-400: #8a8a8d;
+  --color-zinc-300: #bebebe;
+  --color-zinc-200: #bebebe;
+  --color-zinc-100: #eaeaea;
+  --color-orange-600: color-mix(in srgb, #e68e0d, black 18%);
+  --color-orange-500: #e68e0d;
+  --color-orange-400: #f59e0b;
+  --color-orange-300: color-mix(in srgb, #f59e0b, white 25%);
+  --color-red-800: #631e1e;
+  --color-red-600: #b91c1c;
+  --color-red-500: #d35f5f;
+  --color-red-400: color-mix(in srgb, #d35f5f, white 25%);
+  --color-red-300: color-mix(in srgb, #d35f5f, white 45%);
+  --color-green-800: color-mix(in srgb, #ffc107, black 40%);
+  --color-green-600: #ffc107;
+  --color-green-500: #ffc107;
+  --color-green-400: color-mix(in srgb, #ffc107, white 25%);
+  --color-green-300: color-mix(in srgb, #ffc107, white 45%);
+  --color-amber-800: #631e1e;
+  --color-amber-600: #b91c1c;
+  --color-amber-500: #b91c1c;
+  --color-amber-400: color-mix(in srgb, #b91c1c, white 25%);
+  --color-amber-300: color-mix(in srgb, #b91c1c, white 45%);
+  --color-sky-600: color-mix(in srgb, #bebebe, black 30%);
+  --color-sky-500: #bebebe;
+  --color-sky-400: #eaeaea;
+  --color-sky-300: #eaeaea;
+  --chart-info: #eaeaea;
+  --chart-drift: #f59e0b;
+  --chart-outage: #d35f5f;
+  --chart-security: #c63d3d;
+  --chart-cat-0: #eaeaea;
+  --chart-cat-1: #ffc107;
+  --chart-cat-2: #f59e0b;
+  --chart-cat-3: #e68e0d;
+  --chart-cat-4: #333333;
+  --chart-cat-5: #bebebe;
+  --chart-active: #e68e0d;
+  --chart-reserved: #f59e0b;
+  --chart-available: #ffc107;
+  --chart-blacklisted: #d35f5f;
+}
+
+/* Gruvbox — warm retro contrast. accent #7daea3 */
+html.dark[data-theme="gruvbox"] {
+  --color-zinc-950: #161616;
+  --color-zinc-900: #1e1e1e;
+  --color-zinc-800: #282828;
+  --color-zinc-700: #3c3836;
+  --color-zinc-600: #504945;
+  --color-zinc-500: #7c7062;
+  --color-zinc-400: #8e7f6e;
+  --color-zinc-300: #bdae93;
+  --color-zinc-200: #d4be98;
+  --color-zinc-100: #d4be98;
+  --color-orange-600: color-mix(in srgb, #7daea3, black 18%);
+  --color-orange-500: #7daea3;
+  --color-orange-400: color-mix(in srgb, #7daea3, white 22%);
+  --color-orange-300: color-mix(in srgb, #7daea3, white 42%);
+  --color-red-800: #70432e;
+  --color-red-600: #ea6962;
+  --color-red-500: #ea6962;
+  --color-red-400: color-mix(in srgb, #ea6962, white 20%);
+  --color-red-300: color-mix(in srgb, #ea6962, white 40%);
+  --color-green-800: color-mix(in srgb, #a9b665, black 35%);
+  --color-green-600: #a9b665;
+  --color-green-500: #a9b665;
+  --color-green-400: color-mix(in srgb, #a9b665, white 20%);
+  --color-green-300: color-mix(in srgb, #a9b665, white 40%);
+  --color-amber-800: #70432e;
+  --color-amber-600: #d8a657;
+  --color-amber-500: #d8a657;
+  --color-amber-400: color-mix(in srgb, #d8a657, white 20%);
+  --color-amber-300: color-mix(in srgb, #d8a657, white 40%);
+  --color-sky-600: color-mix(in srgb, #89b482, black 25%);
+  --color-sky-500: #89b482;
+  --color-sky-400: color-mix(in srgb, #89b482, white 20%);
+  --color-sky-300: color-mix(in srgb, #89b482, white 40%);
+  --chart-info: #89b482;
+  --chart-drift: #d8a657;
+  --chart-outage: #ea6962;
+  --chart-security: #d3869b;
+  --chart-cat-0: #89b482;
+  --chart-cat-1: #a9b665;
+  --chart-cat-2: #d8a657;
+  --chart-cat-3: #7daea3;
+  --chart-cat-4: #665c54;
+  --chart-cat-5: #e1875c;
+  --chart-active: #7daea3;
+  --chart-reserved: #d8a657;
+  --chart-available: #a9b665;
+  --chart-blacklisted: #ea6962;
+}
+
+/* Everforest — soft forest greens. accent #7fbbb3 */
+html.dark[data-theme="everforest"] {
+  --color-zinc-950: #181d20;
+  --color-zinc-900: #21272c;
+  --color-zinc-800: #2d353b;
+  --color-zinc-700: #343f44;
+  --color-zinc-600: #3d484d;
+  --color-zinc-500: #717571;
+  --color-zinc-400: #84847c;
+  --color-zinc-300: #9da9a0;
+  --color-zinc-200: #d3c6aa;
+  --color-zinc-100: #d3c6aa;
+  --color-orange-600: color-mix(in srgb, #7fbbb3, black 18%);
+  --color-orange-500: #7fbbb3;
+  --color-orange-400: color-mix(in srgb, #7fbbb3, white 22%);
+  --color-orange-300: color-mix(in srgb, #7fbbb3, white 42%);
+  --color-red-800: #704e3f;
+  --color-red-600: #e67e80;
+  --color-red-500: #e67e80;
+  --color-red-400: color-mix(in srgb, #e67e80, white 20%);
+  --color-red-300: color-mix(in srgb, #e67e80, white 40%);
+  --color-green-800: color-mix(in srgb, #a7c080, black 35%);
+  --color-green-600: #a7c080;
+  --color-green-500: #a7c080;
+  --color-green-400: color-mix(in srgb, #a7c080, white 20%);
+  --color-green-300: color-mix(in srgb, #a7c080, white 40%);
+  --color-amber-800: #704e3f;
+  --color-amber-600: #dbbc7f;
+  --color-amber-500: #dbbc7f;
+  --color-amber-400: color-mix(in srgb, #dbbc7f, white 20%);
+  --color-amber-300: color-mix(in srgb, #dbbc7f, white 40%);
+  --color-sky-600: color-mix(in srgb, #83c092, black 25%);
+  --color-sky-500: #83c092;
+  --color-sky-400: color-mix(in srgb, #83c092, white 20%);
+  --color-sky-300: color-mix(in srgb, #83c092, white 40%);
+  --chart-info: #83c092;
+  --chart-drift: #dbbc7f;
+  --chart-outage: #e67e80;
+  --chart-security: #d699b6;
+  --chart-cat-0: #83c092;
+  --chart-cat-1: #a7c080;
+  --chart-cat-2: #dbbc7f;
+  --chart-cat-3: #7fbbb3;
+  --chart-cat-4: #475258;
+  --chart-cat-5: #e09d7f;
+  --chart-active: #7fbbb3;
+  --chart-reserved: #dbbc7f;
+  --chart-available: #a7c080;
+  --chart-blacklisted: #e67e80;
+}
+
 /* ---------- Mobile dialog full-bleed (utilities layer wins) ---------- */
 
 @layer utilities {
