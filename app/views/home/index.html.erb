@@ -2,7 +2,7 @@
 
 <% content_for :page_header do %>Account<% end %>
 
-<div class="grid w-full grid-cols-1 gap-4 md:max-w-2xl">
+<div class="grid w-full grid-cols-1 gap-4 md:max-w-2xl mx-auto">
   <div class="card p-4 sm:p-5">
     <p class="text-sm text-zinc-500 dark:text-zinc-400">Signed in as</p>
     <p class="text-lg font-semibold"><%= Current.user.email %></p>
@@ -25,9 +25,10 @@
   </div>
 
   <div class="card flex flex-row flex-wrap items-center gap-3 p-4 sm:p-5">
-    <% if Rails.env.development? %>
-      <%= button_to "Sign in as last user", user_masquerade_path(User.last), class: "btn !px-3 !py-1.5 text-sm" %>
-    <% end %>
+    <%# Dev-only impersonation shortcut, parked for now (LAN devices reach
+        this server). Uncomment for local testing; the controller still
+        refuses non-development requests. %>
+    <%#= button_to "Sign in as last user", user_masquerade_path(User.last), class: "btn !px-3 !py-1.5 text-sm" if Rails.env.development? %>
     <%= button_to "Log out", Current.session, method: :delete, class: "btn btn--negative !px-3 !py-1.5 text-sm" %>
   </div>
 </div>

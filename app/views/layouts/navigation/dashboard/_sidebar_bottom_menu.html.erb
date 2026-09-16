@@ -50,7 +50,7 @@
       <% end %>
       <%= tag.div popover: "manual", class: "popover overflow-hidden", style: "width: 15rem;", data: { popover_target: "content" } do %>
         <div class="menu" data-controller="menu" data-action="keydown->menu#navigate" role="menu">
-          <%= link_to "My sessions", sessions_path, class: "menu__item", data: { menu_target: "item" }, role: "menuitem" %>
+          <%= link_to "Account", account_path, class: "menu__item", data: { menu_target: "item" }, role: "menuitem" %>
           <%= button_to "Sign out", Current.session, method: :delete, class: "menu__item w-full text-left text-red-600 dark:text-red-400", role: "menuitem" %>
         </div>
       <% end %>
