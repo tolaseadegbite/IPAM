@@ -123,6 +123,15 @@ body {
 
 /* ---------- Buttons ---------- */
 
+/* Pointer cursor on every interactive control (Tailwind v4 no longer
+ * applies it by default). Disabled keeps the system cursor. */
+@layer base {
+  button:not(:disabled),
+  a[href] {
+    cursor: pointer;
+  }
+}
+
 @layer components {
   .btn {
     @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium whitespace-nowrap text-zinc-900 shadow-sm transition-colors hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 disabled:pointer-events-none disabled:opacity-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700;
@@ -421,6 +430,9 @@ body {
 
   .popover {
     @apply w-max rounded-lg border border-zinc-200 bg-white text-zinc-900 shadow-lg dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-100;
+    /* Opt out of native popover centering (inset: 0 + margin: auto):
+     * Floating UI owns every coordinate it sets below. */
+    margin: 0;
     transition-behavior: allow-discrete;
     transition-duration: 150ms;
     transition-property: display, overlay, opacity, transform;
@@ -440,6 +452,14 @@ body {
 
   .menu {
     @apply flex flex-col gap-1 rounded-lg border border-zinc-200 bg-white p-1 shadow-lg dark:border-white/10 dark:bg-zinc-900;
+  }
+
+  /* Menus nested in a popover inherit its chrome; drop their own so
+   * small menus (row actions) don't render a double border. */
+  .popover > .menu {
+    border-width: 0;
+    box-shadow: none;
+    background-color: transparent;
   }
 
   .menu__header {

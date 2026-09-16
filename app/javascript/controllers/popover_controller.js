@@ -12,14 +12,36 @@ export default class extends Controller {
 
   initialize() {
     this.orient = this.orient.bind(this)
+    this.reorientOnToggle = this.reorientOnToggle.bind(this)
+    this.dismissOnScroll = this.dismissOnScroll.bind(this)
   }
 
   connect() {
     this.cleanup = autoUpdate(this.triggerTarget, this.contentTarget, this.orient)
+    this.contentTarget.addEventListener("toggle", this.reorientOnToggle)
+    window.addEventListener("scroll", this.dismissOnScroll, { capture: true, passive: true })
   }
 
   disconnect() {
+    this.contentTarget.removeEventListener("toggle", this.reorientOnToggle)
+    window.removeEventListener("scroll", this.dismissOnScroll)
     this.cleanup()
+  }
+
+  // Coordinates computed while hidden (or pre-font-load) go stale fast.
+  // Recompute at open time so the menu anchors to the live layout.
+  reorientOnToggle() {
+    if (this.contentTarget.matches(":popover-open")) this.orient()
+  }
+
+  // A menu that stays open while the page moves underneath reads as
+  // broken (drifting/parallax). Dismiss on outside scroll instead;
+  // scrolls originating inside the menu itself are ignored.
+  dismissOnScroll(event) {
+    if (!this.contentTarget.matches(":popover-open")) return
+    if (this.contentTarget.contains(event.target)) return
+
+    this.hide()
   }
 
   show() {
@@ -67,6 +89,10 @@ export default class extends Controller {
   }
 
   get #options() {
-    return { placement: this.placementValue, middleware: [offset(4), flip(), shift({padding: 4})] }
+    // Top-layer popovers are viewport-fixed: coordinates must be
+    // viewport-relative too ("absolute" bakes in scroll offset and the
+    // menu drifts with the page). crossAxis shift keeps edge-anchored
+    // menus (e.g. right-start in the sidebar) fully inside the viewport.
+    return { placement: this.placementValue, strategy: "fixed", middleware: [offset(4), flip(), shift({ padding: 4, crossAxis: true })] }
   }
 }
