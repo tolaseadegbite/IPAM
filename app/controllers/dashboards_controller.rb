@@ -43,7 +43,7 @@ class DashboardsController < ApplicationController
       label: "Devices",
       data: device_stats.values,
       # NOC categorical palette — solid ops colors, no purple.
-      backgroundColor: [ "#0ea5e9", "#22c55e", "#f59e0b", "#f97316", "#64748b", "#14b8a6" ],
+      backgroundColor: [ "--chart-cat-0", "--chart-cat-1", "--chart-cat-2", "--chart-cat-3", "--chart-cat-4", "--chart-cat-5" ],
       borderWidth: 0,
       borderRadius: 3,
       barThickness: 20
@@ -60,7 +60,7 @@ class DashboardsController < ApplicationController
           allocation_stats["available"] || 0,
           allocation_stats["blacklisted"] || 0
         ],
-        backgroundColor: [ "#0ea5e9", "#eab308", "#22c55e", "#ef4444" ],
+        backgroundColor: [ "--chart-active", "--chart-reserved", "--chart-available", "--chart-blacklisted" ],
         borderWidth: 0
       } ]
     }
@@ -86,7 +86,7 @@ class DashboardsController < ApplicationController
                            .preload(:list, :users, :referenceable)
                            .order(created_at: :desc)
                            .limit(5)
-    @events_trend = build_events_trend
+    @events_trends = build_events_trends
     @attention_items = build_attention_queue(
       rogue_devices: @rogue_devices,
       ghost_assets: @ghost_assets,
@@ -119,7 +119,7 @@ class DashboardsController < ApplicationController
       subnets: @subnets,
       top_subnets: @top_subnets,
       subnets_overflow: @subnets_overflow,
-      events_trend: @events_trend,
+      events_trends: @events_trends,
       attention_items: @attention_items,
       network_status: @network_status,
       status_reasons: @status_reasons,

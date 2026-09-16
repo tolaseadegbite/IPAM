@@ -119,7 +119,7 @@ class NetworkReconService
         label: "Devices",
         data: device_stats.values,
         # NOC categorical palette — matches DashboardsController, no purple.
-        backgroundColor: [ "#0ea5e9", "#22c55e", "#f59e0b", "#f97316", "#64748b", "#14b8a6" ],
+        backgroundColor: [ "--chart-cat-0", "--chart-cat-1", "--chart-cat-2", "--chart-cat-3", "--chart-cat-4", "--chart-cat-5" ],
         borderWidth: 0,
         borderRadius: 4,
         barThickness: 20
@@ -136,7 +136,7 @@ class NetworkReconService
           allocation_stats["available"] || 0,
           allocation_stats["blacklisted"] || 0
         ],
-        backgroundColor: [ "#0ea5e9", "#eab308", "#22c55e", "#ef4444" ],
+        backgroundColor: [ "--chart-active", "--chart-reserved", "--chart-available", "--chart-blacklisted" ],
         borderWidth: 0
       } ]
     }
@@ -190,7 +190,7 @@ class NetworkReconService
 
     # Shared hero datasets (same shape as DashboardsController#show).
     subnet_list = subnets.to_a
-    events_trend = build_events_trend
+    events_trends = build_events_trends
     attention_items = build_attention_queue(
       rogue_devices: rogue_devices,
       ghost_assets: ghost_assets,
@@ -218,7 +218,7 @@ class NetworkReconService
           subnets: subnets,
           top_subnets: subnet_list.first(5),
           subnets_overflow: [ subnet_list.size - 5, 0 ].max,
-          events_trend: events_trend,
+          events_trends: events_trends,
           attention_items: attention_items,
           network_status: network_status,
           status_reasons: status_reasons,

@@ -1,31 +1,52 @@
 module DashboardData
   extend ActiveSupport::Concern
 
-  TREND_DAYS = 14
+  # Palette keys, not hexes: chart_controller.js resolves them against the
+  # live theme (canvas can't use CSS var() directly). Defaults live in
+  # :root as --chart-*; per-theme overrides ride on html[data-theme].
   TREND_COLORS = {
-    "info" => "#0ea5e9",
-    "drift" => "#f59e0b",
-    "outage" => "#ef4444",
-    "security" => "#f97316"
+    "info" => "--chart-info",
+    "drift" => "--chart-drift",
+    "outage" => "--chart-outage",
+    "security" => "--chart-security"
   }.freeze
+
+  # One pluck, four bucketings. Sub-day ranges use rolling windows aligned
+  # to the hour / 5 minutes; day ranges use calendar days (as before).
+  def build_events_trends(now = Time.current)
+    rows = NetworkEvent.where("created_at >= ?", 13.days.ago.beginning_of_day)
+                       .pluck(:created_at, :kind)
+    hour = now.beginning_of_hour
+    five = now.change(min: now.min - (now.min % 5), sec: 0)
+
+    {
+      "1h" => trend_dataset(rows, 11.downto(0).map { |n| five - n * 5.minutes }, "%H:%M", now),
+      "24h" => trend_dataset(rows, 23.downto(0).map { |n| hour - n * 1.hour }, "%H:00", now),
+      "7d" => trend_dataset(rows, 6.downto(0).map { |n| n.days.ago.beginning_of_day }, "%b %-d", now),
+      "14d" => trend_dataset(rows, 13.downto(0).map { |n| n.days.ago.beginning_of_day }, "%b %-d", now)
+    }
+  end
 
   # Shared by DashboardsController and NetworkReconService so the live
   # dashboard and scan broadcasts always render the same partial shape.
   # URL + date helpers go through global proxies so this works outside
   # of a request (jobs/services) as well as inside controllers.
-  def build_events_trend
-    days = (TREND_DAYS - 1).downto(0).map { |n| n.days.ago.to_date }
+  def trend_dataset(rows, starts, label_format, now)
+    bounds = starts + [ now ]
     counts = Hash.new { |h, k| h[k] = Hash.new(0) }
-    NetworkEvent.where("created_at >= ?", days.first.beginning_of_day)
-                .pluck(:created_at, :kind)
-                .each { |at, kind| counts[at.to_date][kind] += 1 }
+    rows.each do |at, kind|
+      idx = bounds.bsearch_index { |b| b > at }
+      next if idx.nil? || idx.zero?
+
+      counts[idx - 1][kind] += 1
+    end
 
     {
-      labels: days.map { |d| d.strftime("%b %-d") },
+      labels: starts.map { |s| s.strftime(label_format) },
       datasets: NetworkEvent.kinds.keys.map do |kind|
         {
           label: kind.humanize,
-          data: days.map { |d| counts[d][kind] },
+          data: starts.each_index.map { |i| counts[i][kind] },
           backgroundColor: TREND_COLORS.fetch(kind, "#64748b"),
           borderWidth: 0,
           borderRadius: 2,
