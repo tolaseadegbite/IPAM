@@ -14,6 +14,7 @@ class User < ApplicationRecord
   end
 
   has_many :sessions, dependent: :destroy
+  has_many :api_tokens, dependent: :destroy
   has_many :events, dependent: :destroy
   has_many :chats, dependent: :destroy
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
