@@ -14,10 +14,10 @@
   <div>
     <label class="mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">Filter Subnet</label>
     <%= select_tag "subnet_filter_#{id}",
-          options_from_collection_for_select(Subnet.order(:name), :id, :name, assigned_ip&.subnet_id),
+          options_for_select(Subnet.order(:name).map { |s| [ s.name, s.id, { "data-branch-id" => s.branch_id } ] }, assigned_ip&.subnet_id),
           prompt: "Select Network...",
           class: "input w-full cursor-pointer",
-          data: { dependent_select_target: "select", action: "change->dependent-select#load" } %>
+          data: { dependent_select_target: "select", subnet_scope_target: "filter", action: "change->dependent-select#load" } %>
   </div>
   
   <!-- IP Select -->

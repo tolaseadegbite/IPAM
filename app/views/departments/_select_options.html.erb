@@ -18,16 +18,19 @@
      actions = []
      actions << "change->dependent-select#load" if should_trigger
      actions << params[:data_action] if params[:data_action].present?
+     # Subnet scoping is inert on forms without a subnet-scope ancestor.
+     actions << "change->subnet-scope#filter"
 
      # Apply Data Attributes
      if actions.any? || should_trigger
        html_options[:data] = {}
        html_options[:data][:action] = actions.join(" ") if actions.any?
        html_options[:data][:dependent_select_target] = "select" if should_trigger
+       html_options[:data][:subnet_scope_target] = "department"
      end
   %>
   
-  <%= select_tag input_name, 
-        options_from_collection_for_select(departments, :id, :name),
+  <%= select_tag input_name,
+        options_for_select(departments.map { |d| [ d.name, d.id, { "data-branch-id" => d.branch_id } ] }),
         html_options %>
 <% end %>
