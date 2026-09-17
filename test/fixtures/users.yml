@@ -1,6 +1,6 @@
 lazaro_nixon:
-  username: lazaronixon
-  email: lazaronixon@hotmail.com
+  username: tolase
+  email: tolase@example.com
   password_digest: <%= BCrypt::Password.create("Secret1*3*5*") %>
   verified: true
   admin: true
