@@ -8,6 +8,15 @@
     <% delete_trigger = button_tag "Delete", type: "button", class: "btn !border-red-200 !px-3 !py-1.5 text-sm !text-red-600 hover:!bg-red-50 dark:!border-red-500/30 dark:!text-red-400 dark:hover:!bg-red-500/10", data: { action: "dialog#showModal" } %>
     <%= modal_dialog delete_trigger, size: "450px", title: "Delete '#{@subnet.name}'?" do %>
       <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">This will permanently delete this subnet. This action cannot be undone.</p>
+      <% if @assigned_ip_count.positive? %>
+        <div class="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm" role="alert">
+          <p class="font-semibold text-amber-800 dark:text-amber-300">
+            Also releases <%= pluralize(@assigned_ip_count, "assigned IP address") %> from
+            <%= @assigned_devices.to_sentence %><%= " and #{@assigned_device_overflow} more" if @assigned_device_overflow.positive? %>.
+          </p>
+          <p class="mt-1 text-zinc-600 dark:text-zinc-400">The devices themselves are kept — only their addresses on this subnet are freed.</p>
+        </div>
+      <% end %>
       <div class="flex items-center justify-end gap-2">
         <button type="button" class="btn" data-action="click->dialog#requestClose">Cancel</button>
         <%= button_to "Continue", @subnet, method: :delete, data: { turbo: false }, class: "btn btn--negative" %>
@@ -72,11 +81,12 @@
     <%# Controls live OUTSIDE the results frame so debounce resubmits
         never replace the focused input (focus-loss fix). %>
     <div class="mb-4 flex flex-wrap items-center gap-2">
-      <div class="flex rounded-lg border border-zinc-200 p-0.5 text-sm dark:border-white/10">
+      <div class="flex rounded-lg border border-zinc-200 p-0.5 text-sm dark:border-white/10" data-controller="pool-filter">
         <% [["All", nil], ["Assigned", "assigned"], ["Free", "free"]].each do |label, value| %>
           <% active = params[:pool].to_s == value.to_s %>
           <%= link_to label, subnet_path(@subnet, pool: value, addr: params[:addr]),
-                data: { turbo_frame: "ip_pool" },
+                data: { turbo_frame: "ip_pool", pool_filter_target: "button", pool: value },
+                aria: { pressed: active },
                 class: "rounded-md px-3 py-1 font-medium #{active ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"}" %>
         <% end %>
       </div>
