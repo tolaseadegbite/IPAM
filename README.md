@@ -9,6 +9,13 @@ Mainline (IPAM) replaces spreadsheet IP tracking with a live source of truth: su
 
 ![Dashboard](docs/screenshots/dashboard.png)
 
+<details>
+<summary>Complete dashboard overview (tall image)</summary>
+
+![Complete dashboard, top to bottom](docs/screenshots/dashboard-full.png)
+
+</details>
+
 ## Features
 
 - **NOC dashboard** — hero status (Operational/Degraded), reachability and capacity KPIs, rogue/ghost counters, 14-day event trend with 1H/24H/7D/14D ranges, subnet health bars, ranked Needs-Attention queue, critical watchlist, live network log. Everything updates over websockets as scans complete.
