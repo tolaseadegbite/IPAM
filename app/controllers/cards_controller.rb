@@ -31,14 +31,18 @@ class CardsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to board_path(@card.list.board), notice: "Task created." }
         format.turbo_stream do
-          render turbo_stream: [
-            # 1. Append the new card to the specific list's container
-            turbo_stream.append(helpers.dom_id(@card.list, :cards), partial: "cards/card", locals: { card: @card }),
-            # 2. Close the modal by emptying the frame
-            turbo_stream.update("modal", ""),
-            # 3. Flash message
-            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Task created successfully." })
-          ]
+          if request.headers["Turbo-Frame"].present?
+            render turbo_stream: [
+              # 1. Append the new card to the specific list's container
+              turbo_stream.append(helpers.dom_id(@card.list, :cards), partial: "cards/card", locals: { card: @card }),
+              # 2. Close the modal by emptying the frame
+              turbo_stream.update("modal", ""),
+              # 3. Flash message
+              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Task created successfully." })
+            ]
+          else
+            redirect_to board_path(@card.list.board), notice: "Task created.", status: :see_other
+          end
         end
       end
     else
@@ -54,20 +58,24 @@ class CardsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to board_path(@card.list.board), notice: "Task updated." }
         format.turbo_stream do
-          streams = [
-            turbo_stream.update("modal", ""),
-            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Task updated successfully." })
-          ]
+          if request.headers["Turbo-Frame"].present?
+            streams = [
+              turbo_stream.update("modal", ""),
+              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Task updated successfully." })
+            ]
 
-          # Visual Logic: Did it move to a new column or stay in the same one?
-          if old_list_id == @card.list_id
-            streams << turbo_stream.replace(helpers.dom_id(@card), partial: "cards/card", locals: { card: @card })
+            # Visual Logic: Did it move to a new column or stay in the same one?
+            if old_list_id == @card.list_id
+              streams << turbo_stream.replace(helpers.dom_id(@card), partial: "cards/card", locals: { card: @card })
+            else
+              streams << turbo_stream.remove(helpers.dom_id(@card))
+              streams << turbo_stream.append(helpers.dom_id(@card.list, :cards), partial: "cards/card", locals: { card: @card })
+            end
+
+            render turbo_stream: streams
           else
-            streams << turbo_stream.remove(helpers.dom_id(@card))
-            streams << turbo_stream.append(helpers.dom_id(@card.list, :cards), partial: "cards/card", locals: { card: @card })
+            redirect_to board_path(@card.list.board), notice: "Task updated.", status: :see_other
           end
-
-          render turbo_stream: streams
         end
       end
     else
@@ -113,14 +121,14 @@ class CardsController < ApplicationController
       @assets = Device.includes(department: :branch).order(:name).limit(500).map do |d|
         [ "#{d.name} (#{d.department.branch.name} - #{d.department.name})", d.id ]
       end
-      render partial: "cards/asset_selectors/asset_combobox", locals: { assets: @assets, prompt: "Search by Hostname..." }
+      render_asset_options(assets: @assets, prompt: "Search by Hostname...")
 
     when "IpAddress"
       # Eager load subnet for the smart label (capped, see above).
       @assets = IpAddress.includes(:subnet).order(:address).limit(500).map do |ip|
         [ "#{ip.address} (#{ip.subnet.name})", ip.id ]
       end
-      render partial: "cards/asset_selectors/asset_combobox", locals: { assets: @assets, prompt: "Search by IP Address..." }
+      render_asset_options(assets: @assets, prompt: "Search by IP Address...")
 
     else
       render turbo_stream: turbo_stream.update("asset_options_frame", "")
@@ -128,6 +136,14 @@ class CardsController < ApplicationController
   end
 
   private
+
+  def render_asset_options(assets:, prompt:)
+    if (frame_id = request.headers["Turbo-Frame"].presence)
+      render turbo_stream: turbo_stream.update(frame_id, partial: "cards/asset_selectors/asset_combobox", locals: { assets: assets, prompt: prompt })
+    else
+      render partial: "cards/asset_selectors/asset_combobox", locals: { assets: assets, prompt: prompt }
+    end
+  end
 
   def set_card
     @card = Card.find(params[:id])

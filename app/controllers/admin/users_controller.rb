@@ -23,11 +23,15 @@ module Admin
         respond_to do |format|
           format.html { redirect_to admin_users_path, notice: "User created successfully." }
           format.turbo_stream do
-            render turbo_stream: [
-              turbo_stream.prepend("users-list", partial: "admin/users/user_row", locals: { user: @user }),
-              turbo_stream.update("new_user", ""), # Clear modal/form
-              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "User created successfully." })
-            ]
+            if request.headers["Turbo-Frame"].present?
+              render turbo_stream: [
+                turbo_stream.prepend("users-list", partial: "admin/users/user_row", locals: { user: @user }),
+                turbo_stream.update("new_user", ""), # Clear modal/form
+                turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "User created successfully." })
+              ]
+            else
+              redirect_to admin_users_path, notice: "User created successfully.", status: :see_other
+            end
           end
         end
       else
@@ -45,10 +49,14 @@ module Admin
         respond_to do |format|
           format.html { redirect_to admin_users_path, notice: "User updated successfully." }
           format.turbo_stream do
-            render turbo_stream: [
-              turbo_stream.replace(@user, partial: "admin/users/user_row", locals: { user: @user }),
-              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "User updated successfully." })
-            ]
+            if request.headers["Turbo-Frame"].present?
+              render turbo_stream: [
+                turbo_stream.replace(@user, partial: "admin/users/user_row", locals: { user: @user }),
+                turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "User updated successfully." })
+              ]
+            else
+              redirect_to admin_users_path, notice: "User updated successfully.", status: :see_other
+            end
           end
         end
       else

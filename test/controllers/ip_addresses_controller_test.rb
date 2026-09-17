@@ -10,6 +10,13 @@ class IpAddressesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "select_options answers frame requests with turbo stream" do
+    get select_options_ip_addresses_url(subnet_id: subnets(:one).id),
+        headers: { "Turbo-Frame" => "ip_options_1" }
+    assert_response :success
+    assert_match(/turbo-stream action="update" target="ip_options_1"/, response.body)
+  end
+
   test "should render neutral empty state with no rogues" do
     # Fixture IPs are all assigned, so the rogue scope is empty and the
     # shared neutral empty state renders (regression: LocalJumpError from

@@ -49,10 +49,14 @@ class BoardsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to boards_path, notice: "Board created." }
         format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.prepend("boards-grid", partial: "boards/board", locals: { board: @board }),
-            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Board created successfully." })
-          ]
+          if request.headers["Turbo-Frame"].present?
+            render turbo_stream: [
+              turbo_stream.prepend("boards-grid", partial: "boards/board", locals: { board: @board }),
+              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Board created successfully." })
+            ]
+          else
+            redirect_to boards_path, notice: "Board created.", status: :see_other
+          end
         end
       end
     else
@@ -65,10 +69,14 @@ class BoardsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to boards_path, notice: "Board updated." }
         format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.replace(helpers.dom_id(@board), partial: "boards/board", locals: { board: @board }),
-            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Board updated successfully." })
-          ]
+          if request.headers["Turbo-Frame"].present?
+            render turbo_stream: [
+              turbo_stream.replace(helpers.dom_id(@board), partial: "boards/board", locals: { board: @board }),
+              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Board updated successfully." })
+            ]
+          else
+            redirect_to boards_path, notice: "Board updated.", status: :see_other
+          end
         end
       end
     else

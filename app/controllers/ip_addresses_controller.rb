@@ -20,11 +20,15 @@ class IpAddressesController < ApplicationController
       respond_to do |format|
         format.html { redirect_to ip_addresses_path, notice: "IP Address updated." }
         format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.replace(@ip_address, partial: "ip_addresses/ip_address", locals: { ip_address: @ip_address }),
-            turbo_stream.update(("details"), partial: "ip_addresses/details"),
-            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "IP Address updated." })
-          ]
+          if request.headers["Turbo-Frame"].present?
+            render turbo_stream: [
+              turbo_stream.replace(@ip_address, partial: "ip_addresses/ip_address", locals: { ip_address: @ip_address }),
+              turbo_stream.update(("details"), partial: "ip_addresses/details"),
+              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "IP Address updated." })
+            ]
+          else
+            redirect_to ip_addresses_path, notice: "IP Address updated.", status: :see_other
+          end
         end
       end
     else
@@ -59,7 +63,11 @@ class IpAddressesController < ApplicationController
     # Fetch ONLY free IPs for the selected subnet
     @ip_addresses = IpAddress.where(subnet_id: params[:subnet_id]).free.order(:address)
 
-    render partial: "ip_addresses/select_options", locals: { ip_addresses: @ip_addresses }
+    if (frame_id = request.headers["Turbo-Frame"].presence)
+      render turbo_stream: turbo_stream.update(frame_id, partial: "ip_addresses/select_options", locals: { ip_addresses: @ip_addresses })
+    else
+      render partial: "ip_addresses/select_options", locals: { ip_addresses: @ip_addresses }
+    end
   end
 
   private

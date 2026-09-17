@@ -16,11 +16,15 @@ class ListsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to board_path(@board), notice: "Column added." }
         format.turbo_stream do
-          render turbo_stream: [
-            # Append the new list to the board container
-            turbo_stream.append("lists-container", partial: "lists/list", locals: { list: @list, cards: [], filtered: false }),
-            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Column created." })
-          ]
+          if request.headers["Turbo-Frame"].present?
+            render turbo_stream: [
+              # Append the new list to the board container
+              turbo_stream.append("lists-container", partial: "lists/list", locals: { list: @list, cards: [], filtered: false }),
+              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Column created." })
+            ]
+          else
+            redirect_to board_path(@board), notice: "Column added.", status: :see_other
+          end
         end
       end
     else
@@ -33,7 +37,13 @@ class ListsController < ApplicationController
       # Rely on Board broadcasts_refreshes (Morphing) to update the name
       respond_to do |format|
         format.html { redirect_to board_path(@list.board), notice: "Column updated." }
-        format.turbo_stream { head :ok }
+        format.turbo_stream do
+          if request.headers["Turbo-Frame"].present?
+            head :ok
+          else
+            redirect_to board_path(@list.board), notice: "Column updated.", status: :see_other
+          end
+        end
       end
     else
       render :edit, status: :unprocessable_entity
@@ -69,7 +79,11 @@ class ListsController < ApplicationController
     # Fetch lists for the board, ordered by their position (Left to Right)
     @lists = List.where(board_id: params[:board_id]).order(:position)
 
-    render partial: "lists/select_options", locals: { lists: @lists }
+    if (frame_id = request.headers["Turbo-Frame"].presence)
+      render turbo_stream: turbo_stream.update(frame_id, partial: "lists/select_options", locals: { lists: @lists })
+    else
+      render partial: "lists/select_options", locals: { lists: @lists }
+    end
   end
 
   private

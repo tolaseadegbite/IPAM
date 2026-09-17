@@ -6,6 +6,13 @@ class ListsControllerTest < ActionDispatch::IntegrationTest
     @board = boards(:one)
   end
 
+  test "select_options answers frame requests with turbo stream" do
+    get select_options_lists_url(board_id: @board.id),
+        headers: { "Turbo-Frame" => "list_options_frame" }
+    assert_response :success
+    assert_match(/turbo-stream action="update" target="list_options_frame"/, response.body)
+  end
+
   test "should reorder list within board" do
     first = lists(:one)
     second = @board.lists.create!(name: "Second")

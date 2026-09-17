@@ -6,6 +6,13 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
     @board = boards(:one)
   end
 
+  test "select_assets answers frame requests with turbo stream" do
+    get select_assets_cards_url(asset_type: "Device"),
+        headers: { "Turbo-Frame" => "asset_options_frame" }
+    assert_response :success
+    assert_match(/turbo-stream action="update" target="asset_options_frame"/, response.body)
+  end
+
   test "should move card between lists" do
     card = cards(:one)
     target = @board.lists.create!(name: "Target")

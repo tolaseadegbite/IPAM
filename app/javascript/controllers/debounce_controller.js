@@ -5,9 +5,17 @@ export default class extends Controller {
 
   submit() {
     clearTimeout(this.timeout)
-    
+
     this.timeout = setTimeout(() => {
+      // The form may be gone by now (Turbo navigated mid-typing):
+      // submitting a detached form only logs console noise.
+      if (!this.element.isConnected) return
+
       this.element.requestSubmit()
     }, this.delayValue)
+  }
+
+  disconnect() {
+    clearTimeout(this.timeout)
   }
 }

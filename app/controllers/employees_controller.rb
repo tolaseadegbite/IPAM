@@ -26,16 +26,20 @@ class EmployeesController < ApplicationController
       respond_to do |format|
         format.html { redirect_to employees_path, notice: "Employee created successfully." }
         format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.prepend("employees-list", partial: "employees/employee", locals: { employee: @employee }),
+          if request.headers["Turbo-Frame"].present?
+            render turbo_stream: [
+              turbo_stream.prepend("employees-list", partial: "employees/employee", locals: { employee: @employee }),
 
-            turbo_stream.prepend(helpers.dom_id(@employee.department, :employees), partial: "departments/employee_show_card", locals: { employee: @employee }),
+              turbo_stream.prepend(helpers.dom_id(@employee.department, :employees), partial: "departments/employee_show_card", locals: { employee: @employee }),
 
-            turbo_stream.remove("no_employees_message"),
+              turbo_stream.remove("no_employees_message"),
 
-            turbo_stream.update("new_employee", ""),
-            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Employee created successfully." })
-          ]
+              turbo_stream.update("new_employee", ""),
+              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Employee created successfully." })
+            ]
+          else
+            redirect_to employees_path, notice: "Employee created successfully.", status: :see_other
+          end
         end
       end
     else
@@ -48,12 +52,16 @@ class EmployeesController < ApplicationController
       respond_to do |format|
         format.html { redirect_to employees_path, notice: "Employee updated successfully." }
         format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.replace(@employee, partial: "employees/employee", locals: { employee: @employee }),
-            turbo_stream.update(("name"), partial: "employees/name"),
-            turbo_stream.update(("profile"), partial: "employees/profile"),
-            turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Employee updated successfully." })
-          ]
+          if request.headers["Turbo-Frame"].present?
+            render turbo_stream: [
+              turbo_stream.replace(@employee, partial: "employees/employee", locals: { employee: @employee }),
+              turbo_stream.update(("name"), partial: "employees/name"),
+              turbo_stream.update(("profile"), partial: "employees/profile"),
+              turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Employee updated successfully." })
+            ]
+          else
+            redirect_to employees_path, notice: "Employee updated successfully.", status: :see_other
+          end
         end
       end
     else
@@ -86,7 +94,12 @@ class EmployeesController < ApplicationController
 
   def select_options
     @employees = Employee.where(department_id: params[:department_id], status: :active).order(:first_name)
-    render partial: "employees/select_options", locals: { employees: @employees }
+
+    if (frame_id = request.headers["Turbo-Frame"].presence)
+      render turbo_stream: turbo_stream.update(frame_id, partial: "employees/select_options", locals: { employees: @employees })
+    else
+      render partial: "employees/select_options", locals: { employees: @employees }
+    end
   end
 
   private

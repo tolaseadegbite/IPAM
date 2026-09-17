@@ -14,7 +14,7 @@ class CardActivityTest < ApplicationSystemTestCase
     fill_in "Username", with: @user.username
     fill_in "Password", with: "Secret1*3*5*"
     click_on "Sign in"
-    assert_text "Needs attention"
+    assert_text "Needs attention", wait: 10
   end
 
   test "task modal shows created and assigned history" do
