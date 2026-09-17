@@ -2,6 +2,7 @@ class Subnet < ApplicationRecord
   has_paper_trail ignore: [ :updated_at, :created_at ]
 
   has_many :ip_addresses, dependent: :destroy
+  belongs_to :branch, optional: true
 
   validates :name, presence: true
   validates :network_address, presence: true, uniqueness: true
@@ -17,11 +18,11 @@ class Subnet < ApplicationRecord
 
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[ id name gateway network_address vlan_id created_at updated_at ]
+    %w[ id name gateway network_address vlan_id branch_id created_at updated_at ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    [ "ip_addresses" ]
+    [ "ip_addresses", "branch" ]
   end
 
   private

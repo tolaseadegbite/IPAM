@@ -35,6 +35,12 @@
       <%= form.label :vlan_id, "VLAN ID", class: "mb-1 block font-medium" %>
       <%= form.number_field :vlan_id, class: "input" %>
     </div>
+    <div class="col-span-1">
+      <%= form.label :branch_id, "Branch", class: "mb-1 block font-medium" %>
+      <%= form.collection_select :branch_id, Branch.order(:name), :id, :name,
+            { include_blank: "Unassigned" },
+            { class: "input cursor-pointer" } %>
+    </div>
   </div>
 
   <div class="mt-4 flex items-center gap-3">

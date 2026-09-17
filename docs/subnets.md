@@ -1,6 +1,6 @@
 # Subnets
 
-Subnets are CIDR blocks under management: name, network address (e.g. `192.168.1.0/24`), gateway, and optional VLAN.
+Subnets are CIDR blocks under management: name, network address (e.g. `192.168.1.0/24`), gateway, optional VLAN, and an owning branch.
 
 ## Creating a subnet
 
@@ -9,6 +9,7 @@ Subnets → New. Rules enforced at creation:
 - Must be a valid CIDR, `/22` or smaller (larger ranges are refused — a `/16` would flood the database with host rows).
 - The gateway must sit inside the range and may not be the network or broadcast address.
 - Ranges may not overlap an existing subnet.
+- **Branch** is optional — pick the owning site, or leave `Unassigned` for shared/transit ranges. You can assign it later from Edit.
 
 On creation the app **auto-populates every usable host IP** as `available`, reserving the gateway row. Deleting a subnet requires an admin.
 

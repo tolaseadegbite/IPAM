@@ -4,10 +4,10 @@ The organization hierarchy is **Branch → Department → Employee**. Devices be
 
 ## Branches
 
-A branch is a physical site (name, location, contact phone). The branch page shows its whole tree: departments, employees per department, and devices per department.
+A branch is a physical site (name, location, contact phone). The branch page shows its whole tree: departments, employees per department, devices per department — plus its **subnets**, each with a utilization bar linking to the subnet.
 
 - **Creating**: Branches → New. Name, location, contact phone.
-- **Deleting**: blocked while the branch still has departments — move or delete them first. You'll get a plain-language error otherwise.
+- **Deleting**: blocked while the branch still has departments — move or delete them first. You'll get a plain-language error otherwise. Branches with assigned subnets are likewise protected until the subnets are reassigned.
 
 ## Departments
 

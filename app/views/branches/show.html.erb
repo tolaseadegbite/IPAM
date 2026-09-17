@@ -63,6 +63,42 @@
   </div>
 
   <div>
+    <div class="mb-4 flex items-center justify-between border-b border-zinc-200 pb-2 dark:border-white/10">
+      <h3 class="text-lg font-bold">Subnets (<%= @subnets.size %>)</h3>
+      <%= link_to "All subnets", subnets_path, class: "text-sm font-medium text-orange-600 hover:underline dark:text-orange-400", data: { turbo_frame: "_top" } %>
+    </div>
+
+    <% if @subnets.any? %>
+      <div class="flex flex-col gap-2">
+        <% @subnets.each do |subnet| %>
+          <%
+            counts = @subnet_usage.select { |(sid, _status)| sid == subnet.id }
+            total = counts.values.sum
+            used = counts.select { |(_sid, status)| %w[active reserved].include?(status) }.values.sum
+            percent = total > 0 ? ((used.to_f / total) * 100).round : 0
+            bar_color = if percent > 90 then "bg-red-500"
+                        elsif percent > 70 then "bg-amber-400"
+                        else "bg-green-500"
+                        end
+          %>
+          <%= link_to subnet, class: "card flex items-center gap-3 p-3 transition hover:border-orange-300 dark:hover:border-orange-500/40", data: { turbo_frame: "_top" } do %>
+            <div class="min-w-0 flex-1">
+              <div class="truncate text-sm font-bold"><%= subnet.name %></div>
+              <div class="truncate font-mono text-xs text-zinc-500 dark:text-zinc-400"><%= subnet.network_address %></div>
+            </div>
+            <span class="shrink-0 text-xs tabular-nums text-zinc-500 dark:text-zinc-400"><%= used %>/<%= total %></span>
+            <div class="h-2 w-24 shrink-0 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
+              <div class="h-full rounded-full <%= bar_color %>" style="width: <%= percent %>%;"></div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="py-4 text-center text-xs text-zinc-500 italic dark:text-zinc-400">No subnets assigned to this branch yet.</div>
+    <% end %>
+  </div>
+
+  <div>
     <%
       branch_query = PaperTrail::Version.where(item_type: "Branch", item_id: @branch.id)
       dept_query = PaperTrail::Version.where(item_type: "Department", item_id: @branch.department_ids)

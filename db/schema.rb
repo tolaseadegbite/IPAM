@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_16_203724) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_17_190308) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -295,6 +295,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_16_203724) do
   end
 
   create_table "subnets", force: :cascade do |t|
+    t.bigint "branch_id"
     t.datetime "created_at", null: false
     t.inet "gateway"
     t.integer "ip_addresses_count", default: 0, null: false
@@ -302,6 +303,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_16_203724) do
     t.cidr "network_address", null: false
     t.datetime "updated_at", null: false
     t.integer "vlan_id"
+    t.index ["branch_id"], name: "index_subnets_on_branch_id"
     t.index ["network_address"], name: "index_subnets_on_network_address", unique: true
   end
 
@@ -364,5 +366,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_16_203724) do
   add_foreign_key "messages", "tool_calls"
   add_foreign_key "network_events", "devices"
   add_foreign_key "sessions", "users"
+  add_foreign_key "subnets", "branches"
   add_foreign_key "tool_calls", "messages"
 end

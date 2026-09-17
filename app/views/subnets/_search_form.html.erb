@@ -17,6 +17,12 @@
                 { include_blank: "All VLANs" },
                 { class: "input cursor-pointer" } %>
         </div>
+        <div>
+          <%= f.label :branch_id_eq, "Branch", class: "mb-1 block text-xs font-bold tracking-wide text-zinc-500 uppercase dark:text-zinc-400" %>
+          <%= f.collection_select :branch_id_eq, Branch.order(:name), :id, :name,
+                { include_blank: "All branches" },
+                { class: "input cursor-pointer" } %>
+        </div>
         <div class="flex gap-2">
           <%= link_to "Clear", subnets_path, class: "btn btn--primary", data: { action: "click->search-filter#resetAll" } %>
         </div>

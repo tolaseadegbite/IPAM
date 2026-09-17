@@ -81,6 +81,6 @@ class SubnetsController < ApplicationController
     end
 
     def subnet_params
-      params.require(:subnet).permit(:name, :network_address, :gateway, :vlan_id)
+      params.require(:subnet).permit(:name, :network_address, :gateway, :vlan_id, :branch_id)
     end
 end

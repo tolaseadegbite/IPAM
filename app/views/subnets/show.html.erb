@@ -36,6 +36,11 @@
         <h1 class="truncate text-2xl font-bold tracking-tight sm:text-3xl"><%= @subnet.name %></h1>
         <div class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
           <span class="font-mono text-orange-600 dark:text-orange-400"><%= @subnet.network_address %></span>
+          <% if @subnet.branch.present? %>
+            <%= link_to @subnet.branch.name, @subnet.branch, class: "hover:text-orange-500", data: { turbo_frame: "_top" } %>
+          <% else %>
+            <span class="text-xs text-zinc-500 italic dark:text-zinc-400">Unassigned branch</span>
+          <% end %>
           <% if @subnet.vlan_id.present? %>
             <span class="rounded-md border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-xs dark:border-white/10 dark:bg-zinc-800">VLAN <%= @subnet.vlan_id %></span>
           <% end %>

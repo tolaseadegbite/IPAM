@@ -12,6 +12,8 @@ class BranchesController < ApplicationController
     # Whole hierarchy in three queries for the collapsible tree below.
     @employees_by_department = Employee.where(department: @departments).order(:first_name).group_by(&:department_id)
     @devices_by_department = Device.where(department: @departments).includes(:employee).order(:name).group_by(&:department_id)
+    @subnets = @branch.subnets.order(:name)
+    @subnet_usage = IpAddress.where(subnet: @subnets).group(:subnet_id, :status).count
   end
 
   def new

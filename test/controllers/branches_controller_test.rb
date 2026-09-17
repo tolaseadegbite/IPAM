@@ -37,4 +37,13 @@ class BranchesControllerTest < ActionDispatch::IntegrationTest
       assert_select "details", text: /#{Regexp.escape(device.name)}/
     end
   end
+
+  test "should show branch subnets" do
+    subnet = subnets(:one)
+    subnet.update!(branch: @branch)
+
+    get branch_url(@branch)
+    assert_response :success
+    assert_select "a[href=?]", subnet_path(subnet), count: 1
+  end
 end
