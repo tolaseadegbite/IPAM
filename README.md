@@ -123,4 +123,4 @@ Built by [Tolase Adegbite](https://github.com/tolaseadegbite) — full-stack Rai
 
 ## License
 
-Not yet licensed — all rights reserved until a `LICENSE` file lands.
+MIT — see [LICENSE](LICENSE).
