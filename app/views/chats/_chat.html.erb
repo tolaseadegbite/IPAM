@@ -4,6 +4,10 @@
       <%= chat.messages.reject { |m| %w[system tool].include?(m.role) }.first&.content&.truncate(80) || "New conversation" %>
     </div>
     <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400">
+      <span class="inline-flex items-center gap-1">
+        <span class="h-1.5 w-1.5 rounded-full <%= chat.build_mode? ? "bg-orange-500" : "bg-zinc-400 dark:bg-zinc-500" %>" aria-hidden="true"></span>
+        <%= chat.mode.capitalize %>
+      </span>
       <span><%= chat.user.username.presence || chat.user.email.truncate(24) %></span>
       <span><%= chat.model&.label || "Default model" %></span>
       <span><%= pluralize(chat.messages.size, "message") %></span>

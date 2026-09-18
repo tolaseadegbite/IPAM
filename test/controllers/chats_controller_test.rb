@@ -1,0 +1,50 @@
+require "test_helper"
+
+class ChatsControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    sign_in_as users(:lazaro_nixon)
+    @chat = users(:lazaro_nixon).chats.create!(model: models(:gemini_flash))
+  end
+
+  test "shows chat" do
+    get chat_url(@chat)
+    assert_response :success
+  end
+
+  test "flips chat to build mode" do
+    patch chat_url(@chat), params: { chat: { mode: "build" } }
+    assert_redirected_to chat_url(@chat)
+    assert @chat.reload.build_mode?
+  end
+
+  test "flips chat back to plan mode" do
+    @chat.update!(mode: :build)
+
+    patch chat_url(@chat), params: { chat: { mode: "plan" } }
+    assert_redirected_to chat_url(@chat)
+    assert @chat.reload.plan_mode?
+  end
+
+  test "rejects unknown mode" do
+    patch chat_url(@chat), params: { chat: { mode: "turbo" } }
+    assert_redirected_to chat_url(@chat)
+    assert @chat.reload.plan_mode?
+  end
+
+  test "cannot flip another users chat" do
+    other = User.create!(username: "otherone", email: "other@example.com",
+                         password: "Sup3rSecretTemp!", verified: true)
+    chat = other.chats.create!(model: models(:gemini_flash))
+
+    patch chat_url(chat), params: { chat: { mode: "build" } }
+    assert_response :not_found
+    assert chat.reload.plan_mode?
+  end
+
+  test "requires sign in" do
+    delete session_url(users(:lazaro_nixon).sessions.last)
+
+    patch chat_url(@chat), params: { chat: { mode: "build" } }
+    assert_redirected_to sign_in_url
+  end
+end

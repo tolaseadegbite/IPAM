@@ -13,6 +13,10 @@ Useful prompts:
 - `What changed on srv-dc-02 in the last week?`
 - `Register the laptop with MAC 02:00:00:00:00:0A for Adaeze in IT`
 
+## Plan and Build modes
+
+Every chat opens in **Plan mode**: NAT investigates with read-only tools, presents a numbered plan, and asks for approval — it cannot change anything, by construction. Flip to **Build** (header toggle) to let it execute; flip back anytime. The mode sticks per chat, including across reloads. Rule of thumb: stay in Plan until the plan looks right, then build.
+
 ## Attachments
 
 Attach images (e.g. photos of handwritten IP books — NAT reads them visually), CSV and Excel sheets, and PDFs. It will never guess ambiguous handwriting like `1` vs `7` — it asks you to confirm first.

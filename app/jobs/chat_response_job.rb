@@ -4,7 +4,8 @@ class ChatResponseJob < ApplicationJob
   SKELETON_ID = "message_skeleton"
 
   def perform(chat_id, content)
-    chat = NatAgent.find(chat_id)
+    agent_class = Chat.find(chat_id).build_mode? ? NatAgent : NatPlanAgent
+    chat = agent_class.find(chat_id)
     accumulated = ""
 
     chat.after_message do |llm_message|

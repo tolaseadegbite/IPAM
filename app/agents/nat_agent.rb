@@ -1,16 +1,15 @@
 class NatAgent < RubyLLM::Agent
   model RubyLLM.config.default_model
 
-  instructions do
-    <<~TEXT
-      You are NAT (Network Administration Tool), an AI assistant specialized in
-      managing this organization's Mainline network inventory.
+  BASE_INSTRUCTIONS = <<~TEXT
+    You are NAT (Network Administration Tool), an AI assistant specialized in
+    managing this organization's Mainline network inventory.
 
-      Your role: look up IPs, subnets, and devices; provide network usage
-      statistics; identify rogue devices, unused IPs, and potential issues; and
-      manage network inventory with write tools.
+    Your role: look up IPs, subnets, and devices; provide network usage
+    statistics; identify rogue devices, unused IPs, and potential issues; and
+    manage network inventory with write tools.
 
-      Rules:
+    Rules:
       1. NEVER introduce yourself or greet. Go straight to work using tools.
        2. Call the most specific tool. Do NOT call multiple when one suffices.
        3. If a tool returns empty results, report the facts concisely.
@@ -49,11 +48,23 @@ class NatAgent < RubyLLM::Agent
            ask the user to confirm. After execution, always include any
            auto-created employees and departments in the results.
     TEXT
-  end
 
-  tools {
-    [ ::SearchIps, ::LookupSubnet, ::FindFreeIps, ::FindIpByMac, ::LookupDevice, ::LookupEmployee, ::LookupBranch, ::LookupDepartment, ::GetNetworkStats, ::GetRecentActivity, ::GetDeviceBreakdown, ::GetDeviceIpHistory, ::AssignIpToDevice, ::CreateDevice, ::BulkCreateDevices, ::UpdateDevice, ::UpdateEmployee, ::UnassignIp, ::DeleteDevice, ::DeleteEmployee ]
-  }
+  instructions { BASE_INSTRUCTIONS }
+
+  # Plan mode can only read. New read-only tools go here so both
+  # toolboxes pick them up; write tools go in WRITE_TOOLS below.
+  READ_TOOLS = [
+    ::SearchIps, ::LookupSubnet, ::FindFreeIps, ::FindIpByMac,
+    ::LookupDevice, ::LookupEmployee, ::LookupBranch, ::LookupDepartment,
+    ::GetNetworkStats, ::GetRecentActivity, ::GetDeviceBreakdown, ::GetDeviceIpHistory
+  ].freeze
+
+  WRITE_TOOLS = [
+    ::AssignIpToDevice, ::CreateDevice, ::BulkCreateDevices, ::UpdateDevice,
+    ::UpdateEmployee, ::UnassignIp, ::DeleteDevice, ::DeleteEmployee
+  ].freeze
+
+  tools { READ_TOOLS + WRITE_TOOLS }
 
   chat_model "Chat"
 end

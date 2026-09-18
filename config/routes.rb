@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :chats, except: [ :edit, :update ] do
+  resources :chats, except: [ :edit ] do
     resources :messages, only: [ :create ]
   end
   resources :models, only: [ :index, :show ] do
