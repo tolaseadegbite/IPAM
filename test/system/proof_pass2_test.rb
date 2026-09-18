@@ -1,6 +1,10 @@
 require "application_system_test_case"
 
 class ProofPass2Test < ApplicationSystemTestCase
+  teardown do
+    page.current_window.resize_to(1400, 1400)
+  end
+
   def sign_in
     visit sign_in_path
     fill_in "Username", with: users(:lazaro_nixon).username

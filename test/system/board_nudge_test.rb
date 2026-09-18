@@ -6,6 +6,10 @@ require "application_system_test_case"
 # reach pointer/mouse listeners), so drag behavior is verified manually;
 # the drop path it shares with nudge (save/revert) is covered here.
 class BoardNudgeTest < ApplicationSystemTestCase
+  teardown do
+    page.current_window.resize_to(1400, 1400)
+  end
+
   setup do
     @user = users(:lazaro_nixon)
     @board = boards(:one)

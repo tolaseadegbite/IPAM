@@ -1,6 +1,10 @@
 require "application_system_test_case"
 
 class CardActivityTest < ApplicationSystemTestCase
+  teardown do
+    page.current_window.resize_to(1400, 1400)
+  end
+
   setup do
     @user = users(:lazaro_nixon)
     @board = boards(:one)
