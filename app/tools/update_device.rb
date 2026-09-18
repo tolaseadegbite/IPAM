@@ -1,16 +1,16 @@
 class UpdateDevice < RubyLLM::Tool
-  desc "Update an existing device's fields. Only provided fields will be changed. Pass an empty string to clear a field."
+  description "Update an existing device's fields. Only provided fields will be changed. Pass an empty string to clear a field."
 
-  param :name, desc: "The name of the device to update"
-  param :new_name, desc: "New name for the device", required: false
-  param :device_type, desc: "Type: desktop, all_in_one, laptop, printer, server, tablet, biometrics_machine, or router", required: false
-  param :status, desc: "Status: active, in_storage, in_repair, retired, or lost", required: false
-  param :mac_address, desc: "MAC address (format: xx:xx:xx:xx:xx:xx). Pass empty string to clear.", required: false
-  param :department_name, desc: "New department name. Provide branch_name if the department is new or ambiguous.", required: false
-  param :branch_name, desc: "Branch name for finding or auto-creating the department", required: false
-  param :employee_name, desc: "Full name of the employee to assign. Pass empty string to unassign.", required: false
-  param :location, desc: "Physical location of the device", required: false
-  param :notes, desc: "Additional notes about the device", required: false
+  parameter :name, description: "The name of the device to update"
+  parameter :new_name, description: "New name for the device", required: false
+  parameter :device_type, description: "Type: desktop, all_in_one, laptop, printer, server, tablet, biometrics_machine, or router", required: false
+  parameter :status, description: "Status: active, in_storage, in_repair, retired, or lost", required: false
+  parameter :mac_address, description: "MAC address (format: xx:xx:xx:xx:xx:xx). Pass empty string to clear.", required: false
+  parameter :department_name, description: "New department name. Provide branch_name if the department is new or ambiguous.", required: false
+  parameter :branch_name, description: "Branch name for finding or auto-creating the department", required: false
+  parameter :employee_name, description: "Full name of the employee to assign. Pass empty string to unassign.", required: false
+  parameter :location, description: "Physical location of the device", required: false
+  parameter :notes, description: "Additional notes about the device", required: false
 
   def execute(name:, new_name: nil, device_type: nil, status: nil, mac_address: nil, department_name: nil, branch_name: nil, employee_name: nil, location: nil, notes: nil)
     device = Device.find_by(name: name)

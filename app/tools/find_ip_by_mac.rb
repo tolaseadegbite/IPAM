@@ -1,7 +1,7 @@
 class FindIpByMac < RubyLLM::Tool
-  desc "Find a device by its MAC address and show its assigned IPs."
+  description "Find a device by its MAC address and show its assigned IPs."
 
-  param :mac_address, desc: "MAC address to search for (formats: xx:xx:xx:xx:xx:xx, xx-xx-xx-xx-xx-xx, or xxxxxxxxxxxx)"
+  parameter :mac_address, description: "MAC address to search for (formats: xx:xx:xx:xx:xx:xx, xx-xx-xx-xx-xx-xx, or xxxxxxxxxxxx)"
 
   def execute(mac_address:)
     normalized = mac_address.strip.downcase.gsub(/[^0-9a-f]/i, "")

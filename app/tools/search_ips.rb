@@ -1,7 +1,7 @@
 class SearchIps < RubyLLM::Tool
-  desc "Search for IP addresses by address, device name, or subnet name"
+  description "Search for IP addresses by address, device name, or subnet name"
 
-  param :query, desc: "IP address, device name, or subnet name to search for"
+  parameter :query, description: "IP address, device name, or subnet name to search for"
 
   def execute(query:)
     IpAddress.left_joins(:device, :subnet)

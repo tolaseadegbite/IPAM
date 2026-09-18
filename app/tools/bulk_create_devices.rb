@@ -1,7 +1,7 @@
 class BulkCreateDevices < RubyLLM::Tool
-  desc "Create multiple devices and assign IPs in one call. Use this when the user provides a list of 2+ devices instead of calling CreateDevice for each one individually."
+  description "Create multiple devices and assign IPs in one call. Use this when the user provides a list of 2+ devices instead of calling CreateDevice for each one individually."
 
-  param :records_json, desc: <<~DESC.strip
+  parameter :records_json, description: <<~DESC.strip
     JSON array of device records. Each record has:
     - name (required): Device name
     - device_type (required): desktop, all_in_one, laptop, printer, server, tablet, biometrics_machine, or router
@@ -13,7 +13,7 @@ class BulkCreateDevices < RubyLLM::Tool
     - location (optional): Physical location
     - notes (optional): Additional notes
   DESC
-  param :branch_name, desc: "Default branch for auto-creating missing departments (default: Yale 1). Individual records can override this.", required: false
+  parameter :branch_name, description: "Default branch for auto-creating missing departments (default: Yale 1). Individual records can override this.", required: false
 
   def execute(records_json:, branch_name: nil)
     branch_name ||= "Yale 1"

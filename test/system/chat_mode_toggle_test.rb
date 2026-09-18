@@ -6,7 +6,7 @@ class ChatModeToggleTest < ApplicationSystemTestCase
   end
 
   test "toggling plan and build persists" do
-    chat = Chat.create!(user: @user, model: models(:gemini_flash))
+    chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
     chat.messages.create!(role: "user", content: "Will this work?")
 
     visit sign_in_path
@@ -30,7 +30,7 @@ class ChatModeToggleTest < ApplicationSystemTestCase
     assert chat.reload.plan_mode?
   end
 
-    test "escape key flips modes" do    chat = Chat.create!(user: @user, model: models(:gemini_flash))
+    test "escape key flips modes" do    chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
     chat.messages.create!(role: "user", content: "Will this work?")
 
     visit sign_in_path
@@ -52,7 +52,7 @@ class ChatModeToggleTest < ApplicationSystemTestCase
   end
 
   test "mode toggle lives in the message form and bubbles stay readable" do
-    chat = Chat.create!(user: @user, model: models(:gemini_flash))
+    chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
     chat.messages.create!(role: "user", content: "Will this work?")
     chat.messages.create!(role: "assistant", content: "Yes, working.")
 
@@ -91,11 +91,12 @@ class ChatModeToggleTest < ApplicationSystemTestCase
     assert_checked_field "chat_mode_plan"
     assert_unchecked_field "chat_mode_build"
 
-    select "Gemini Flash", from: "chat_model"
+    find("#chat_model option[value='gemini-3.1-flash-lite']").select_option
     within("[aria-label='Starting mode']") { find("label", text: "Build").click }
     fill_in "Your question:", with: "Is anyone there?"
     click_on "Start new chat"
 
-    assert_selector 'button[aria-pressed="true"]', text: "Build"
+    # Chat creation persists agent configuration — allow for a slow store.
+    assert_selector 'button[aria-pressed="true"]', text: "Build", wait: 10
   end
 end

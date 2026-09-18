@@ -15,7 +15,13 @@ class NatAgentToolboxTest < ActiveSupport::TestCase
 
   test "plan instructions demand approval without execution" do
     instructions = NatPlanAgent.instructions.is_a?(Proc) ? NatPlanAgent.instructions.call : NatPlanAgent.instructions
-    text = instructions.is_a?(Hash) ? instructions.to_s : instructions.to_s
+    # RubyLLM 2.0 returns structured instruction entries whose values may
+    # be procs — resolve them before asserting on the text.
+    text = Array(instructions).map { |entry|
+      value = entry.is_a?(Hash) ? entry[:value] : entry
+      value = value.call if value.is_a?(Proc)
+      value.to_s
+    }.join("\n")
 
     assert_includes text, "PLAN mode"
   end

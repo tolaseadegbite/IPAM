@@ -3,7 +3,7 @@ require "test_helper"
 class ChatsControllerTest < ActionDispatch::IntegrationTest
   setup do
     sign_in_as users(:lazaro_nixon)
-    @chat = users(:lazaro_nixon).chats.create!(model: models(:gemini_flash))
+    @chat = users(:lazaro_nixon).chats.create!(model: "gemini-3.1-flash-lite")
   end
 
   test "shows chat" do
@@ -34,7 +34,7 @@ class ChatsControllerTest < ActionDispatch::IntegrationTest
   test "cannot flip another users chat" do
     other = User.create!(username: "otherone", email: "other@example.com",
                          password: "Sup3rSecretTemp!", verified: true)
-    chat = other.chats.create!(model: models(:gemini_flash))
+    chat = other.chats.create!(model: "gemini-3.1-flash-lite")
 
     patch chat_url(chat), params: { chat: { mode: "build" } }
     assert_response :not_found
@@ -50,18 +50,18 @@ class ChatsControllerTest < ActionDispatch::IntegrationTest
 
   test "creates chat in plan mode by default" do
     assert_difference "Chat.count" do
-      post chats_url, params: { chat: { prompt: "Hello there", model: "gemini-2.0-flash" } }
+      post chats_url, params: { chat: { prompt: "Hello there", model: "gemini-3.1-flash-lite" } }
     end
     assert Chat.last.plan_mode?
   end
 
   test "creates chat in build mode when requested" do
-    post chats_url, params: { chat: { prompt: "Hello there", model: "gemini-2.0-flash", mode: "build" } }
+    post chats_url, params: { chat: { prompt: "Hello there", model: "gemini-3.1-flash-lite", mode: "build" } }
     assert Chat.last.build_mode?
   end
 
   test "ignores unknown mode on create" do
-    post chats_url, params: { chat: { prompt: "Hello there", model: "gemini-2.0-flash", mode: "turbo" } }
+    post chats_url, params: { chat: { prompt: "Hello there", model: "gemini-3.1-flash-lite", mode: "turbo" } }
     assert Chat.last.plan_mode?
   end
 end

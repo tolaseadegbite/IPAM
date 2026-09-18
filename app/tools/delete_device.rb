@@ -1,7 +1,7 @@
 class DeleteDevice < RubyLLM::Tool
-  desc "Delete a device by name. IPs assigned to it will be freed (set to unassigned)."
+  description "Delete a device by name. IPs assigned to it will be freed (set to unassigned)."
 
-  param :name, desc: "The name of the device to delete"
+  parameter :name, description: "The name of the device to delete"
 
   def execute(name:)
     device = Device.includes(:ip_addresses).find_by(name: name)

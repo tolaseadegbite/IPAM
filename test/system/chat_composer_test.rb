@@ -10,7 +10,7 @@ class ChatComposerTest < ApplicationSystemTestCase
   end
 
   test "composer uses icon picker without accordion" do
-    chat = Chat.create!(user: @user, model: models(:gemini_flash))
+    chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
     chat.messages.create!(role: "user", content: "Hello")
 
     visit sign_in_path
@@ -26,7 +26,7 @@ class ChatComposerTest < ApplicationSystemTestCase
   end
 
   test "long transcript fills viewport without page overflow" do
-    chat = Chat.create!(user: @user, model: models(:gemini_flash))
+    chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
     25.times do |i|
       chat.messages.create!(role: i.even? ? "user" : "assistant", content: "Message number #{i} with enough words to wrap.")
     end

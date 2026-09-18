@@ -1,5 +1,5 @@
 class GetNetworkStats < RubyLLM::Tool
-  desc "Get overall network statistics including IP usage, device counts, and subnet info"
+  description "Get overall network statistics including IP usage, device counts, and subnet info"
 
   def execute
     {

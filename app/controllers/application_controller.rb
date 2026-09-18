@@ -51,7 +51,11 @@ class ApplicationController < ActionController::Base
   end
 
   def available_chat_models
+    # Gemini-only app: other providers' listings (OpenRouter, Perplexity,
+    # Vertex) share bare ids but are unauthenticated here, and their
+    # namespaced ids resolve to the wrong provider. Scope to native.
     RubyLLM.models.chat_models.all
+           .select { |model| model.provider.to_s == "gemini" }
            .sort_by { |model| [ model.provider.to_s, model.name.to_s ] }
   end
 end

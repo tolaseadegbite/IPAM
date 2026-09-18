@@ -1,7 +1,7 @@
 class LookupEmployee < RubyLLM::Tool
-  desc "Search for employees by name, department, or status"
+  description "Search for employees by name, department, or status"
 
-  param :query, desc: "Employee name, department name, or status to search for"
+  parameter :query, description: "Employee name, department name, or status to search for"
 
   def execute(query:)
     Employee.left_joins(:department)

@@ -1,15 +1,15 @@
 class CreateDevice < RubyLLM::Tool
-  desc "Create a new device. If the department or employee doesn't exist, provide enough info and they will be auto-created."
+  description "Create a new device. If the department or employee doesn't exist, provide enough info and they will be auto-created."
 
-  param :name, desc: "Device name (must be unique)"
-  param :device_type, desc: "Type of device: desktop, all_in_one, laptop, printer, server, tablet, biometrics_machine, or router"
-  param :department_name, desc: "Name of the department this device belongs to. If the department doesn't exist, provide branch_name to auto-create it."
-  param :branch_name, desc: "Branch name for auto-creating a new department (required if department doesn't exist yet)", required: false
-  param :status, desc: "Device status: active, in_storage, in_repair, retired, or lost (default: active)", required: false
-  param :mac_address, desc: "MAC address (format: xx:xx:xx:xx:xx:xx)", required: false
-  param :employee_name, desc: "Full name of the employee assigned to this device. If the employee doesn't exist, they will be auto-created.", required: false
-  param :location, desc: "Physical location of the device", required: false
-  param :notes, desc: "Additional notes about the device", required: false
+  parameter :name, description: "Device name (must be unique)"
+  parameter :device_type, description: "Type of device: desktop, all_in_one, laptop, printer, server, tablet, biometrics_machine, or router"
+  parameter :department_name, description: "Name of the department this device belongs to. If the department doesn't exist, provide branch_name to auto-create it."
+  parameter :branch_name, description: "Branch name for auto-creating a new department (required if department doesn't exist yet)", required: false
+  parameter :status, description: "Device status: active, in_storage, in_repair, retired, or lost (default: active)", required: false
+  parameter :mac_address, description: "MAC address (format: xx:xx:xx:xx:xx:xx)", required: false
+  parameter :employee_name, description: "Full name of the employee assigned to this device. If the employee doesn't exist, they will be auto-created.", required: false
+  parameter :location, description: "Physical location of the device", required: false
+  parameter :notes, description: "Additional notes about the device", required: false
 
   def execute(name:, device_type:, department_name:, branch_name: nil, status: nil, mac_address: nil, employee_name: nil, location: nil, notes: nil)
     unless Device.device_types.key?(device_type)

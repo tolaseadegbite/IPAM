@@ -1,7 +1,7 @@
 class DeleteEmployee < RubyLLM::Tool
-  desc "Delete an employee by name. Will only proceed if the employee has no devices assigned."
+  description "Delete an employee by name. Will only proceed if the employee has no devices assigned."
 
-  param :name, desc: "The full name of the employee to delete"
+  parameter :name, description: "The full name of the employee to delete"
 
   def execute(name:)
     parts = name.strip.split(/\s+/, 2)

@@ -1,7 +1,7 @@
 class LookupSubnet < RubyLLM::Tool
-  desc "Search for subnets by name, network address, or VLAN ID"
+  description "Search for subnets by name, network address, or VLAN ID"
 
-  param :query, desc: "Subnet name, CIDR network address, or VLAN ID to search for"
+  parameter :query, description: "Subnet name, CIDR network address, or VLAN ID to search for"
 
   def execute(query:)
     Subnet.where("name ILIKE :q OR network_address::text ILIKE :q OR CAST(vlan_id AS text) ILIKE :q", q: "%#{query}%")

@@ -1,8 +1,8 @@
 class GetDeviceBreakdown < RubyLLM::Tool
-  desc "Get device counts broken down by type (laptop, desktop, server, etc.), optionally filtered by department or branch"
+  description "Get device counts broken down by type (laptop, desktop, server, etc.), optionally filtered by department or branch"
 
-  param :department, desc: "Department name to filter by (optional)"
-  param :branch, desc: "Branch name to filter by (optional)"
+  parameter :department, description: "Department name to filter by (optional)"
+  parameter :branch, description: "Branch name to filter by (optional)"
 
   IGNORE_FILTERS = %w[all any every].freeze
 

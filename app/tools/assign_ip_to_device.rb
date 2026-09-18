@@ -1,8 +1,8 @@
 class AssignIpToDevice < RubyLLM::Tool
-  desc "Assign an IP address to a device. Requires the IP address string and device name."
+  description "Assign an IP address to a device. Requires the IP address string and device name."
 
-  param :ip_address, desc: "The IP address to assign (e.g. 192.168.1.100)"
-  param :device_name, desc: "The name of the device to assign the IP to"
+  parameter :ip_address, description: "The IP address to assign (e.g. 192.168.1.100)"
+  parameter :device_name, description: "The name of the device to assign the IP to"
 
   def execute(ip_address:, device_name:)
     ip = IpAddress.find_by(address: ip_address)

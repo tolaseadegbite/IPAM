@@ -1,7 +1,7 @@
 class LookupDepartment < RubyLLM::Tool
-  desc "Search for departments by name or branch name"
+  description "Search for departments by name or branch name"
 
-  param :query, desc: "Department name or branch name to search for"
+  parameter :query, description: "Department name or branch name to search for"
 
   def execute(query:)
     Department.left_joins(:branch)

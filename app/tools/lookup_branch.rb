@@ -1,7 +1,7 @@
 class LookupBranch < RubyLLM::Tool
-  desc "Search for branches by name or location, including departments, devices, and their IP addresses"
+  description "Search for branches by name or location, including departments, devices, and their IP addresses"
 
-  param :query, desc: "Branch name or location to search for"
+  parameter :query, description: "Branch name or location to search for"
 
   def execute(query:)
     Branch.where("name ILIKE :q OR location ILIKE :q", q: "%#{query}%")

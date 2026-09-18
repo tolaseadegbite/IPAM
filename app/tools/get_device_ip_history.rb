@@ -1,7 +1,7 @@
 class GetDeviceIpHistory < RubyLLM::Tool
-  desc "Show the IP assignment history for a device, including past and current IPs with timestamps."
+  description "Show the IP assignment history for a device, including past and current IPs with timestamps."
 
-  param :name, desc: "The name of the device to look up"
+  parameter :name, description: "The name of the device to look up"
 
   def execute(name:)
     device = Device.find_by(name: name)

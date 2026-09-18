@@ -1,12 +1,12 @@
 class UpdateEmployee < RubyLLM::Tool
-  desc "Update an existing employee's fields. Only provided fields will be changed."
+  description "Update an existing employee's fields. Only provided fields will be changed."
 
-  param :name, desc: "The full name of the employee to update"
-  param :first_name, desc: "New first name", required: false
-  param :last_name, desc: "New last name", required: false
-  param :department_name, desc: "New department name. Provide branch_name if the department is new or ambiguous.", required: false
-  param :branch_name, desc: "Branch name for finding or auto-creating the department", required: false
-  param :status, desc: "Status: active, on_leave, or terminated", required: false
+  parameter :name, description: "The full name of the employee to update"
+  parameter :first_name, description: "New first name", required: false
+  parameter :last_name, description: "New last name", required: false
+  parameter :department_name, description: "New department name. Provide branch_name if the department is new or ambiguous.", required: false
+  parameter :branch_name, description: "Branch name for finding or auto-creating the department", required: false
+  parameter :status, description: "Status: active, on_leave, or terminated", required: false
 
   def execute(name:, first_name: nil, last_name: nil, department_name: nil, branch_name: nil, status: nil)
     parts = name.strip.split(/\s+/, 2)

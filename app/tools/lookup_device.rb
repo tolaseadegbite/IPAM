@@ -1,9 +1,9 @@
 class LookupDevice < RubyLLM::Tool
-  desc "Search for devices by name, MAC address, type, location, or filter by MAC/IP presence"
+  description "Search for devices by name, MAC address, type, location, or filter by MAC/IP presence"
 
-  param :query, desc: "Device name, MAC address, device type, or location to search for (ignored when has_mac or has_ip filters are used)"
-  param :has_mac, desc: "Filter by MAC address presence: true = has MAC, false = no MAC", required: false
-  param :has_ip, desc: "Filter by IP assignment: true = has IP(s), false = no IPs", required: false
+  parameter :query, description: "Device name, MAC address, device type, or location to search for (ignored when has_mac or has_ip filters are used)"
+  parameter :has_mac, description: "Filter by MAC address presence: true = has MAC, false = no MAC", required: false
+  parameter :has_ip, description: "Filter by IP assignment: true = has IP(s), false = no IPs", required: false
 
   def execute(query: nil, has_mac: nil, has_ip: nil)
     has_mac = ActiveRecord::Type::Boolean.new.cast(has_mac) unless has_mac.nil?

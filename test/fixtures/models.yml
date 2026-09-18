@@ -1,6 +1,0 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-gemini_flash:
-  provider: gemini
-  model_id: gemini-2.0-flash
-  name: Gemini Flash

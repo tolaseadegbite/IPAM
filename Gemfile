@@ -92,7 +92,7 @@ gem "marginalia"
 
 gem "acts_as_list"
 
-gem "ruby_llm"
+gem "ruby_llm", "2.0.0"
 
 gem "redcarpet"
 

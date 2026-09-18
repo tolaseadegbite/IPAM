@@ -1,7 +1,7 @@
 class UnassignIp < RubyLLM::Tool
-  desc "Unassign an IP address from its device, making it available again."
+  description "Unassign an IP address from its device, making it available again."
 
-  param :ip_address, desc: "The IP address to unassign (e.g. 192.168.1.100)"
+  parameter :ip_address, description: "The IP address to unassign (e.g. 192.168.1.100)"
 
   def execute(ip_address:)
     ip = IpAddress.find_by(address: ip_address)

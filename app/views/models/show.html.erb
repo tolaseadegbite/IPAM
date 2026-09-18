@@ -3,7 +3,7 @@
 <% content_for :page_header do %><%= @model.name %><% end %>
 
 <div class="card mx-auto w-full max-w-2xl space-y-2 p-4 text-sm sm:p-5">
-  <p><strong>ID:</strong> <span class="font-mono"><%= @model.model_id %></span></p>
+  <p><strong>ID:</strong> <span class="font-mono"><%= @model.id %></span></p>
   <p><strong>Provider:</strong> <%= @model.provider_class&.name || @model.provider %></p>
   <p><strong>Context Window:</strong> <span class="tabular-nums"><%= number_with_delimiter(@model.context_window) %> tokens</span></p>
   <p><strong>Max Output:</strong> <span class="tabular-nums"><%= number_with_delimiter(@model.max_output_tokens) %> tokens</span></p>
