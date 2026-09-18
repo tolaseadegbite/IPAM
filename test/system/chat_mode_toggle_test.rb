@@ -30,7 +30,7 @@ class ChatModeToggleTest < ApplicationSystemTestCase
     assert chat.reload.plan_mode?
   end
 
-  test "escape key flips modes" do    chat = Chat.create!(user: @user, model: models(:gemini_flash))
+    test "escape key flips modes" do    chat = Chat.create!(user: @user, model: models(:gemini_flash))
     chat.messages.create!(role: "user", content: "Will this work?")
 
     visit sign_in_path
@@ -63,8 +63,12 @@ class ChatModeToggleTest < ApplicationSystemTestCase
     assert_text "Needs attention", wait: 10
 
     visit chat_path(chat)
-    assert_selector "[role='group'][aria-label='Assistant mode']"
-    assert_no_selector "form#new_message [role='group'][aria-label='Assistant mode']"
+    # Toggle is the first item of the composer toolbar row, inside the
+    # message form. Pills are plain buttons (never nested forms), so the
+    # form contains zero nested <form> elements.
+    assert_selector "form#new_message [role='group'][aria-label='Assistant mode']"
+    assert_no_selector "form#new_message form"
+    assert_selector "form#new_message [role='group'][aria-label='Assistant mode'] button[type='button']", count: 2
 
     widths = evaluate_script(<<~JS)
       ({
@@ -74,5 +78,24 @@ class ChatModeToggleTest < ApplicationSystemTestCase
     JS
     assert_equal "768px", widths["assistant"]
     assert_equal "75%", widths["user"]
+  end
+
+  test "new chat offers starting mode" do
+    visit sign_in_path
+    fill_in "Username", with: @user.username
+    fill_in "Password", with: "Secret1*3*5*"
+    click_on "Sign in"
+    assert_text "Needs attention", wait: 10
+
+    visit new_chat_path
+    assert_checked_field "chat_mode_plan"
+    assert_unchecked_field "chat_mode_build"
+
+    select "Gemini Flash", from: "chat_model"
+    within("[aria-label='Starting mode']") { find("label", text: "Build").click }
+    fill_in "Your question:", with: "Is anyone there?"
+    click_on "Start new chat"
+
+    assert_selector 'button[aria-pressed="true"]', text: "Build"
   end
 end

@@ -21,6 +21,11 @@ export default class extends Controller {
     }
   }
 
+  // Opens the file picker (the visible trigger is a separate icon button).
+  browse() {
+    if (this.dropZone) this.dropZone.hiddenFileInput.click()
+  }
+
   #init() {
     this.dropZone = this.#createDropZone()
     this.dropZone.enqueueFile = it => this.#upload(it)

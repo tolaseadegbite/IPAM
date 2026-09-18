@@ -6,8 +6,8 @@
   <span class="block truncate"><%= @chat.messages.order(:id).first&.content&.truncate(60) || "NAT Assistant" %></span>
 <% end %>
 
-<div class="flex w-full flex-col" style="height: calc(100dvh - 12rem);">
-  <div id="messages" data-controller="autoscroll" class="mb-4 flex flex-1 flex-col gap-2 overflow-y-auto rounded-xl border border-zinc-200 bg-white p-3 sm:p-4 dark:border-white/10 dark:bg-zinc-900">
+<div class="flex w-full flex-col max-w-7xl mx-auto" style="height: calc(100dvh - 12rem);">
+  <div id="messages" data-controller="autoscroll" class="mb-4 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto rounded-xl border border-zinc-200 bg-white p-3 sm:p-4 dark:border-white/10 dark:bg-zinc-900">
     <% @chat.messages.where.not(id: nil).each do |message| %>
       <%= render message %>
     <% end %>

@@ -15,7 +15,7 @@ Useful prompts:
 
 ## Plan and Build modes
 
-Every chat opens in **Plan mode**: NAT investigates with read-only tools, presents a numbered plan, and asks for approval — it cannot change anything, by construction. Flip to **Build** (header toggle) to let it execute; flip back anytime. The mode sticks per chat, including across reloads. Rule of thumb: stay in Plan until the plan looks right, then build.
+Every chat opens in **Plan mode**: NAT investigates with read-only tools, presents a numbered plan, and asks for approval — it cannot change anything, by construction. Flip to **Build** (header toggle) to let it execute; flip back anytime. The mode sticks per chat, including across reloads. Rule of thumb: stay in Plan until the plan looks right, then build. You can also pick the starting mode right on the new-chat form.
 
 ## Attachments
 

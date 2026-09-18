@@ -47,4 +47,21 @@ class ChatsControllerTest < ActionDispatch::IntegrationTest
     patch chat_url(@chat), params: { chat: { mode: "build" } }
     assert_redirected_to sign_in_url
   end
+
+  test "creates chat in plan mode by default" do
+    assert_difference "Chat.count" do
+      post chats_url, params: { chat: { prompt: "Hello there", model: "gemini-2.0-flash" } }
+    end
+    assert Chat.last.plan_mode?
+  end
+
+  test "creates chat in build mode when requested" do
+    post chats_url, params: { chat: { prompt: "Hello there", model: "gemini-2.0-flash", mode: "build" } }
+    assert Chat.last.build_mode?
+  end
+
+  test "ignores unknown mode on create" do
+    post chats_url, params: { chat: { prompt: "Hello there", model: "gemini-2.0-flash", mode: "turbo" } }
+    assert Chat.last.plan_mode?
+  end
 end

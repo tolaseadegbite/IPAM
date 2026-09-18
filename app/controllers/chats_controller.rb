@@ -23,6 +23,11 @@ class ChatsController < ApplicationController
       opts[:model] = selected_model if selected_model
       @chat = NatAgent.create!(**opts)
 
+      # Plan is the database default; only build needs an explicit flip.
+      # Unknown values fall through to plan, never raise.
+      requested_mode = params.dig(:chat, :mode)
+      @chat.update!(mode: :build) if requested_mode == "build"
+
       message = @chat.messages.create!(role: :user, content: prompt || "")
 
       message.attachments.attach(attachment_ids) if attachment_ids.present?
@@ -51,7 +56,9 @@ class ChatsController < ApplicationController
     end
 
     @chat.update!(chat_params)
-    redirect_to @chat, notice: "Switched to #{@chat.mode} mode."
+    # 303 so fetch/XHR clients follow with GET. A 302 would preserve the
+    # PATCH across the redirect and loop (browsers only rewrite POST to GET).
+    redirect_to @chat, notice: "Switched to #{@chat.mode} mode.", status: :see_other
   end
 
   private
