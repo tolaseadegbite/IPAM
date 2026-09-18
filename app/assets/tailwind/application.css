@@ -522,11 +522,18 @@ body {
   }
 
   .message--user {
-    @apply ml-auto max-w-[85%] border-orange-200 bg-orange-50 dark:border-orange-500/20 dark:bg-orange-500/10;
+    @apply ml-auto max-w-[75%] border-orange-200 bg-orange-50 dark:border-orange-500/20 dark:bg-orange-500/10;
   }
 
   .message--assistant {
-    @apply mr-auto max-w-[95%];
+    @apply mr-auto max-w-3xl;
+  }
+
+  /* Tool calls/results stay in the DOM (broadcasts and skeletons target
+   * their ids) but stay out of sight: only assistant and user messages
+   * render as conversation. */
+  .message--tool {
+    display: none;
   }
 
   .message__header {
