@@ -14,7 +14,14 @@ class FindIpByMac < RubyLLM::Tool
     device = Device.find_by(mac_address: formatted)
 
     unless device
-      similar = Device.where("mac_address ILIKE ?", "%#{normalized}%").limit(5).map do |d|
+      # Stored MACs keep separators, so compare separator-free on both
+      # sides. Match the OUI prefix: a one-digit typo still shares the
+      # vendor prefix, while a full-length ILIKE could only ever match
+      # the exact address (already ruled out above).
+      oui = normalized.first(6)
+      similar = Device.where(
+        "REPLACE(REPLACE(mac_address, ':', ''), '-', '') ILIKE ?", "#{oui}%"
+      ).limit(5).map do |d|
         { name: d.name, mac: d.mac_address }
       end
       if similar.any?

@@ -5,10 +5,11 @@ class LookupBranch < RubyLLM::Tool
 
   def execute(query:)
     Branch.where("name ILIKE :q OR location ILIKE :q", q: "%#{query}%")
+          .includes(:departments)
           .limit(10)
           .map do |b|
       departments = b.departments.map(&:name)
-      devices = b.devices.limit(20).map do |d|
+      devices = b.devices.includes(:ip_addresses).limit(20).map do |d|
         {
           name: d.name,
           type: d.device_type,

@@ -57,9 +57,14 @@ class CreateDevice < RubyLLM::Tool
     if employee_name.present?
       parts = employee_name.strip.split(/\s+/, 2)
       employee = if parts[1].present?
-          Employee.find_by("first_name ILIKE ? AND last_name ILIKE ?", parts[0], parts[1])
+        Employee.find_by("first_name ILIKE ? AND last_name ILIKE ?", parts[0], parts[1])
       else
-          Employee.find_by("first_name ILIKE ?", parts[0])
+        candidates = Employee.where("first_name ILIKE ?", parts[0])
+        if candidates.count > 1
+          names = candidates.limit(10).map(&:full_name).to_sentence
+          return "Multiple employees named '#{parts[0]}' exist: #{names}. Ask the user which one (or provide the full name)."
+        end
+        candidates.first
       end
 
       unless employee

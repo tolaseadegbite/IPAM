@@ -10,9 +10,16 @@ class UpdateEmployee < RubyLLM::Tool
 
   def execute(name:, first_name: nil, last_name: nil, department_name: nil, branch_name: nil, status: nil)
     parts = name.strip.split(/\s+/, 2)
-    employee = Employee.where("first_name ILIKE ? AND last_name ILIKE ?", parts[0], parts[1] || "")
-                        .or(Employee.where("first_name ILIKE ?", parts[0]))
-                        .first
+    employee = if parts[1].present?
+      Employee.find_by("first_name ILIKE ? AND last_name ILIKE ?", parts[0], parts[1])
+    else
+      candidates = Employee.where("first_name ILIKE ?", parts[0])
+      if candidates.count > 1
+        names = candidates.limit(10).map(&:full_name).to_sentence
+        return "Multiple employees named '#{parts[0]}' exist: #{names}. Ask the user which one (or provide the full name)."
+      end
+      candidates.first
+    end
 
     unless employee
       return "Employee '#{name}' not found. Use LookupEmployee to search."

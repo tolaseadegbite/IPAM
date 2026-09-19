@@ -5,7 +5,11 @@ class FindFreeIps < RubyLLM::Tool
   parameter :count, type: "integer", description: "Number of free IPs to return, max 50 (default: 5)", required: false
 
   def execute(subnet_id:, count: 5)
-    subnet = Subnet.find(subnet_id)
+    subnet = Subnet.find_by(id: subnet_id)
+
+    unless subnet
+      return "Subnet with ID #{subnet_id} not found. Use LookupSubnet to find the subnet ID."
+    end
 
     subnet.ip_addresses
           .where(device_id: nil, reachability_status: :unknown)

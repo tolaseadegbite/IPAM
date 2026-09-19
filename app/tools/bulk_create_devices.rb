@@ -13,11 +13,9 @@ class BulkCreateDevices < RubyLLM::Tool
     - location (optional): Physical location
     - notes (optional): Additional notes
   DESC
-  parameter :branch_name, description: "Default branch for auto-creating missing departments (default: Yale 1). Individual records can override this.", required: false
+  parameter :branch_name, description: "Branch used when auto-creating missing departments. Individual records can override this. Required when any record needs a new department.", required: false
 
   def execute(records_json:, branch_name: nil)
-    branch_name ||= "Yale 1"
-
     records = JSON.parse(records_json)
     return "records_json must be a JSON array." unless records.is_a?(Array)
     return "records_json is empty." if records.empty?
@@ -67,12 +65,20 @@ class BulkCreateDevices < RubyLLM::Tool
       return { line: "#{index}. #{name}: FAILED - Invalid device_type '#{device_type}'. Valid types: #{valid_types}.", success: false }
     end
 
-    department = Department.joins(:branch).find_by(
-      "departments.name ILIKE ? AND branches.name ILIKE ?",
-      department_name, branch_name
-    )
+    department = if branch_name.present?
+      Department.joins(:branch).find_by(
+        "departments.name ILIKE ? AND branches.name ILIKE ?",
+        department_name, branch_name
+      )
+    else
+      Department.find_by("name ILIKE ?", department_name)
+    end
 
     unless department
+      if branch_name.blank?
+        return { line: "#{index}. #{name}: FAILED - Department '#{department_name}' not found and no branch_name given to auto-create it.", success: false }
+      end
+
       branch = Branch.find_by("name ILIKE ?", branch_name)
       unless branch
         similar = Branch.where("name ILIKE ?", "%#{branch_name}%").limit(5).pluck(:name)
@@ -90,7 +96,12 @@ class BulkCreateDevices < RubyLLM::Tool
       employee = if parts[1].present?
           Employee.find_by("first_name ILIKE ? AND last_name ILIKE ?", parts[0], parts[1])
       else
-          Employee.find_by("first_name ILIKE ?", parts[0])
+          candidates = Employee.where("first_name ILIKE ?", parts[0])
+          if candidates.count > 1
+            names = candidates.limit(10).map(&:full_name).to_sentence
+            return { line: "#{index}. #{name}: FAILED - Multiple employees named '#{parts[0]}' exist: #{names}. Ask for the full name.", success: false }
+          end
+          candidates.first
       end
 
       unless employee

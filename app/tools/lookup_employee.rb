@@ -5,7 +5,7 @@ class LookupEmployee < RubyLLM::Tool
 
   def execute(query:)
     Employee.left_joins(:department)
-            .includes(:department)
+            .includes(:department, :devices)
             .where("first_name ILIKE :q OR last_name ILIKE :q OR departments.name ILIKE :q", q: "%#{query}%")
             .limit(20)
             .map do |e|

@@ -5,9 +5,21 @@ class DeleteEmployee < RubyLLM::Tool
 
   def execute(name:)
     parts = name.strip.split(/\s+/, 2)
-    employee = Employee.where("first_name ILIKE ? AND last_name ILIKE ?", parts[0], parts[1] || "")
-                        .or(Employee.where("first_name ILIKE ?", parts[0]))
-                        .first
+
+    # Destructive action: never guess. Require a full name, and refuse
+    # when it still matches more than one employee.
+    unless parts[1].present?
+      return "Please provide the employee's full name (first and last). Use LookupEmployee to search."
+    end
+
+    matches = Employee.where("first_name ILIKE ? AND last_name ILIKE ?", parts[0], parts[1])
+
+    if matches.count > 1
+      list = matches.limit(10).map(&:full_name).to_sentence
+      return "Multiple employees match '#{name}': #{list}. Please specify which one to delete."
+    end
+
+    employee = matches.first
 
     unless employee
       return "Employee '#{name}' not found. Use LookupEmployee to search."

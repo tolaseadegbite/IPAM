@@ -10,7 +10,7 @@ class LookupDevice < RubyLLM::Tool
     has_ip = ActiveRecord::Type::Boolean.new.cast(has_ip) unless has_ip.nil?
 
     scope = Device.left_joins(:department, :employee)
-                  .includes(:department, :employee)
+                  .includes(:department, :employee, :ip_addresses)
                   .limit(20)
 
     if query.present?

@@ -13,12 +13,12 @@ class GetDeviceBreakdown < RubyLLM::Tool
     devices = Device.left_joins(:department)
 
     if department.present?
-      devices = devices.where(departments: { name: department })
+      devices = devices.where("departments.name ILIKE ?", department)
     end
 
     if branch.present?
       devices = devices.joins(department: :branch)
-                       .where(branches: { name: branch })
+                       .where("branches.name ILIKE ?", branch)
     end
 
     by_type = devices.group(:device_type).count
