@@ -1,0 +1,14 @@
+<%= turbo_stream.prepend "messages" do %>
+  <% @older_messages.each do |message| %>
+    <%= render message %>
+  <% end %>
+<% end %>
+<% if @has_more_older %>
+  <%= turbo_stream.replace "history_sentinel" do %>
+    <div id="history_sentinel" data-chat-history-target="sentinel" data-oldest-id="<%= @older_messages.first.id %>" class="p-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
+      <span class="animate-pulse">Loading older messages…</span>
+    </div>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove "history_sentinel" %>
+<% end %>

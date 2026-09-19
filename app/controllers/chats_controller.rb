@@ -38,8 +38,36 @@ class ChatsController < ApplicationController
     end
   end
 
+  # Chat history renders newest-first in windows; older windows load on
+  # scroll-up via cursor pagination (stable while live messages append).
+  # NOTE: reorder (not order) — the chat messages association carries its
+  # own ascending ordering, which an appended order can never override.
+  HISTORY_PAGE_SIZE = 25
+
   def show
     @message = @chat.messages.build
+    ordered = @chat.messages.where.not(id: nil)
+
+    if params[:before_id].present?
+      @older_messages = ordered.where("messages.id < ?", params[:before_id].to_i)
+                               .reorder(id: :desc).limit(HISTORY_PAGE_SIZE).to_a.reverse
+      @has_more_older = @older_messages.any? &&
+        ordered.where("messages.id < ?", @older_messages.first.id).exists?
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to chat_path(@chat) }
+      end
+    else
+      @recent_messages = ordered.reorder(id: :desc).limit(HISTORY_PAGE_SIZE).to_a.reverse
+      @has_older = @recent_messages.any? &&
+        ordered.where("messages.id < ?", @recent_messages.first.id).exists?
+      respond_to do |format|
+        format.html
+        # Turbo Drive follows form-submission redirects expecting a full
+        # page, so a stream-format hit without a cursor renders the page.
+        format.turbo_stream { render :show, formats: [ :html ] }
+      end
+    end
   end
 
   def destroy

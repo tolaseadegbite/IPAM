@@ -11,6 +11,75 @@ class ChatsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "show renders newest window with sentinel when history overflows" do
+    30.times { |i| @chat.messages.create!(role: "user", content: "History message #{i + 1}") }
+
+    get chat_url(@chat)
+
+    assert_response :success
+    # Skeleton shares the .message class, so count user bubbles precisely.
+    assert_select "#messages .message--user", count: 25
+    assert_select "#history_sentinel"
+  end
+
+  test "show renders everything with no sentinel for short histories" do
+    @chat.messages.create!(role: "user", content: "Only message")
+
+    get chat_url(@chat)
+
+    assert_response :success
+    assert_select "#messages .message--user", count: 1
+    assert_select "#history_sentinel", count: 0
+  end
+
+  test "before_id turbo stream prepends the older window" do
+    30.times { |i| @chat.messages.create!(role: "user", content: "History message #{i + 1}") }
+    # NOTE: minimum ignores limit — resolve the window edge in Ruby.
+    # reorder (not order): the messages association sorts ascending by
+    # default, which an appended order can never override.
+    oldest_loaded = @chat.messages.reorder(id: :desc).limit(25).pluck(:id).min
+
+    get chat_url(@chat, before_id: oldest_loaded),
+        headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+    assert_response :success
+    assert_match(/action="prepend"/, response.body)
+    assert_match(/History message 1</, response.body)
+    # Only five older messages exist with nothing below them, so the
+    # exhausted window drops the sentinel instead of replacing it.
+    assert_match(/action="remove"/, response.body)
+  end
+
+  test "before_id turbo stream refreshes the sentinel mid-history" do
+    60.times { |i| @chat.messages.create!(role: "user", content: "History message #{i + 1}") }
+    edge = @chat.messages.reorder(id: :desc).limit(25).pluck(:id).min
+    next_oldest = @chat.messages.where("messages.id < ?", edge).reorder(id: :desc).limit(25).pluck(:id).min
+
+    get chat_url(@chat, before_id: edge),
+        headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+    assert_response :success
+    assert_match(/action="prepend"/, response.body)
+    assert_match(/data-oldest-id="#{next_oldest}"/, response.body)
+  end
+
+  test "before_id turbo stream drops the sentinel when exhausted" do
+    3.times { |i| @chat.messages.create!(role: "user", content: "History message #{i + 1}") }
+    oldest = @chat.messages.minimum(:id)
+
+    get chat_url(@chat, before_id: oldest),
+        headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+    assert_response :success
+    assert_match(/action="remove"/, response.body)
+  end
+
+  test "before_id over html redirects to the clean chat page" do
+    get chat_url(@chat, before_id: 123)
+
+    assert_redirected_to chat_url(@chat)
+  end
+
   test "flips chat to build mode" do
     patch chat_url(@chat), params: { chat: { mode: "build" } }
     assert_redirected_to chat_url(@chat)
