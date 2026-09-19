@@ -18,8 +18,12 @@ class ChatModeToggleTest < ApplicationSystemTestCase
     visit chat_path(chat)
     assert_selector 'button[aria-pressed="true"]', text: "Plan"
 
+    # Draft preservation proves the switch applies in place: a reload
+    # would wipe the unsent textarea.
+    fill_in "message_content", with: "unsent draft"
     click_on "Build"
     assert_selector 'button[aria-pressed="true"]', text: "Build"
+    assert_field "message_content", with: "unsent draft"
     assert chat.reload.build_mode?
 
     refresh
@@ -66,7 +70,7 @@ class ChatModeToggleTest < ApplicationSystemTestCase
     # Toggle is the first item of the composer toolbar row, inside the
     # message form. Pills are plain buttons (never nested forms), so the
     # form contains zero nested <form> elements.
-    assert_selector "form#new_message [role='group'][aria-label='Assistant mode']"
+    assert_selector "form#new_message #chat_mode_toggle[role='group'][aria-label='Assistant mode']"
     assert_no_selector "form#new_message form"
     assert_selector "form#new_message [role='group'][aria-label='Assistant mode'] button[type='button']", count: 2
 
@@ -93,7 +97,7 @@ class ChatModeToggleTest < ApplicationSystemTestCase
 
     find("#chat_model option[value='gemini-3.1-flash-lite']").select_option
     within("[aria-label='Starting mode']") { find("label", text: "Build").click }
-    fill_in "Your question:", with: "Is anyone there?"
+    fill_in "chat_prompt", with: "Is anyone there?"
     click_on "Start new chat"
 
     # Chat creation persists agent configuration — allow for a slow store.

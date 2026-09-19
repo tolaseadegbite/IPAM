@@ -6,16 +6,7 @@
 
   <div class="flex items-end justify-between gap-2 pb-1">
     <div class="gap-2 flex items-center">
-      <div class="flex w-fit items-center gap-1 self-start rounded-full bg-zinc-200 p-0.5 dark:bg-zinc-800" role="group" aria-label="Assistant mode"
-           data-controller="mode-toggle" data-action="keydown@window->mode-toggle#escape">
-        <% [["Plan", "plan"], ["Build", "build"]].each do |label, key| %>
-          <% active = chat.mode == key %>
-          <button type="button" data-action="click->mode-toggle#switch"
-                data-mode-toggle-mode-param="<%= key %>" data-mode-toggle-url-param="<%= chat_path(chat) %>"
-                class="rounded-full px-3 py-1 text-xs font-semibold <%= active ? "bg-orange-500 text-white shadow-sm" : "text-zinc-500 dark:text-zinc-400" %>"
-                aria-pressed="<%= active %>" title="<%= active ? "#{label} mode (current, Esc to switch)" : "Switch to #{label.downcase} mode (Esc)" %>"><%= label %></button>
-        <% end %>
-      </div>
+      <%= render "messages/mode_toggle", chat: chat %>
       <div class="flex items-center gap-2">
           <%= tag.div class: "flex items-center gap-1", data: {
             controller: "dropzone",

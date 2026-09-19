@@ -51,14 +51,27 @@ class ChatsController < ApplicationController
   # bounce back instead of raising on the enum.
   def update
     unless Chat.modes.key?(chat_params[:mode])
-      redirect_to @chat, alert: "Unknown mode."
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.update("flash_messages", partial: "shared/flash", locals: { alert: "Unknown mode." })
+        end
+        format.html { redirect_to @chat, alert: "Unknown mode." }
+      end
       return
     end
 
     @chat.update!(chat_params)
-    # 303 so fetch/XHR clients follow with GET. A 302 would preserve the
-    # PATCH across the redirect and loop (browsers only rewrite POST to GET).
-    redirect_to @chat, notice: "Switched to #{@chat.mode} mode.", status: :see_other
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace("chat_mode_toggle", partial: "messages/mode_toggle", locals: { chat: @chat }),
+          turbo_stream.update("flash_messages", partial: "shared/flash", locals: { notice: "Switched to #{@chat.mode} mode." })
+        ]
+      end
+      # 303 so fetch/XHR clients follow with GET. A 302 would preserve the
+      # PATCH across the redirect and loop (browsers only rewrite POST to GET).
+      format.html { redirect_to @chat, notice: "Switched to #{@chat.mode} mode.", status: :see_other }
+    end
   end
 
   private
