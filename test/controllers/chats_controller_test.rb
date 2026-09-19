@@ -20,6 +20,7 @@ class ChatsControllerTest < ActionDispatch::IntegrationTest
     # Skeleton shares the .message class, so count user bubbles precisely.
     assert_select "#messages .message--user", count: 25
     assert_select "#history_sentinel"
+    assert_select "#history_sentinel", text: /5 older messages above/
   end
 
   test "show renders everything with no sentinel for short histories" do

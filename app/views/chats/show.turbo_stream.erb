@@ -3,11 +3,9 @@
     <%= render message %>
   <% end %>
 <% end %>
-<% if @has_more_older %>
+<% if @remaining.to_i > 0 %>
   <%= turbo_stream.replace "history_sentinel" do %>
-    <div id="history_sentinel" data-chat-history-target="sentinel" data-oldest-id="<%= @older_messages.first.id %>" class="p-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
-      <span class="animate-pulse">Loading older messages…</span>
-    </div>
+    <%= render "chats/history_sentinel", oldest_id: @older_messages.first.id, remaining: @remaining %>
   <% end %>
 <% else %>
   <%= turbo_stream.remove "history_sentinel" %>

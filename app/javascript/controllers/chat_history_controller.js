@@ -4,21 +4,24 @@ import { Controller } from "@hotwired/stimulus"
 // message list carries the oldest loaded id; scrolling it into view
 // fetches the next older window and prepends it, compensating scrollTop
 // so the view stays anchored instead of jumping.
+//
+// Pacing, not position, bounds the trigger: fires are cooldown-limited
+// (with exponential backoff on failures), so momentum scrolling and
+// post-insertion reflow can never machine-gun the history — yet slow,
+// continuous scrolling always makes progress without any exit/re-enter
+// dance.
+const COOLDOWN_MS = 1500
+const MAX_BACKOFF_MS = 30000
+
 export default class extends Controller {
   static targets = ["sentinel"]
   static values = { loading: { type: Boolean, default: false } }
 
   connect() {
-    // One window per visit: firing disarms until the sentinel leaves the
-    // viewport, so a single scroll gesture (or momentum + reflow) can never
-    // machine-gun the whole history. Scrolling away and back re-arms.
-    this.armed = true
+    this.lastFiredAt = 0
+    this.consecutiveFailures = 0
     this.observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        if (this.armed) this.#loadOlder()
-      } else {
-        this.armed = true
-      }
+      if (entries[0].isIntersecting) this.#loadOlder()
     }, { root: this.element, rootMargin: "200px" })
     if (this.hasSentinelTarget) this.observer.observe(this.sentinelTarget)
   }
@@ -27,10 +30,15 @@ export default class extends Controller {
     this.observer?.disconnect()
   }
 
+  #cooldownMs() {
+    return Math.min(COOLDOWN_MS * (2 ** this.consecutiveFailures), MAX_BACKOFF_MS)
+  }
+
   async #loadOlder() {
     if (this.loadingValue || !this.hasSentinelTarget) return
+    if (Date.now() - this.lastFiredAt < this.#cooldownMs()) return
     this.loadingValue = true
-    this.armed = false
+    this.lastFiredAt = Date.now()
     this.observer.unobserve(this.sentinelTarget)
 
     const oldestId = this.sentinelTarget.dataset.oldestId
@@ -48,7 +56,18 @@ export default class extends Controller {
         // otherwise the delta measures zero and the view jumps to the top.
         await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
         this.element.scrollTop += this.element.scrollHeight - previousHeight
-        if (this.hasSentinelTarget) this.observer.observe(this.sentinelTarget)
+        if (this.hasSentinelTarget) {
+          if (this.sentinelTarget.dataset.oldestId === oldestId) {
+            // The load applied nothing new (same cursor still in the DOM):
+            // surface it as a failure instead of looping silently.
+            this.#markFailed("sentinel did not advance")
+          } else {
+            this.consecutiveFailures = 0
+            this.observer.observe(this.sentinelTarget)
+          }
+        } else {
+          this.consecutiveFailures = 0
+        }
       } else {
         this.#markFailed(response.status)
       }
@@ -61,18 +80,15 @@ export default class extends Controller {
   }
 
   // A stuck silent spinner is worse than an error: leave the sentinel in
-  // place with a retry affordance. Re-arm on the next scroll (not
-  // immediately — the sentinel is already intersecting, which would
-  // retry in a tight loop on persistent failures).
+  // place with a retry affordance. Re-observing immediately is safe — the
+  // cooldown paces retries instead of tight-looping them.
   #markFailed(reason) {
     console.error("History load failed:", reason)
-    this.armed = true
+    this.consecutiveFailures += 1
     if (this.hasSentinelTarget) {
       this.sentinelTarget.innerHTML =
         '<span>Couldn\'t load older messages — scroll to retry</span>'
-      this.element.addEventListener("scroll", () => {
-        if (this.hasSentinelTarget) this.observer.observe(this.sentinelTarget)
-      }, { once: true })
+      this.observer.observe(this.sentinelTarget)
     }
   }
 }
