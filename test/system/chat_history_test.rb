@@ -46,8 +46,7 @@ class ChatHistoryTest < ApplicationSystemTestCase
     assert_operator after_top, :<, 300
   end
 
-  test "short histories render fully with no sentinel" do
-    chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
+  test "short histories render fully with no sentinel" do    chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
     chat.messages.create!(role: "user", content: "Only message")
 
     visit sign_in_path
@@ -59,6 +58,36 @@ class ChatHistoryTest < ApplicationSystemTestCase
     visit chat_path(chat)
 
     assert_selector "#messages .message--user", count: 1
+    assert_no_selector "#history_sentinel"
+  end
+
+  test "one scroll gesture loads exactly one window" do
+    chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
+    60.times { |i| chat.messages.create!(role: "user", content: "History message #{i + 1}") }
+    ids = chat.messages.order(:id).pluck(:id)
+
+    visit sign_in_path
+    fill_in "Username", with: @user.username
+    fill_in "Password", with: "Secret1*3*5*"
+    click_on "Sign in"
+    assert_text "Needs attention", wait: 10
+
+    visit chat_path(chat)
+    assert_selector "#messages .message--user", count: 25
+    assert_selector "#history_sentinel[data-oldest-id='#{ids[-25]}']"
+
+    # One gesture: exactly one older window loads (oldest drops by 25),
+    # even though history remains below it.
+    scroll_to(find("#history_sentinel"))
+    assert_selector "#messages .message--user", count: 50, wait: 10
+    sleep 2
+    assert_selector "#history_sentinel[data-oldest-id='#{ids[-50]}']"
+
+    # Scroll away and back: the second visit loads the final window.
+    evaluate_script("document.querySelector('#messages').scrollTop = document.querySelector('#messages').scrollHeight")
+    sleep 1
+    scroll_to(find("#history_sentinel"))
+    assert_selector "#messages .message--user", count: 60, wait: 10
     assert_no_selector "#history_sentinel"
   end
 end

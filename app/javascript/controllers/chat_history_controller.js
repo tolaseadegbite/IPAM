@@ -9,8 +9,16 @@ export default class extends Controller {
   static values = { loading: { type: Boolean, default: false } }
 
   connect() {
+    // One window per visit: firing disarms until the sentinel leaves the
+    // viewport, so a single scroll gesture (or momentum + reflow) can never
+    // machine-gun the whole history. Scrolling away and back re-arms.
+    this.armed = true
     this.observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) this.#loadOlder()
+      if (entries[0].isIntersecting) {
+        if (this.armed) this.#loadOlder()
+      } else {
+        this.armed = true
+      }
     }, { root: this.element, rootMargin: "200px" })
     if (this.hasSentinelTarget) this.observer.observe(this.sentinelTarget)
   }
@@ -22,6 +30,7 @@ export default class extends Controller {
   async #loadOlder() {
     if (this.loadingValue || !this.hasSentinelTarget) return
     this.loadingValue = true
+    this.armed = false
     this.observer.unobserve(this.sentinelTarget)
 
     const oldestId = this.sentinelTarget.dataset.oldestId
@@ -57,6 +66,7 @@ export default class extends Controller {
   // retry in a tight loop on persistent failures).
   #markFailed(reason) {
     console.error("History load failed:", reason)
+    this.armed = true
     if (this.hasSentinelTarget) {
       this.sentinelTarget.innerHTML =
         '<span>Couldn\'t load older messages — scroll to retry</span>'
