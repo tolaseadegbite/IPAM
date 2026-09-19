@@ -26,19 +26,43 @@ export default class extends Controller {
 
     const oldestId = this.sentinelTarget.dataset.oldestId
     const previousHeight = this.element.scrollHeight
+    // Flag the container so the autoscroll controller never mistakes a
+    // history prepend for content worth snapping to the bottom for.
+    this.element.dataset.historyLoading = "true"
     try {
       const response = await fetch(`${window.location.pathname}?before_id=${oldestId}`, {
         headers: { Accept: "text/vnd.turbo-stream.html" }
       })
       if (response.ok) {
         Turbo.renderStreamMessage(await response.text())
+        // Turbo lands the DOM asynchronously: compensate only after layout,
+        // otherwise the delta measures zero and the view jumps to the top.
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
         this.element.scrollTop += this.element.scrollHeight - previousHeight
         if (this.hasSentinelTarget) this.observer.observe(this.sentinelTarget)
+      } else {
+        this.#markFailed(response.status)
       }
     } catch (error) {
-      console.error("History load failed:", error)
+      this.#markFailed(error)
     } finally {
+      delete this.element.dataset.historyLoading
       this.loadingValue = false
+    }
+  }
+
+  // A stuck silent spinner is worse than an error: leave the sentinel in
+  // place with a retry affordance. Re-arm on the next scroll (not
+  // immediately — the sentinel is already intersecting, which would
+  // retry in a tight loop on persistent failures).
+  #markFailed(reason) {
+    console.error("History load failed:", reason)
+    if (this.hasSentinelTarget) {
+      this.sentinelTarget.innerHTML =
+        '<span>Couldn\'t load older messages — scroll to retry</span>'
+      this.element.addEventListener("scroll", () => {
+        if (this.hasSentinelTarget) this.observer.observe(this.sentinelTarget)
+      }, { once: true })
     }
   }
 }

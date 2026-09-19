@@ -23,6 +23,7 @@ class ChatHistoryTest < ApplicationSystemTestCase
     within("#messages") { assert_no_text(/\bHistory message 1\b/) }
 
     fill_in "message_content", with: "unsent draft"
+    evaluate_script("window.__anchorId = document.querySelector('#messages .message--user').id")
     scroll_to(find("#history_sentinel"))
 
     within("#messages") { assert_text(/\bHistory message 1\b/, wait: 10) }
@@ -30,9 +31,19 @@ class ChatHistoryTest < ApplicationSystemTestCase
     assert_no_selector "#history_sentinel"
     assert_field "message_content", with: "unsent draft"
 
-    scroll_position = evaluate_script("document.querySelector('#messages').scrollTop")
+    # The no-jump invariant: after older content lands above, the anchor
+    # message must sit near the top where the user parked — not pushed
+    # ~1700px down-viewport (the jump-to-top bug) nor snapped to bottom.
+    after_top = evaluate_script(<<~JS)
+      (() => {
+        const list = document.querySelector('#messages');
+        const anchor = document.getElementById(window.__anchorId);
+        return anchor.getBoundingClientRect().top - list.getBoundingClientRect().top;
+      })()
+    JS
 
-    assert_operator scroll_position, :>, 0
+    assert_operator after_top, :>, -50
+    assert_operator after_top, :<, 300
   end
 
   test "short histories render fully with no sentinel" do

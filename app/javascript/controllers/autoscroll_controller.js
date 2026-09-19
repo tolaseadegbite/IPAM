@@ -10,6 +10,9 @@ export default class extends Controller {
       this.#wasNearBottom = this.element.scrollHeight - this.element.scrollTop - this.element.clientHeight < this.thresholdValue
     })
     this.observer = new MutationObserver(() => {
+      // History prepends above the viewport must never trigger a snap:
+      // the history controller flags the container while loading.
+      if (this.element.dataset.historyLoading) return
       if (this.#wasNearBottom) this.#scrollToBottom()
     })
     this.observer.observe(this.element, { childList: true, subtree: true, characterData: true })
