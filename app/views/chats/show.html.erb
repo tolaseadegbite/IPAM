@@ -6,20 +6,20 @@
   <span class="block truncate"><%= @chat.messages.order(:id).first&.content&.truncate(60) || "NAT Assistant" %></span>
 <% end %>
 
-<div class="flex w-full flex-col max-w-7xl mx-auto" style="height: calc(100dvh - 12rem);">
-  <div id="messages" data-controller="autoscroll chat-history" class="mb-4 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto rounded-xl border border-zinc-200 bg-white p-3 sm:p-4 [overflow-anchor:none] dark:border-white/10 dark:bg-zinc-900">
-    <% if @has_older %>
-      <%= render "chats/history_sentinel", oldest_id: @recent_messages.first.id, remaining: @remaining %>
-    <% end %>
-    <% @recent_messages.each do |message| %>
-      <%= render message %>
-    <% end %>
-    <% if @chat.messages.exists?(role: :user) %>
-      <% last_assistant = @chat.messages.where(role: :assistant).order(:id).last %>
-      <% if last_assistant.nil? || last_assistant.content.blank? %>
-        <%= render "messages/assistant_skeleton", skeleton_id: "message_skeleton_#{@chat.id}" %>
+<div class="flex w-full flex-col max-w-7xl mx-auto" style="height: calc(100dvh - 12rem);" data-controller="messages" data-messages-page-url-value="<%= chat_messages_url(@chat) %>" data-action="turbo:before-stream-render@document->messages#beforeStreamRender turbo:submit-end@document->messages#composerSubmitted">
+  <div class="relative mb-4 flex min-h-0 flex-1 flex-col">
+    <div id="messages" data-messages-target="messages" class="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto rounded-xl border border-zinc-200 bg-white p-3 sm:p-4 dark:border-white/10 dark:bg-zinc-900">
+      <% @messages.each do |message| %>
+        <%= render message %>
       <% end %>
-    <% end %>
+      <% if @chat.messages.exists?(role: :user) %>
+        <% last_assistant = @chat.messages.where(role: :assistant).order(:id).last %>
+        <% if last_assistant.nil? || last_assistant.content.blank? %>
+          <%= render "messages/assistant_skeleton", skeleton_id: "message_skeleton_#{@chat.id}" %>
+        <% end %>
+      <% end %>
+    </div>
+    <button type="button" id="jump_to_newest" data-messages-target="latest" data-action="click->messages#returnToLatest" hidden class="fixed bottom-28 left-1/2 z-30 w-fit -translate-x-1/2 rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold text-white shadow-lg dark:bg-white dark:text-zinc-900">Jump to newest</button>
   </div>
 
   <div class="mt-auto">

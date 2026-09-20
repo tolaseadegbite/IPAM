@@ -17,23 +17,19 @@ class ChatHistoryTest < ApplicationSystemTestCase
 
     visit chat_path(chat)
     assert_selector "#messages .message--user", count: 25
-    assert_selector "#history_sentinel"
-    # NOTE: scoped to the list (the header quotes message 1), with a word
-    # boundary so messages 10-19 do not match.
-    within("#messages") { assert_no_text(/\bHistory message 1\b/) }
+    # The pill is a viewport overlay: hidden initially and never
+    # contributing to page layout.
+    assert_selector "#jump_to_newest", visible: :hidden
 
     fill_in "message_content", with: "unsent draft"
-    evaluate_script("window.__anchorId = document.querySelector('#messages .message--user').id")
-    scroll_to(find("#history_sentinel"))
+    scroll_to_first_row
 
     within("#messages") { assert_text(/\bHistory message 1\b/, wait: 10) }
     assert_selector "#messages .message--user", count: 30
-    assert_no_selector "#history_sentinel"
     assert_field "message_content", with: "unsent draft"
 
-    # The no-jump invariant: after older content lands above, the anchor
-    # message must sit near the top where the user parked — not pushed
-    # ~1700px down-viewport (the jump-to-top bug) nor snapped to bottom.
+    # The no-jump invariant: the anchor message sits near the top where
+    # the user parked — not pushed down-viewport nor snapped to bottom.
     after_top = evaluate_script(<<~JS)
       (() => {
         const list = document.querySelector('#messages');
@@ -46,7 +42,8 @@ class ChatHistoryTest < ApplicationSystemTestCase
     assert_operator after_top, :<, 300
   end
 
-  test "short histories render fully with no sentinel" do    chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
+  test "short histories render fully" do
+    chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
     chat.messages.create!(role: "user", content: "Only message")
 
     visit sign_in_path
@@ -58,13 +55,11 @@ class ChatHistoryTest < ApplicationSystemTestCase
     visit chat_path(chat)
 
     assert_selector "#messages .message--user", count: 1
-    assert_no_selector "#history_sentinel"
   end
 
-  test "one scroll gesture loads exactly one window" do
+  test "live arrivals reveal the pill and return on click" do
     chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
     60.times { |i| chat.messages.create!(role: "user", content: "History message #{i + 1}") }
-    ids = chat.messages.order(:id).pluck(:id)
 
     visit sign_in_path
     fill_in "Username", with: @user.username
@@ -74,28 +69,44 @@ class ChatHistoryTest < ApplicationSystemTestCase
 
     visit chat_path(chat)
     assert_selector "#messages .message--user", count: 25
-    assert_selector "#history_sentinel[data-oldest-id='#{ids[-25]}']"
+    assert_selector "#jump_to_newest", visible: :hidden
 
-    # One gesture: exactly one older window loads (oldest drops by 25),
-    # even though history remains below it.
-    scroll_to(find("#history_sentinel"))
-    assert_selector "#messages .message--user", count: 50, wait: 10
-    sleep 2
-    assert_selector "#history_sentinel[data-oldest-id='#{ids[-50]}']"
-    assert_text "10 older messages above"
+    # Scroll into history, then simulate a live cable append arriving
+    # while behind: the pill appears instead of snapping.
+    scroll_to_first_row
+    within("#messages") { assert_text(/\bHistory message 11\b/, wait: 10) }
+    evaluate_script(<<~JS)
+      (() => {
+        const stream = document.createElement("turbo-stream");
+        stream.setAttribute("action", "append");
+        stream.setAttribute("target", "messages");
+        stream.innerHTML = "<template><div id=\\"message_999999\\" class=\\"message message--user\\"><div class=\\"message__content\\">Live arrival</div></div></template>";
+        const detail = {
+          newStream: stream,
+          render: (el) => Turbo.renderStreamMessage(el.outerHTML)
+        };
+        document.dispatchEvent(new CustomEvent("turbo:before-stream-render", {
+          cancelable: true, detail
+        }));
+        // The controller wraps detail.render synchronously; invoking it
+        // simulates Turbo completing the stream render.
+        detail.render(stream);
+      })()
+    JS
 
-    # Scroll away and back: the second visit loads the final window.
-    evaluate_script("document.querySelector('#messages').scrollTop = document.querySelector('#messages').scrollHeight")
-    sleep 1
-    scroll_to(find("#history_sentinel"))
-    assert_selector "#messages .message--user", count: 60, wait: 10
-    assert_no_selector "#history_sentinel"
+    assert_selector "#jump_to_newest:not([hidden])", wait: 10
+    assert_text "Live arrival"
+
+    # Returning resets to the latest page (synthetic row was never saved).
+    click_on "Jump to newest"
+    assert_selector "#messages .message--user", count: 25, wait: 10
+    assert_no_text "Live arrival"
+    assert_selector "#jump_to_newest", visible: :hidden
   end
 
-  test "rapid re-entry within cooldown fires nothing more" do
+  test "dom stays bounded on long histories" do
     chat = Chat.create!(user: @user, model: "gemini-3.1-flash-lite")
-    90.times { |i| chat.messages.create!(role: "user", content: "History message #{i + 1}") }
-    ids = chat.messages.order(:id).pluck(:id)
+    400.times { |i| chat.messages.create!(role: "user", content: "History message #{i + 1}") }
 
     visit sign_in_path
     fill_in "Username", with: @user.username
@@ -106,25 +117,18 @@ class ChatHistoryTest < ApplicationSystemTestCase
     visit chat_path(chat)
     assert_selector "#messages .message--user", count: 25
 
-    scroll_to(find("#history_sentinel"))
-    assert_selector "#history_sentinel[data-oldest-id='#{ids[-50]}']", wait: 10
+    scroll_to_first_row
+    within("#messages") { assert_text(/\bHistory message 351\b/, wait: 10) }
 
-    # Two immediate away-and-back cycles stay well inside the cooldown:
-    # the cursor must not advance further.
-    2.times do
-      evaluate_script("document.querySelector('#messages').scrollTop = document.querySelector('#messages').scrollHeight")
-      sleep 0.1
-      scroll_to(find("#history_sentinel"))
-      sleep 0.1
-    end
-    assert_selector "#history_sentinel[data-oldest-id='#{ids[-50]}']"
-    assert_selector "#messages .message--user", count: 50
+    row_count = evaluate_script("document.querySelectorAll('#messages [id^=\"message_\"]').length")
 
-    # Past the cooldown, the next visit advances one window.
-    sleep 2
-    evaluate_script("document.querySelector('#messages').scrollTop = document.querySelector('#messages').scrollHeight")
-    sleep 0.5
-    scroll_to(find("#history_sentinel"))
-    assert_selector "#history_sentinel[data-oldest-id='#{ids[-75]}']", wait: 10
+    assert_operator row_count, :<=, 330
+  end
+
+  private
+
+  def scroll_to_first_row
+    evaluate_script("window.__anchorId = document.querySelector('#messages .message--user').id")
+    scroll_to(find("#messages .message--user", match: :first))
   end
 end

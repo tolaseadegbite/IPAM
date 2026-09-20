@@ -1,7 +1,0 @@
-<div id="history_sentinel" data-chat-history-target="sentinel" data-oldest-id="<%= oldest_id %>" class="p-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
-  <% if remaining.to_i > 0 %>
-    <span class="animate-pulse"><%= pluralize(remaining, "older message") %> above — scroll for more…</span>
-  <% else %>
-    <span class="animate-pulse">Loading older messages…</span>
-  <% end %>
-</div>

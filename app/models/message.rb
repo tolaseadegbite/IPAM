@@ -1,5 +1,6 @@
 class Message < ApplicationRecord
   acts_as_message
+  include MessagePagination
   has_many_attached :attachments
 
   after_create :touch_chat
