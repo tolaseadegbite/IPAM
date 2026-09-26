@@ -1,4 +1,9 @@
 class NetworkReconService
+  # Device links dark longer than this are released back to the pool on
+  # each sweep. Days, not hours: weekends, public-holiday stretches and
+  # short leaves must never trigger a release. Reclaim unlinks only —
+  # rows (and their audit trail) are never deleted.
+  RECLAIM_AFTER = 5.days
   include BroadcastSafely
   include DashboardData
   # Entry point for scanning a specific subnet.
@@ -71,6 +76,8 @@ class NetworkReconService
         offline_records_to_broadcast = IpAddress.includes(:device, :subnet).where(id: offline_ids).to_a
         Rails.logger.info "[NetworkRecon] Marked #{offline_ids.count} hosts as OFFLINE in #{subnet_cidr}."
       end
+
+      reclaim_stale_links!(subnet_cidr)
     end
     # --- TRANSACTION CLOSES HERE. LOCK IS RELEASED. ---
 
@@ -233,6 +240,35 @@ class NetworkReconService
         }
       )
     end
+  end
+
+  # Releases device links dark longer than RECLAIM_AFTER. Called from the
+  # sweep's offline step; extracted (not inlined) so it is unit-testable
+  # without running nmap. Unlinks only — rows are never deleted, reserved
+  # rows are never touched, and live legs of multi-homed devices are
+  # unaffected (the decision is per IP, not per device).
+  def reclaim_stale_links!(subnet_cidr)
+    stale = IpAddress.where("address <<= ?", subnet_cidr)
+                     .where.not(device_id: nil)
+                     .where(reachability_status: :down)
+                     .where("last_seen_at < ?", RECLAIM_AFTER.ago)
+                     .where.not(status: :reserved)
+
+    reclaimed = 0
+    stale.find_each do |ip|
+      device = ip.device
+      ip.update!(device: nil)
+      NetworkEvent.create!(
+        kind: :info,
+        ip_address: ip.address.to_s,
+        device: device,
+        message: "Released #{ip.address} from '#{device&.name}' after #{RECLAIM_AFTER.inspect} dark; returned to the available pool."
+      )
+      reclaimed += 1
+    end
+
+    Rails.logger.info "[NetworkRecon] Reclaimed #{reclaimed} stale links in #{subnet_cidr}." if reclaimed.positive?
+    reclaimed
   end
 
   private
