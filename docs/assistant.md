@@ -23,15 +23,19 @@ Attach images (e.g. photos of handwritten IP books — NAT reads them visually),
 
 ## What NAT can do
 
-- **Lookups**: IPs, subnets, devices (including by MAC), employees, branches, departments, free-IP hunts (truly free: unassigned, never-seen, unreserved), device IP history, network stats, recent activity, device breakdowns.
-- **Changes**: assign/unassign IPs, create/update devices and employees, bulk-create devices from a list, delete devices (frees their IPs) or employees (only when deviceless).
+- **Lookups**: IPs (filterable by status, reachability, subnet), subnets (with live reachability counts, not just allocation), devices (including by MAC), employees, branches, departments, free-IP hunts (truly free: unassigned, never-seen, unreserved), live-but-unregistered hosts, device IP history, network stats, recent activity, device breakdowns.
+- **Changes**: assign/unassign IPs, create/update devices and employees, bulk-create devices from a list, delete devices (frees their IPs) or employees (only when deviceless), create/update subnets, trigger a live rescan of one subnet.
+- **Knows the difference** between allocation (`status`: is the IP assigned?) and liveness (`reachability`: is it answering?) — and will never answer one question with the other's data.
 
 ## Safety rules it follows
 
 - **Confirms before destructive acts**: unassigning and deleting always ask first.
+- **Collects required fields first**: subnet creation asks for name, CIDR, gateway, VLAN-or-none, and branch-or-no-branch up front — never plans with pieces missing.
 - **Refuses bad writes**: assigned or blacklisted IPs can't be double-assigned.
-- **Minimal edits**: updates touch only the fields you asked about.
+- **Refuses to guess people**: ambiguous names list the matches and ask instead of picking.
+- **Minimal edits**: updates touch only the fields you asked about — and ask which fields when you don't say.
 - **Bulk creates summarize first**: multi-device jobs show a plan, ask for confirmation, then report per-row success/failure.
+- **Scans on request only**: it reports from last-scan data with freshness, and offers rescans as follow-ups rather than firing sweeps unprompted.
 - **Auto-creates missing org records** when provisioning (branch/department/employee) rather than failing.
 
 ## Models

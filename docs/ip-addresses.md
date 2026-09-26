@@ -17,7 +17,7 @@ An IP that answers ping with **no device assigned** is rogue: unknown hardware o
 
 ## Ghost assets
 
-An **assigned** IP unseen for 30+ days is a ghost — usually decommissioned gear nobody recorded. The dashboard lists them with one-click **Reclaim**, which releases the device and frees the address.
+An **assigned** IP unseen for 5+ days is a ghost — usually decommissioned gear nobody recorded. Sweeps release such links automatically (device freed, address back to `available`, one event logged; `reserved` rows exempt, rows never deleted). For anything you want gone sooner, the dashboard lists ghosts with one-click **Reclaim**.
 
 ## IP pages
 
