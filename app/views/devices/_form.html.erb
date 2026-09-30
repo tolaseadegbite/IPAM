@@ -1,4 +1,4 @@
-<%= form_with(model: device, html: { contents: true, data: { controller: "subnet-scope" } }) do |form| %>
+<%= form_with(model: device, html: { contents: true, data: { controller: "subnet-scope interface-list", interface_list_max_value: DeviceSubnetPolicy.max_rows_for(device), interface_list_total_value: Subnet.count } }) do |form| %>
   <%= render "shared/error_messages", object: device %>
 
   <!-- SECTION: Hardware -->
@@ -19,6 +19,11 @@
     <div class="col-span-1 flex items-center gap mt-6">
       <%= label_tag :critical, "Critical device?", class: "text-sm font-medium cursor-pointer" %>
       <%= form.check_box :critical, class: "switch cursor-pointer", role: "switch" %>
+    </div>
+    <div class="col-span-1 flex items-center gap mt-6">
+      <%= label_tag :infrastructure, "Infrastructure?", class: "text-sm font-medium cursor-pointer" %>
+      <%= form.check_box :infrastructure, class: "switch cursor-pointer", role: "switch",
+            data: { action: "change->interface-list#retoggle", interface_list_target: "flag" } %>
     </div>
   </div>
 
@@ -107,9 +112,7 @@
   <!-- SECTION: Network Interfaces -->
   <h4 class="font-bold border rounded-lg p-4 pb-3 mb-4">Network Interfaces</h4>
 
-  <div data-controller="interface-list"
-       data-interface-list-max-value="<%= DeviceSubnetPolicy.max_rows %>">
-    <div id="interfaces-container" class="flex flex-col gap-4">
+  <div id="interfaces-container" class="flex flex-col gap-4">
       <%# One block per assigned IP plus a blank block — no silent drops. %>
       <% device.ip_addresses.order(:address).each_with_index do |ip, index| %>
         <%= render "devices/ip_interface_block", device: device, id: "interface-#{index}", assigned_ip: ip %>

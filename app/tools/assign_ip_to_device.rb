@@ -25,7 +25,7 @@ class AssignIpToDevice < RubyLLM::Tool
       return "IP #{ip_address} is blacklisted and cannot be assigned to a device. Choose a different IP."
     end
 
-    violations = DeviceSubnetPolicy.violations(device.ip_address_ids + [ ip.id ])
+    violations = DeviceSubnetPolicy.violations(device.ip_address_ids + [ ip.id ], exempt: device.infrastructure?)
     unless violations.empty?
       return "Cannot assign IP #{ip_address} to #{device.name}: #{violations.to_sentence}."
     end

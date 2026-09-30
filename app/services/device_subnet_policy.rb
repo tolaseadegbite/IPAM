@@ -19,16 +19,27 @@ class DeviceSubnetPolicy
     %w[172.15.242.0/24 172.16.242.0/24]
   ].freeze
 
-  def self.max_rows
+  def self.max_rows(exempt: false)
+    return Subnet.count if exempt
+
     # Only pairs whose both sides exist constrain the count: a rule about
     # subnets that aren't inventoried is vacuous, not a deduction.
     applicable = EXCLUSIVE_PAIRS.count { |pair| resolve_pair(pair).all? }
     Subnet.count - applicable
   end
 
+  # Per-device cap for the form: infrastructure spans all segments,
+  # anything else follows the derived cap. Single call site so the
+  # view never re-derives policy math.
+  def self.max_rows_for(device)
+    max_rows(exempt: device&.infrastructure? || false)
+  end
+
   # Returns an array of human-readable violations for the given IPs
   # (IpAddress records or ids). Empty means the set is legal.
-  def self.violations(ip_addresses)
+  # Infrastructure devices (multi-segment by design) bypass the pair
+  # rules; the one-series rule binds everyone.
+  def self.violations(ip_addresses, exempt: false)
     ips = Array(ip_addresses).map { |ip| ip.is_a?(IpAddress) ? ip : IpAddress.find_by(id: ip) }.compact
     return [] if ips.size < 2
 
@@ -41,14 +52,16 @@ class DeviceSubnetPolicy
       end
     end
 
-    pair_members = EXCLUSIVE_PAIRS.map { |pair| resolve_pair(pair) }
-    held = ips.map(&:subnet_id).uniq
-    pair_members.each do |a_id, b_id|
-      next if a_id.nil? || b_id.nil?
-      if held.include?(a_id) && held.include?(b_id)
-        a_name = Subnet.find_by(id: a_id)&.name || a_id
-        b_name = Subnet.find_by(id: b_id)&.name || b_id
-        messages << "cannot hold both #{a_name} and #{b_name} — either side, not both"
+    unless exempt
+      pair_members = EXCLUSIVE_PAIRS.map { |pair| resolve_pair(pair) }
+      held = ips.map(&:subnet_id).uniq
+      pair_members.each do |a_id, b_id|
+        next if a_id.nil? || b_id.nil?
+        if held.include?(a_id) && held.include?(b_id)
+          a_name = Subnet.find_by(id: a_id)&.name || a_id
+          b_name = Subnet.find_by(id: b_id)&.name || b_id
+          messages << "cannot hold both #{a_name} and #{b_name} — either side, not both"
+        end
       end
     end
 

@@ -40,7 +40,7 @@ class Device < ApplicationRecord
   validate :ip_subnet_combination_valid
 
   def ip_subnet_combination_valid
-    DeviceSubnetPolicy.violations(ip_address_ids).each do |message|
+    DeviceSubnetPolicy.violations(ip_address_ids, exempt: infrastructure?).each do |message|
       errors.add(:ip_addresses, message)
     end
   end
