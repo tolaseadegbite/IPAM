@@ -95,6 +95,7 @@ Rails.application.routes.draw do
 
     collection do
       get :select_options
+      get :interface_row
     end
   end
 

@@ -107,12 +107,20 @@
   <!-- SECTION: Network Interfaces -->
   <h4 class="font-bold border rounded-lg p-4 pb-3 mb-4">Network Interfaces</h4>
 
-  <div id="interfaces-container" class="flex flex-col gap-4">
-    <%# One block per assigned IP plus a blank block — no silent drops. %>
-    <% device.ip_addresses.order(:address).each_with_index do |ip, index| %>
-      <%= render "devices/ip_interface_block", device: device, id: "interface-#{index}", assigned_ip: ip %>
-    <% end %>
-    <%= render "devices/ip_interface_block", device: device, id: "interface-new", assigned_ip: nil %>
+  <div data-controller="interface-list"
+       data-interface-list-max-value="<%= DeviceSubnetPolicy.max_rows %>">
+    <div id="interfaces-container" class="flex flex-col gap-4">
+      <%# One block per assigned IP plus a blank block — no silent drops. %>
+      <% device.ip_addresses.order(:address).each_with_index do |ip, index| %>
+        <%= render "devices/ip_interface_block", device: device, id: "interface-#{index}", assigned_ip: ip %>
+      <% end %>
+      <%= render "devices/ip_interface_block", device: device, id: "interface-new", assigned_ip: nil %>
+    </div>
+
+    <div class="mt-2 flex items-center gap-3">
+      <%= link_to "Add IP", interface_row_devices_path, data: { turbo_stream: true, interface_list_target: "add" }, class: "btn text-sm" %>
+      <span data-interface-list-target="hint" class="text-xs text-zinc-500 dark:text-zinc-400"></span>
+    </div>
   </div>
 
   <!-- Actions -->
