@@ -34,21 +34,32 @@ export default class extends Controller {
   }
 
   #refresh() {
-    const max = this.#maxRows()
-    const count = this.element.querySelectorAll("[data-interface-row]").length
-    const maxed = count >= max
-    if (this.hasAddTarget) {
-      this.addTarget.classList.toggle("hidden", maxed)
-      this.addTarget.setAttribute("aria-disabled", maxed)
+    // Disconnect while applying our own writes: observer callbacks from
+    // our own mutations are pure feedback, and any write that isn't a
+    // DOM no-op would otherwise ping-pong forever and wedge the tab.
+    this.observer.disconnect()
+    try {
+      const max = this.#maxRows()
+      const count = this.element.querySelectorAll("[data-interface-row]").length
+      const maxed = count >= max
+      if (this.hasAddTarget) {
+        this.addTarget.classList.toggle("hidden", maxed)
+        this.#setAttribute(this.addTarget, "aria-disabled", String(maxed))
+      }
+      if (this.hasHintTarget) {
+        const text = this.hasFlagTarget && this.flagTarget.checked ?
+          `Up to ${max} interfaces (infrastructure: all segments allowed).` :
+          `Up to ${max} interfaces: one per segment (.13/.30 and .15/.16 excluded).`
+        if (this.hintTarget.textContent !== text) this.hintTarget.textContent = text
+      }
+    } finally {
+      this.observer.observe(this.element, { childList: true, subtree: true })
     }
-    // Compare before assigning: unguarded textContent writes re-trigger
-    // this subtree observer forever, pegging the tab and starving the
-    // driver. classList.toggle above is already a no-op when unchanged.
-    if (this.hasHintTarget) {
-      const text = this.hasFlagTarget && this.flagTarget.checked ?
-        `Up to ${max} interfaces (infrastructure: all segments allowed).` :
-        `Up to ${max} interfaces: one per segment (.13/.30 and .15/.16 excluded).`
-      if (this.hintTarget.textContent !== text) this.hintTarget.textContent = text
-    }
+  }
+
+  // setAttribute is only guaranteed mutation-free when the value is
+  // identical — compare first so our own writes can never re-trigger us.
+  #setAttribute(element, name, value) {
+    if (element.getAttribute(name) !== value) element.setAttribute(name, value)
   }
 }

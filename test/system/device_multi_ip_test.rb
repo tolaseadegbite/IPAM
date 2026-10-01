@@ -41,6 +41,45 @@ class DeviceMultiIpTest < ApplicationSystemTestCase
                  device.reload.ip_addresses.map { |ip| ip.address.to_s }.sort
   end
 
+  test "removing a row cycles cleanly and releases on save" do
+    device = Device.create!(
+      name: "Cycle Box", device_type: :desktop, status: :active,
+      department: departments(:one)
+    )
+    keep = IpAddress.find_by!(address: "192.168.13.10")
+    drop = IpAddress.find_by!(address: "172.15.242.10")
+    keep.update!(device: device)
+    drop.update!(device: device)
+
+    visit sign_in_path
+    fill_in "Username", with: @user.username
+    fill_in "Password", with: "Secret1*3*5*"
+    click_on "Sign in"
+    assert_text "Needs attention", wait: 10
+
+    visit edit_device_path(device)
+    # Two linked rows plus the perpetual blank row. Target rows by their
+    # selected IP value — row order follows address sort, not creation.
+    rows = interface_rows(3)
+    drop_row = rows.find { |r| r.find("select[name='device[ip_address_ids][]']").value == drop.id.to_s }
+
+    # Remove the .15 row, add a fresh blank one, remove it too —
+    # repeated add/remove cycles must never wedge the tab.
+    drop_row.find("button[aria-label='Remove interface row']").click
+    assert_selector "#interfaces-container [data-interface-row]", count: 2, wait: 10
+    click_on "Add IP"
+    rows = interface_rows(3)
+    blank_row = rows.find { |r| r.find("select[name='device[ip_address_ids][]']").value.to_s.empty? }
+    blank_row.find("button[aria-label='Remove interface row']").click
+    assert_selector "#interfaces-container [data-interface-row]", count: 2, wait: 10
+
+    click_on "Save Device"
+    assert_text "Device updated successfully", wait: 10
+    assert_equal [ "192.168.13.10" ],
+                 device.reload.ip_addresses.map { |ip| ip.address.to_s }
+    assert drop.reload.available?
+  end
+
   test "forbidden pairs are rejected with an explanation" do
     device = Device.create!(
       name: "Pair Box", device_type: :desktop, status: :active,
