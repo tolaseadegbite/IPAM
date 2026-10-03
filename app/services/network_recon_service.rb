@@ -4,6 +4,11 @@ class NetworkReconService
   # short leaves must never trigger a release. Reclaim unlinks only —
   # rows (and their audit trail) are never deleted.
   RECLAIM_AFTER = 5.days
+
+  # A release requires proof of looking, not just old timestamps: no
+  # releases unless a sweep completed within this window. Monitoring
+  # gaps therefore pause reclaim instead of massacring on stale data.
+  SWEEP_FRESHNESS_WINDOW = 24.hours
   include BroadcastSafely
   include DashboardData
   # Entry point for scanning a specific subnet.
@@ -248,6 +253,18 @@ class NetworkReconService
   # rows are never touched, and live legs of multi-homed devices are
   # unaffected (the decision is per IP, not per device).
   def reclaim_stale_links!(subnet_cidr)
+    cache_key = "subnet_last_swept_at_#{subnet_cidr}"
+    previous_sweep = Rails.cache.read(cache_key)
+    # Stamp unconditionally: a returning sweep re-arms the gate for the
+    # next one even when this run releases nothing. Reaching here proves
+    # nmap worked (the guard above returns early otherwise), so the stamp
+    # never certifies a failed sweep.
+    Rails.cache.write(cache_key, Time.current)
+    if previous_sweep.nil? || previous_sweep < SWEEP_FRESHNESS_WINDOW.ago
+      Rails.logger.info "[NetworkRecon] Skipping reclaim in #{subnet_cidr}: no sweep in the last #{SWEEP_FRESHNESS_WINDOW.inspect}."
+      return 0
+    end
+
     stale = IpAddress.where("address <<= ?", subnet_cidr)
                      .where.not(device_id: nil)
                      .where(reachability_status: :down)
