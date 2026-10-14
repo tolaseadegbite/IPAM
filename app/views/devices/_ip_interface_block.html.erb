@@ -5,6 +5,7 @@
 %>
 
 <div class="grid grid-cols-1 gap-4 rounded-lg bg-zinc-100 p-4 sm:grid-cols-2 dark:bg-white/5"
+     data-interface-row
      data-controller="dependent-select" 
      data-dependent-select-url-value="<%= select_options_ip_addresses_path(field_name: 'device[ip_address_ids][]', frame_id: "ip_options_#{id}") %>"
      data-dependent-select-param-value="subnet_id"
@@ -34,10 +35,17 @@
                end
       %>
       
-      <%= select_tag "device[ip_address_ids][]",
-            options_from_collection_for_select(ips, :id, :address, assigned_ip&.id),
-            prompt: assigned_ip ? "Select IP..." : "Select Subnet First",
-            class: "input w-full cursor-pointer" %>
+    <%= select_tag "device[ip_address_ids][]",
+          options_from_collection_for_select(ips, :id, :address, assigned_ip&.id),
+          prompt: assigned_ip ? "Select IP..." : "Select Subnet First",
+          class: "input w-full cursor-pointer" %>
     <% end %>
+  </div>
+
+  <div class="sm:col-span-2 flex justify-end">
+    <button type="button" data-action="click->interface-list#remove" title="Remove this interface row" aria-label="Remove interface row"
+            class="btn btn--icon btn--plain border-0 !p-2 text-zinc-400 hover:text-red-600 dark:hover:text-red-400">
+      <%= icon("trash-2", "h-[18px] w-[18px]") %>
+    </button>
   </div>
 </div>

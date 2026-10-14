@@ -34,6 +34,17 @@ class Device < ApplicationRecord
   # Validation to ensure a device doesn't have an IP assigned if it's "Retired"
   validate :ip_released_if_retired
 
+  # Estate subnet-combination policy (one series per device, exclusive
+  # pairs). Runs on the incoming link set so the form, API, console and
+  # seeds all obey the same rules.
+  validate :ip_subnet_combination_valid
+
+  def ip_subnet_combination_valid
+    DeviceSubnetPolicy.violations(ip_address_ids, exempt: infrastructure?).each do |message|
+      errors.add(:ip_addresses, message)
+    end
+  end
+
   def self.ransackable_attributes(auth_object = nil)
     %w[ name mac_address device_type critical status location created_at updated_at ]
   end

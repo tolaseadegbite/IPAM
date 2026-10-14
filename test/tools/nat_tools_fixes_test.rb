@@ -1,6 +1,23 @@
 require "test_helper"
 
 class NatToolsFixesTest < ActiveSupport::TestCase
+  test "assign refuses forbidden subnet combinations" do
+    corp = Subnet.create!(name: "Corporate", network_address: "192.168.13.0/24", gateway: "192.168.13.1")
+    alt = Subnet.create!(name: "Alt Corp", network_address: "192.168.30.0/24", gateway: "192.168.30.1")
+    device = Device.create!(
+      name: "Combo Tool Box", device_type: :desktop, status: :active,
+      department: departments(:one)
+    )
+    first = IpAddress.find_by!(address: "192.168.13.10")
+    first.update!(device: device)
+    second = IpAddress.find_by!(address: "192.168.30.10")
+
+    result = AssignIpToDevice.new.execute(ip_address: "192.168.30.10", device_name: "Combo Tool Box")
+
+    assert_match(/either side, not both/i, result)
+    assert_nil second.reload.device_id
+  end
+
   test "find_free_ips reports unknown subnet instead of raising" do
     result = FindFreeIps.new.execute(subnet_id: -1)
 

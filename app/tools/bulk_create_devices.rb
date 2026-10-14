@@ -156,6 +156,12 @@ class BulkCreateDevices < RubyLLM::Tool
         return { line: "#{index}. #{device_info}", success: true }
       end
 
+      violations = DeviceSubnetPolicy.violations(device.ip_address_ids + [ ip.id ], exempt: device.infrastructure?)
+      if violations.any?
+        device_info << ". Device created but IP #{ip_address} not assigned: #{violations.to_sentence}."
+        return { line: "#{index}. #{device_info}", success: true }
+      end
+
       ip.update!(device: device)
       device_info << ". Assigned IP #{ip_address}."
     end

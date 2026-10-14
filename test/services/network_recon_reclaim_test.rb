@@ -5,6 +5,16 @@ class NetworkReconReclaimTest < ActiveSupport::TestCase
     @subnet = subnets(:one)
     @device = devices(:one)
     @service = NetworkReconService.new
+    # Test env uses null_store: swap in memory so the freshness gate
+    # behaves like production. Restored after each test.
+    @real_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    # Gate open: a sweep ran just now.
+    Rails.cache.write("subnet_last_swept_at_10.0.1.0/24", Time.current)
+  end
+
+  teardown do
+    Rails.cache = @real_cache
   end
 
   def stale_link(address:, dark_for:, status: :active)
@@ -78,5 +88,27 @@ class NetworkReconReclaimTest < ActiveSupport::TestCase
 
     assert_equal 0, @service.reclaim_stale_links!("10.0.1.0/24")
     assert_equal devices(:two).id, ip.reload.device_id
+  end
+
+  test "skips releases with no recent sweep" do
+    Rails.cache.delete("subnet_last_swept_at_10.0.1.0/24")
+    ip = stale_link(address: "10.0.1.65", dark_for: 30.days)
+
+    assert_no_difference "NetworkEvent.count" do
+      assert_equal 0, @service.reclaim_stale_links!("10.0.1.0/24")
+    end
+
+    assert_equal @device.id, ip.reload.device_id
+  end
+
+  test "back-to-back sweeps skip then release" do
+    Rails.cache.delete("subnet_last_swept_at_10.0.1.0/24")
+    ip = stale_link(address: "10.0.1.66", dark_for: 30.days)
+
+    assert_equal 0, @service.reclaim_stale_links!("10.0.1.0/24")
+    assert_equal @device.id, ip.reload.device_id
+
+    assert_equal 1, @service.reclaim_stale_links!("10.0.1.0/24")
+    assert_nil ip.reload.device_id
   end
 end

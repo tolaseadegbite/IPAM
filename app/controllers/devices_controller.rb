@@ -162,7 +162,7 @@ class DevicesController < ApplicationController
   def device_params
     params.require(:device).permit(
       :name, :device_type,
-      :status, :mac_address, :critical, :location, :notes,
+      :status, :mac_address, :critical, :infrastructure, :location, :notes,
       :department_id, :employee_id, ip_address_ids: []
     )
   end
