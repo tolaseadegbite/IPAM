@@ -147,7 +147,7 @@ class DevicesController < ApplicationController
           locals: { device: Device.new, id: "interface-#{SecureRandom.hex(4)}", assigned_ip: nil }
         )
       end
-      format.html { redirect_to devices_path }
+      format.html { redirect_back_or_to devices_path }
     end
   end
 
