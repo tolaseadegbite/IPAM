@@ -136,21 +136,6 @@ class DevicesController < ApplicationController
     end
   end
 
-  # Blank interface block for the Add-IP button (Turbo Stream append).
-  # Row identity is random per render so subnet filtering stays independent.
-  def interface_row
-    respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.append(
-          "interfaces-container",
-          partial: "devices/ip_interface_block",
-          locals: { device: Device.new, id: "interface-#{SecureRandom.hex(4)}", assigned_ip: nil }
-        )
-      end
-      format.html { redirect_back_or_to devices_path }
-    end
-  end
-
   private
 
   # The edit form POSTs from its own URL, so the Referer header can never

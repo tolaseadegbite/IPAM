@@ -66,26 +66,4 @@ class DevicesControllerTest < ActionDispatch::IntegrationTest
     patch device_url(devices(:one)), params: { device: { notes: "Hostile probe" } }
     assert_redirected_to device_url(devices(:one))
   end
-
-  test "interface_row html fallback returns to the form, not the index" do
-    get interface_row_devices_url,
-        headers: { "Referer" => new_device_url }
-
-    assert_redirected_to new_device_url
-  end
-
-  test "interface_row html fallback uses index only without referrer" do
-    get interface_row_devices_url
-
-    assert_redirected_to devices_url
-  end
-
-  test "interface_row turbo stream appends a blank row" do
-    get interface_row_devices_url,
-        headers: { "Accept" => "text/vnd.turbo-stream.html" }
-
-    assert_response :success
-    assert_match(/turbo-stream action="append" target="interfaces-container"/, response.body)
-    assert_match(/data-interface-row/, response.body)
-  end
 end
