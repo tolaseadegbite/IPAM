@@ -97,3 +97,6 @@ gem "ruby_llm", "2.0.0"
 gem "redcarpet"
 
 gem "noticed", "~> 3.0"
+
+# Read-only xlsx parsing for the spreadsheet inventory import (no native deps)
+gem "creek", "~> 2.6"

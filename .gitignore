@@ -43,3 +43,8 @@
 
 # Kamal secrets are fetched at deploy time, never committed.
 /.kamal/secrets
+
+/config/credentials.yml.enc
+# Local database backups and spreadsheet import snapshots are never committed.
+/db/backups/
+/db/imports/
