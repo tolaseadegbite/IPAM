@@ -39,13 +39,21 @@ namespace :import do
       ActiveRecord::Base.transaction do
         source.employees.update_all(department_id: target.id)
         source.devices.update_all(department_id: target.id)
-        source.destroy!
+        # update_all skips callbacks/counters: refresh caches and the
+        # association state restrict_with_error checks before destroying.
+        %w[employees devices].each do |assoc|
+          Department.reset_counters(source.id, assoc)
+          Department.reset_counters(target.id, assoc)
+        end
+        source.reload.destroy!
       end
     end
 
-    DUPE_EMPLOYEES.each do |dupe_first, keeper_first|
-      dupe = Employee.where("upper(first_name) = ?", dupe_first.upcase).first
-      keeper = Employee.where("upper(first_name) = ?", keeper_first.upcase).first
+    DUPE_EMPLOYEES.each do |dupe_name, keeper_name|
+      dupe = Employee.find_by(first_name: dupe_name.split.first, last_name: dupe_name.split.last)
+      # Keepers may use either convention ("Engr"/"Praju" or "Engr Praju"/"").
+      keeper = Employee.find_by(first_name: keeper_name.split.first, last_name: keeper_name.split.last) ||
+               Employee.find_by(first_name: keeper_name)
       if dupe.nil?
         puts "  dupe gone already: #{dupe_first}"
         next
