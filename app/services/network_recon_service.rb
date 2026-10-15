@@ -3,7 +3,7 @@ class NetworkReconService
   # each sweep. Days, not hours: weekends, public-holiday stretches and
   # short leaves must never trigger a release. Reclaim unlinks only —
   # rows (and their audit trail) are never deleted.
-  RECLAIM_AFTER = 5.days
+  RECLAIM_AFTER = 2.weeks
 
   # A release requires proof of looking, not just old timestamps: no
   # releases unless a sweep completed within this window. Monitoring

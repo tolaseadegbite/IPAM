@@ -40,7 +40,7 @@ Caveat: an address only works if the switch port actually carries that segment's
 
 ## Automatic stale-link reclaim
 
-Device-linked IPs dark longer than **5 days** are released back to the pool automatically during sweeps (`device_id` cleared, status falls to `available`, one `info` event each). Rows are never deleted; `reserved` rows are never touched; live legs of multi-homed devices are unaffected (the decision is per IP). Manually releasing earlier is always available via the dashboard **Reclaim** action.
+Device-linked IPs dark longer than **2 weeks** are released back to the pool automatically during sweeps (`device_id` cleared, status falls to `available`, one `info` event each). Rows are never deleted; `reserved` rows are never touched; live legs of multi-homed devices are unaffected (the decision is per IP). Manually releasing earlier is always available via the dashboard **Reclaim** action.
 
 ## What the scanner reports
 
@@ -48,7 +48,7 @@ Device-linked IPs dark longer than **5 days** are released back to the pool auto
 - **Takeover** (`security`): an unknown MAC sits on an IP assigned to a known device. The IP is freed and flagged — treat as hostile until proven otherwise.
 - **Rogue sighting** (`security`): a reachable IP with no inventory record.
 - **Adoption** (`info`): a device recorded without a MAC inherits the discovered one.
-- **Ghost watch** (`outage`/`info`): long-unseen assignments surface for reclaim — and past 5 days dark, sweeps release them automatically (see above).
+- **Ghost watch** (`outage`/`info`): long-unseen assignments surface for reclaim — and past 2 weeks dark, sweeps release them automatically (see above).
 
 Severe findings also auto-file triage cards (see [Boards & Tasks](/docs/boards)) and notify admins — with flap protection so one flapping asset doesn't spam you.
 

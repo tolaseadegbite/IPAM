@@ -27,7 +27,7 @@ class NetworkReconReclaimTest < ActiveSupport::TestCase
   end
 
   test "keeps links dark within the grace window" do
-    ip = stale_link(address: "10.0.1.60", dark_for: 3.days)
+    ip = stale_link(address: "10.0.1.60", dark_for: NetworkReconService::RECLAIM_AFTER - 1.day)
 
     assert_no_difference "NetworkEvent.count" do
       assert_equal 0, @service.reclaim_stale_links!("10.0.1.0/24")
@@ -37,7 +37,7 @@ class NetworkReconReclaimTest < ActiveSupport::TestCase
   end
 
   test "releases links dark beyond the grace window" do
-    ip = stale_link(address: "10.0.1.61", dark_for: 8.days)
+    ip = stale_link(address: "10.0.1.61", dark_for: NetworkReconService::RECLAIM_AFTER + 1.day)
 
     assert_difference "NetworkEvent.count", 1 do
       assert_equal 1, @service.reclaim_stale_links!("10.0.1.0/24")
@@ -70,7 +70,7 @@ class NetworkReconReclaimTest < ActiveSupport::TestCase
       reachability_status: :up, device: @device,
       last_seen_at: Time.current
     )
-    stale_link(address: "10.0.1.64", dark_for: 9.days)
+    stale_link(address: "10.0.1.64", dark_for: NetworkReconService::RECLAIM_AFTER + 1.day)
 
     assert_equal 1, @service.reclaim_stale_links!("10.0.1.0/24")
 
