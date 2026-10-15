@@ -36,7 +36,9 @@ class NetworkReconService
 
     # 1. Execute Nmap (System Call)
     windows_path_raw = "/mnt/c/Program Files (x86)/Nmap/nmap.exe"
-    nmap_bin = File.exist?(windows_path_raw) ? "'#{windows_path_raw}'" : "sudo nmap"
+    # nmap_bin = File.exist?(windows_path_raw) ? "'#{windows_path_raw}'" : "sudo nmap"
+
+    nmap_bin = "sudo /usr/bin/nmap"
 
     command = "#{nmap_bin} -sn -PR -n -T4 --min-parallelism 100 --max-rtt-timeout 250ms #{subnet_cidr}"
     output = `#{command}`
