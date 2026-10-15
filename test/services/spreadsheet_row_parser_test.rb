@@ -69,7 +69,7 @@ class SpreadsheetRowParserTest < ActiveSupport::TestCase
   private
 
   def write_fixture_xlsx(filename, sheets)
-    path = Rails.root.join("tmp", filename).to_s
+    path = Rails.root.join("tmp", "pid#{Process.pid}_#{filename}").to_s
     FileUtils.rm_f(path)
     Zip::File.open(path, create: true) do |zip|
       zip.get_output_stream("[Content_Types].xml") { |f| f.write(content_types(sheets.size)) }
